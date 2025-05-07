@@ -557,6 +557,22 @@ local porygonz={
         }
       end
     end
+    if context.open_booster and #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit then
+      local forced_key = matching_energy(G.jokers.cards[1]);
+      G.GAME.consumeable_buffer = G.GAME.consumeable_buffer + 1
+      G.E_MANAGER:add_event(Event({
+          trigger = 'before',
+          delay = 0.0,
+          func = (function()
+                  local card = create_card('Energy', G.consumeables, nil, nil, nil, nil, forced_key)
+                  card:add_to_deck()
+                  G.consumeables:emplace(card)
+                  G.GAME.consumeable_buffer = 0
+              return true
+          end)}))
+      card_eval_status_text(card, 'extra', nil, nil, nil, {message = localize("poke_plus_energy"), colour = G.ARGS.LOC_COLOURS["pink"]})
+    end
+    return item_evo(self, card, context, "j_poke_porygonz")
   end,
   add_to_deck = function(self, card, from_debuff)
     if not G.GAME.energy_plus then
