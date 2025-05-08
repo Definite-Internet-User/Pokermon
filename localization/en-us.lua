@@ -3054,8 +3054,8 @@ return {
                     "{C:pink}+3{} Energy Limit",
                     "{X:red,C:white} X#2# {} Mult per {C:pink}Energy{}",
                     "card used this {C:attention}run{}",
-                    "{C:inactive}(Currently {X:red,C:white} X#1# {C:inactive} Mult)"
-                    "{br:2}BREAK - LINE BREAK",
+                    "{C:inactive}(Currently {X:red,C:white} X#1# {C:inactive} Mult)",
+                    "{br:2}ERROR - CONTACT STEAK",
                     "When any {C:attention}Booster Pack{} is opened",
                     "create an {C:pink}Energy{} card of",
                     "the same {C:pink}Type{} of leftmost Joker",                } 
