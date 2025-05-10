@@ -13,4 +13,7 @@ This is a fork containing my own personal tweaks to the Balatro mod [Pokermon](h
 - Change Articuno to give a random edtion(excluding shiny & negative)
 - Allow Umbreon to delevel a hand to 0 and below, if that's possible.
 - Give Sylveon to more variety of tags such as ethereal tag.
-- I might increase megastone's soul rate.
+- Espeon rank select based on deck. Not suit select though.
+- Considering Flareon's reducing reroll req to gain xmult to 2. 
+- Increase megastone's soul rate.
+- Change +Hand and +Discard jokers to +Hand/Discard on blind select.
