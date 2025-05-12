@@ -26,6 +26,8 @@ jd_def["j_poke_grubbin"] = {
         local count = #find_pokemon_type("Lightning")
         if count >= 1 then
           card.joker_display_values.mult = card.ability.extra.mult * 3
+        else
+          card.joker_display_values.mult = card.ability.extra.mult
         end
     end
 }
