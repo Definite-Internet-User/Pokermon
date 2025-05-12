@@ -626,7 +626,7 @@ return {
             j_poke_pidgeot = {
                 name = "Pidgeot",
                 text = {
-                    "Create a {C:planet}Planet{} card of highest leved hand when {C:attention}Blind{} is selected",
+                    "Create a {C:planet}Planet{} card of highest leveled hand when {C:attention}Blind{} is selected",
                     "{br:2}ERROR - CONTACT STEAK",
                     "{C:mult}+#1#{} Mult if scoring hand contains",
                     "multiple ranks and multiple suits",
