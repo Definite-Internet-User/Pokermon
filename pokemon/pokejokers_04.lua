@@ -138,7 +138,7 @@ local gengar={
       info_queue[#info_queue+1] = G.P_CENTERS.e_negative
     end
     info_queue[#info_queue+1] = {set = 'Other', key = 'mega_poke'}
-    info_queue[#info_queue+1] = {key = 'percent_chance', set = 'Other', specific_vars = {20}}
+    info_queue[#info_queue+1] = {key = 'percent_chance', set = 'Other', specific_vars = {35}}
     return {vars = {1, center.ability.extra.odds}}
   end,
   rarity = "poke_safari", 
