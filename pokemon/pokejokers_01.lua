@@ -1230,7 +1230,7 @@ local pikachu={
 local raichu={
   name = "raichu", 
   pos = {x = 12, y = 1}, 
-  config = {extra={money = 2, threshold = 120, plus_slot = false, money_limit = 16}},
+  config = {extra={money = 2, threshold = 120, plus_slot = false, money_limit = 30}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     if not center.edition or (center.edition and not center.edition.negative) then
