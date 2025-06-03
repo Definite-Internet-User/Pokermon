@@ -590,11 +590,17 @@ local espeon={
   calculate = function(self, card, context)
     if context.reroll_shop and not context.blueprint then
       if not G.GAME.current_round.espeon_triggered then
-        local rank_ids = {{rank = '2', id = 2},{rank = '3', id = 3},{rank = '4', id = 4},{rank = '5', id = 5},{rank = '6', id = 6},{rank = '7', id = 7},{rank = '8', id = 8},
-                          {rank = '9', id = 9},{rank = '10', id = 10},{rank = 'Jack', id = 11},{rank = 'Queen', id = 12},{rank = 'King', id =13},{rank = 'Ace', id = 14},}
-        local rank_id = pseudorandom_element(rank_ids, pseudoseed('espeon'..G.GAME.round))
-        G.GAME.current_round.espeon_rank = rank_id.rank
-        G.GAME.current_round.espeon_id = rank_id.id
+        local rank_ids = {}
+        for k, v in ipairs(G.playing_cards) do
+            if v.ability.effect ~= 'Stone Card' then
+                rank_ids[#rank_ids+1] = v
+            end
+        end
+        if rank_ids[1] then 
+            local rank_id = pseudorandom_element(rank_ids, pseudoseed('espeon'))
+            G.GAME.current_round.espeon_rank = rank_id.base.value
+            G.GAME.current_round.espeon_id = rank_id.base.id
+        end
         local suits = {'Spades','Hearts','Diamonds','Clubs'}
         G.GAME.current_round.espeon_suit = pseudorandom_element(suits, pseudoseed('espeon'..G.GAME.round))
         
@@ -626,16 +632,22 @@ local espeon={
   end,
   set_ability = function(self, card, initial, delay_sprites)
     if initial and not next(SMODS.find_card("j_poke_espeon")) then
-      local rank_ids = {{rank = '2', id = 2},{rank = '3', id = 3},{rank = '4', id = 4},{rank = '5', id = 5},{rank = '6', id = 6},{rank = '7', id = 7},{rank = '8', id = 8},
-                  {rank = '9', id = 9},{rank = '10', id = 10},{rank = 'Jack', id = 11},{rank = 'Queen', id = 12},{rank = 'King', id =13},{rank = 'Ace', id = 14},}
-      local rank_id = pseudorandom_element(rank_ids, pseudoseed('espeon'))
-      G.GAME.current_round.espeon_rank = rank_id.rank
-      G.GAME.current_round.espeon_id = rank_id.id
+      local rank_ids = {}
+      for k, v in ipairs(G.playing_cards) do
+          if v.ability.effect ~= 'Stone Card' then
+              rank_ids[#rank_ids+1] = v
+          end
+      end
+      if rank_ids[1] then 
+          local rank_id = pseudorandom_element(rank_ids, pseudoseed('espeon'))
+            G.GAME.current_round.espeon_rank = rank_id.base.value
+            G.GAME.current_round.espeon_id = rank_id.base.id
+      end
       
       local suits = {'Spades','Hearts','Diamonds','Clubs'}
       G.GAME.current_round.espeon_suit = pseudorandom_element(suits, pseudoseed('espeon'))
     end
-  end
+ end
 }
 -- Umbreon 197
 local umbreon={

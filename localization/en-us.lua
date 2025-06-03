@@ -643,7 +643,7 @@ return {
             j_poke_pidgeot = {
                 name = "Pidgeot",
                 text = {
-                    "Create a {C:planet}Planet{} card when {C:attention}Blind{} is selected",
+                    "Create a {C:planet}Planet{} card of highest leveled hand when {C:attention}Blind{} is selected",
                     "{br:2}ERROR - CONTACT STEAK",
                     "{C:mult}+#1#{} Mult if scoring hand contains",
                     "multiple ranks and multiple suits",
@@ -1333,8 +1333,7 @@ return {
             j_poke_gastly = {
                 name = 'Gastly',      
                 text = {
-                    "{C:green}#1# in #2#{} chance to {C:attention}replace{} the",
-                    "edition of a random {C:attention}Joker{} with",
+                    "{C:green}#1# in #2#{} chance to give a random {C:attention}Joker{}",
                     "{C:dark_edition}Negative{} at end of round",
                     "{S:1.1,C:red,E:2}self destructs{}",
                     "{C:inactive,s:0.8}(Evolves after {C:attention,s:0.8}#3#{C:inactive,s:0.8} rounds)",
@@ -1343,8 +1342,7 @@ return {
             j_poke_haunter = {
                 name = 'Haunter',      
                 text = {
-                    "{C:green}#1# in #2#{} chance to {C:attention}replace{} the",
-                    "edition of a random {C:attention}Joker{} with",
+                    "{C:green}#1# in #2#{} chance to give a random {C:attention}Joker{}",
                     "{C:dark_edition}Negative{} at end of round",
                     "{S:1.1,C:red,E:2}self destructs{}",
                     "{C:inactive,s:0.8}(Evolves with a {C:attention,s:0.8}Linking Cord{C:inactive,s:0.8})"
@@ -1353,8 +1351,7 @@ return {
             j_poke_gengar = {
                 name = 'Gengar',      
                 text = {
-                    "{C:green}#1#%{} chance to {C:attention}replace{} the",
-                    "edition of a random {C:attention}Joker{} with",
+                    "{C:green}#1#%{} chance give a random {C:attention}Joker{}",
                     "{C:dark_edition}Negative{} at end of round",
                     "{C:inactive,s:0.8}(Odds can't be increased){}",
                     "{C:inactive,s:0.8}(Excludes Gengars){}",
@@ -2098,6 +2095,7 @@ return {
                     "{X:red,C:white}X#6#{} for scoring {C:attention}Steel{} / {C:attention}Glass{} cards",
                     "{C:money}$#8#{} for scoring {C:attention}Gold{} / {C:attention}Lucky{} cards",
                     "Then {C:attention}Randomize{} scoring card {C:dark_edition}Enhancements",
+                    "{C:inactive,s:0.8}Will not give stone enhancement{}",
                     "{C:inactive}(Currently {C:chips}+#3#{}, {C:mult}+#1#{}, {X:red,C:white}X#5#{}, {C:money}$#7#{C:inactive} end of round)"
                 } 
             },
@@ -3231,8 +3229,11 @@ return {
                     "{C:pink}+3{} Energy Limit",
                     "{X:red,C:white} X#2# {} Mult per {C:pink}Energy{}",
                     "card used this {C:attention}run{}",
-                    "{C:inactive}(Currently {X:red,C:white} X#1# {C:inactive} Mult)"
-                } 
+                    "{C:inactive}(Currently {X:red,C:white} X#1# {C:inactive} Mult)",
+                    "{br:2}ERROR - CONTACT STEAK",
+                    "When any {C:attention}Booster Pack{} is opened",
+                    "create an {C:pink}Energy{} card of",
+                    "the same {C:pink}Type{} of leftmost Joker",                } 
             },
             j_poke_probopass = {
                 name = 'Probopass',      
