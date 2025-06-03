@@ -2163,7 +2163,7 @@ return {
                   "{br:3}ERROR - CONTACT STEAK",
                   "Loses {X:red,C:white}X#3#{} Mult when one or more",
                   "{C:attention}playing cards{} are {C:attention}destroyed",
-                  "{C:inactive}(Currently {X:red,C:white}X#1#{C:inactive} / X#4# Mult)",
+                  "{C:inactive}(Evolves at {X:red,C:white}X#1#{C:inactive} / X#4# Mult)",
                 }
             },
             j_poke_flaaffy = {
@@ -2174,7 +2174,7 @@ return {
                   "{br:3}ERROR - CONTACT STEAK",
                   "Loses {X:red,C:white}X#3#{} Mult when one or more",
                   "{C:attention}playing cards{} are {C:attention}destroyed",
-                  "{C:inactive}(Currently {X:red,C:white}X#1#{C:inactive} / X#4# Mult)",
+                  "{C:inactive}(Evolves at {X:red,C:white}X#1#{C:inactive} / X#4# Mult)",
                 }
             },
             j_poke_ampharos = {
