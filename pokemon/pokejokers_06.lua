@@ -3,7 +3,7 @@ local mew ={
   name = "mew", 
   pos = {x = pokermon_config.pokemon_altart and 11 or 12, y = pokermon_config.pokemon_altart and 12 or 11},
   soul_pos = { x = 0, y = 12},
-  config = {extra = {percent = 15}},
+  config = {extra = {percent = 80}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     if not center.edition or (center.edition and not center.edition.negative) then
@@ -768,7 +768,7 @@ local crobat={
               elseif enhancement_type > .625 then v:set_ability(G.P_CENTERS.m_wild, nil, true)
               elseif enhancement_type > .50 then v:set_ability(G.P_CENTERS.m_glass, nil, true)
               elseif enhancement_type > .375 then v:set_ability(G.P_CENTERS.m_steel, nil, true)
-              elseif enhancement_type > .25 then v:set_ability(G.P_CENTERS.m_stone, nil, true)
+--              elseif enhancement_type > .25 then v:set_ability(G.P_CENTERS.m_stone, nil, true)
               elseif enhancement_type > .125 then v:set_ability(G.P_CENTERS.m_gold, nil, true)
               else v:set_ability(G.P_CENTERS.m_lucky, nil, true)
               end

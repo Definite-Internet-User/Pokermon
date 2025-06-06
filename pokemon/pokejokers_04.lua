@@ -56,7 +56,7 @@ local gastly={
       if #G.jokers.cards > 0 then
         local eligible_editionless_jokers = {}
         for k, v in pairs(G.jokers.cards) do
-          if v.ability.set == 'Joker' and v ~= card and not v.gone then
+          if v.ability.set == 'Joker' and (not v.edition) and v ~= card and not v.gone then
               table.insert(eligible_editionless_jokers, v)
           end
         end
@@ -107,7 +107,7 @@ local haunter={
       if #G.jokers.cards > 0 then
         local eligible_editionless_jokers = {}
         for k, v in pairs(G.jokers.cards) do
-          if v.ability.set == 'Joker' and v ~= card and not v.gone then
+          if v.ability.set == 'Joker' and (not v.edition) and v ~= card and not v.gone then
               table.insert(eligible_editionless_jokers, v)
           end
         end
@@ -131,7 +131,7 @@ local haunter={
 local gengar={
   name = "gengar", 
   pos = {x = 2, y = 7}, 
-  config = {extra = {odds = 20}},
+  config = {extra = {odds = 33}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     if not center.edition or (center.edition and not center.edition.negative) then
@@ -153,7 +153,7 @@ local gengar={
       if #G.jokers.cards > 0 then
         local eligible_jokers = {}
         for k, v in pairs(G.jokers.cards) do
-          if v.ability.set == 'Joker' and v.ability.name ~= "gengar" and not v.gone then
+          if v.ability.set == 'Joker' and (not v.edition) and v.ability.name ~= "gengar" and not v.gone then
               table.insert(eligible_jokers, v)
           end
         end
