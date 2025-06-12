@@ -591,19 +591,21 @@ local espeon={
     if context.reroll_shop and not context.blueprint then
       if not G.GAME.current_round.espeon_triggered then
         local rank_ids = {}
-        for k, v in ipairs(G.playing_cards) do
+        if G.playing_cards then
+          for k, v in ipairs(G.playing_cards) do
             if v.ability.effect ~= 'Stone Card' then
-                rank_ids[#rank_ids+1] = v
+              rank_ids[#rank_ids+1] = v
             end
+          end
         end
         if rank_ids[1] then 
-            local rank_id = pseudorandom_element(rank_ids, pseudoseed('espeon'))
-            G.GAME.current_round.espeon_rank = rank_id.base.value
-            G.GAME.current_round.espeon_id = rank_id.base.id
+          local rank_id = pseudorandom_element(rank_ids, pseudoseed('espeon'))
+          G.GAME.current_round.espeon_rank = rank_id.base.value
+          G.GAME.current_round.espeon_id = rank_id.base.id
         end
         local suits = {'Spades','Hearts','Diamonds','Clubs'}
         G.GAME.current_round.espeon_suit = pseudorandom_element(suits, pseudoseed('espeon'..G.GAME.round))
-        
+
         G.GAME.current_round.espeon_triggered = true
         G.E_MANAGER:add_event(Event({
           trigger = 'immediate',
@@ -633,12 +635,14 @@ local espeon={
   set_ability = function(self, card, initial, delay_sprites)
     if initial and not next(SMODS.find_card("j_poke_espeon")) then
       local rank_ids = {}
-      for k, v in ipairs(G.playing_cards) do
+      if G.playing_cards then
+        for k, v in ipairs(G.playing_cards) do
           if v.ability.effect ~= 'Stone Card' then
-              rank_ids[#rank_ids+1] = v
+            rank_ids[#rank_ids+1] = v
           end
+        end
       end
-      if rank_ids[1] then 
+      if rank_ids[1] then
           local rank_id = pseudorandom_element(rank_ids, pseudoseed('espeon'))
             G.GAME.current_round.espeon_rank = rank_id.base.value
             G.GAME.current_round.espeon_id = rank_id.base.id
