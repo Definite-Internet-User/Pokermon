@@ -206,7 +206,7 @@ local thunderstone = {
         local _card = create_playing_card({
               front = pseudorandom_element(poss_cards, pseudoseed('thunderstone')),
               center = G.P_CENTERS.m_gold}, area, nil, nil, {G.C.SECONDARY_SET.Enhanced})
-        cards_added[#cards_added] = _card
+        cards_added[#cards_added + 1] = _card
       end
       playing_card_joker_effects(cards_added)
       poke_remove_card(selected, card)
@@ -521,7 +521,7 @@ local thickclub = {
     if G.hand.highlighted and #G.hand.highlighted ~= 1 then return false end
     if G.STATE == G.STATES.SMODS_BOOSTER_OPENED or G.STATE == G.STATES.TAROT_PACK or G.STATE == G.STATES.SPECTRAL_PACK or G.STATE == G.STATES.PLANET_PACK
        or G.STATE == G.STATES.STANDARD_PACK then 
-      if #G.consumeables.cards + G.GAME.consumeable_buffer >= G.consumeables.config.card_limit then return false end
+      if (#G.consumeables.cards + G.GAME.consumeable_buffer >= G.consumeables.config.card_limit) and card.area == G.pack_cards then return false end
     end
     
     return card.ability.extra.usable

@@ -112,7 +112,7 @@ return {
                     "{C:green}#2# in #3#{} chance to",
                     "upgrade level of",
                     "selected {C:attention}poker hand{}",
-                    "{C:inactive}(Hand: {C:attention}#1#{Cinactive}){}"
+                    "{C:inactive}(Hand: {C:attention}#1#{C:inactive}){}"
                 },
             },
             c_poke_sunstone = {
@@ -871,8 +871,8 @@ return {
             j_poke_zubat = {
                 name = "Zubat",
                 text = {
-                    "Gains {C:mult}+#2#{} Mult for each Enhanced",
-                    "card in scoring hand",
+                    "Gains {C:mult}+#2#{} Mult for each",
+                    "{C:attention}Enhanced{} card in scoring hand",
                     "{C:inactive}(Currently {C:mult}+#1#{C:inactive} Mult)",
                     "{C:inactive}(Evolves at {C:mult}+#1#{C:inactive} / +#3# Mult)",
                 }
@@ -1692,8 +1692,8 @@ return {
                     "{C:attention}Tauros{} and {C:attention}Miltank{} Jokers",
                     "each give {X:mult,C:white} X#1# {} Mult",
                     "{br:4}ERROR - CONTACT STEAK",
-                    "Each reroll in the shop has a",
-                    "{C:green}#2# in #3#{} chance to find a {C:attention}Tauros (Herd){}",
+                    "Rerolls have a {C:green}#2# in #3#{} chance",
+                    "to add a {C:attention}Tauros (Herd){} to shop",
                 } 
             },
             j_poke_taurosh = {
@@ -3887,6 +3887,20 @@ return {
                   "{C:inactive}({C:attention}#1#{C:inactive} rounds remaining){}"
                 }
             },
+            j_poke_ruins_of_alph = {
+                name = "Ruins of Alph",
+                text = {
+                  "When {C:attention}Blind{} is selected,",
+                  "create {C:attention}3{} {C:dark_edition}Negative{} {C:attention}Unown",
+                  "{br:2}ERROR - CONTACT STEAK",
+                  "After an {C:attention}Unown{} triggers",
+                  "merge it and gain {C:mult}+#1#{} Mult",
+                  "{br:2}ERROR - CONTACT STEAK",
+                  "Sell this for a {C:attention}reward{}", 
+                  "based on Unown {C:attention}merged",
+                  "{C:inactive}(Currently {C:mult}+#3#{C:inactive} Mult and {C:attention}#2#{C:inactive} Unown)",
+                }
+            },
             j_poke_treasure_eatery = {
                 name = "Treasure Eatery",
                 text = {
@@ -4396,6 +4410,25 @@ return {
                     "Set once upon Joker creation",
                 }
             },
+            merge = {
+                name = "Merge",
+                text = {
+                  "Removes card and adds it",
+                  "to this Joker",
+                  "Right click to view",
+                  "merged cards"
+                }
+            },
+            rewards_ruins_of_alph = {
+                name = "Rewards",
+                text = {
+                  "{C:attention}#1#{} - {C:attention}Safari{} Joker",
+                  "{C:attention}#2#{} - {C:attention}Duplicate{} a random Joker",
+                  "{C:attention}#3#{} - {C:attention}Blueprint{}",
+                  "{C:attention}#4#{} - {C:attention}Unown Swarm",
+                  "{C:inactive}(Rewards are not cumulative){}"
+                }
+            },
             scry_cards = {
                 name = "Foresight",
                 text = {
@@ -4471,6 +4504,14 @@ return {
                 text = {
                   "This Joker comes with",
                   "a {C:attention}#1#{} card",
+                  "{C:inactive}(Must have room){}"
+                }
+            },
+            holding_an = {
+                name = "Holding",
+                text = {
+                  "This Joker comes with",
+                  "an {C:attention}#1#{} card",
                   "{C:inactive}(Must have room){}"
                 }
             },
@@ -4854,6 +4895,7 @@ return {
             poke_settings_pokemon_altart = "Alt Art?",
             poke_settings_pokemon_aprilfools = "Joke Content?",
             poke_settings_pokemon_legacy = "Legacy Content?",
+            poke_settings_enable_animations = "Enable Animations?",
             poke_settings_pokemon_master = "Pokemon Master Mode?",
             poke_credits_actualcredits = "Credits",
             poke_credits_thanks = "Thanks to",
@@ -4950,7 +4992,9 @@ return {
             poke_shake_ex = "Shake!",
             poke_closed_ex = "Closed!",
             poke_reload_ex = "Reload!",
-            poke_shadow_tag_ex = "Shadow Tag!"
+            poke_shadow_tag_ex = "Shadow Tag!",
+            poke_flees_ex = "Flees!",
+            poke_hidden_power_ex = "Hidden Power!"
         },
         --These are the Labels
         --You know how things like seals and editions have those badges at the bottom? That's what this is for!
