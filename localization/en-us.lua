@@ -4004,6 +4004,15 @@ return {
                     "of {C:item,T:c_poke_twisted_spoon}#2#"
                 } 
             },
+            sleeve_poke_ampeddeck = {
+                name = "Amped Sleeve",
+                text = {
+                    "Start run with the",
+                    "{C:tarot,T:v_poke_energysearch}#1#{} voucher",
+                    "and a copy of",
+                    "{C:pink,T:c_poke_double_rainbow_energy}#2#"
+                } 
+            },
         },
         Spectral = {
             c_poke_ultraball = {
@@ -4416,7 +4425,8 @@ return {
                   "Removes card and adds it",
                   "to this Joker",
                   "Right click to view",
-                  "merged cards"
+                  "merged cards",
+                  "{C:inactive}(Merged Jokers can't be copied){}"
                 }
             },
             rewards_ruins_of_alph = {
