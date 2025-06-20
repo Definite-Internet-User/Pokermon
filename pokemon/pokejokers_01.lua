@@ -878,14 +878,35 @@ local pidgeot={
   ptype = "Colorless",
   blueprint_compat = true,
   calculate = function(self, card, context)
-    if context.setting_blind then
-      if #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit then
-        local _card = create_card('Planet', G.consumeables, nil, nil, nil, nil, nil)
-        _card:add_to_deck()
-        G.consumeables:emplace(_card)
-        card_eval_status_text(_card, 'extra', nil, nil, nil, {message = localize('k_plus_planet'), colour = G.C.PLANET})
-      end
-    end
+		if context.setting_blind then
+			if #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit then
+				local _planet, _hand, _tally = nil, nil, 1
+				for k, v in ipairs(G.handlist) do
+					if G.GAME.hands[v].visible and G.GAME.hands[v].played > _tally then
+						_hand = v
+						_tally = G.GAME.hands[v].played
+					end
+				end
+				if _hand then
+					for k, v in pairs(G.P_CENTER_POOLS.Planet) do
+						if v.config.hand_type == _hand then
+							_planet = v.key
+						end
+					end
+				end
+				local _card = create_card("Planet", G.consumeables, nil, nil, nil, nil, _planet)
+				_card:add_to_deck()
+				G.consumeables:emplace(_card)
+				card_eval_status_text(
+					_card,
+					"extra",
+					nil,
+					nil,
+					nil,
+					{ message = localize("k_plus_planet"), colour = G.C.PLANET }
+				)
+			end
+		end
     if context.cardarea == G.jokers and context.scoring_hand then
       if context.joker_main then
         local first_rank = nil
@@ -1237,7 +1258,7 @@ local pikachu={
 local raichu={
   name = "raichu", 
   pos = {x = 12, y = 1}, 
-  config = {extra={money = 2, threshold = 120, plus_slot = false, money_limit = 16}},
+  config = {extra={money = 2, threshold = 120, plus_slot = false, money_limit = 30}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     if not center.edition or (center.edition and not center.edition.negative) then
