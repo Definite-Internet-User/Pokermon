@@ -2842,6 +2842,59 @@ return {
                     "your deck and draw it to {C:attention}Hand",
                 } 
             },
+            j_poke_raikou = {
+                name = "Raikou",
+                text = {
+                  "If first played hand is {C:attention}1{} card,",
+                  "turns {C:attention}3{} cards {C:attention}held{} in hand",
+                  "to its {C:attention}rank{} and earn {C:money}$#1#{}",
+                }
+            },
+            j_poke_entei = {
+                name = "Entei",
+                text = {
+                  "If {C:attention}first{} discard is exactly",
+                  "{C:attention}4{} cards, destroy one of them",
+                  "and gain {X:red,C:white}X#2#{} Mult",
+                  "{C:inactive}(Currently {X:red,C:white}X#1#{C:inactive} Mult)",
+                }
+            },
+            j_poke_suicune = {
+                name = "Suicune",
+                text = {
+                  "{C:attention}Doubles{} the total chips of",
+                  "each card in played hand",
+                  "{C:inactive}(Max of {C:chips}+#1#{C:inactive} Chips)",
+                }
+            },
+            j_poke_larvitar = {
+                name = "Larvitar",
+                text = {
+                  "If played hand is a {C:attention}Full House{}",
+                  "every played card permanently ",
+                  "gains {C:chips}+#1#{} Chips when scored",
+                  "{C:inactive,s:0.8}(Evolves after playing {C:attention,s:0.8}#2#{C:inactive,s:0.8} Full Houses)"
+                }
+            },
+            j_poke_pupitar = {
+                name = "Pupitar",
+                text = {
+                  "If played hand is a {C:attention}Full House{}",
+                  "every played card permanently ",
+                  "gains {C:chips}+#1#{} Chips when scored",
+                  "{C:inactive,s:0.8}(Evolves after playing {C:attention,s:0.8}#2#{C:inactive,s:0.8} Full Houses)"
+                }
+            },
+            j_poke_tyranitar = {
+                name = "Tyranitar",
+                text = {
+                  "If played hand is a {C:attention}Full House{}",
+                  "When scored, every played card",
+                  "permanently loses up to {C:chips}#1#{} Chips and",
+                  "permanently gains {X:mult,C:white}X#2#{} Mult if",
+                  "chips were lost"
+                }
+            },
             j_poke_celebi = {
                 name = "Celebi",
                 text = {

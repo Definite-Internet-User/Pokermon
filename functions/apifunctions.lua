@@ -58,7 +58,6 @@ pokermon.add_family = function(family)
 end
 
 pokermon.Pokemon = function(item, custom_prefix, custom_atlas)
-  table.insert(pokermon.family, family)
   if custom_prefix then
     item.poke_custom_prefix = custom_prefix
   end
@@ -68,4 +67,14 @@ pokermon.Pokemon = function(item, custom_prefix, custom_atlas)
     item.prefix_config = {atlas = false}
   end
   pokermon.load_pokemon(item)
+end
+
+pokermon.Juice = function(item, custom_prefix, set)
+  item.berry_juice = true
+  local prefix = custom_prefix and 'c_'..custom_prefix..'_' or 'c_'
+  local key = item.key or item.name
+  if not pokermon.juice_list[set] then
+    pokermon.juice_list[set] = prefix..key
+  end
+  SMODS.Consumable(item)
 end
