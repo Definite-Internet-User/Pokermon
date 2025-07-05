@@ -568,13 +568,13 @@ local mega_blastoise = {
 local caterpie={
   name = "caterpie", 
   pos = {x = 9, y = 0},
-  config = {extra = {mult = 2, rounds = 2}},
+  config = {extra = {mult = 3, rounds = 2}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
 		return {vars = {center.ability.extra.mult, center.ability.extra.rounds}}
   end,
   rarity = 1, 
-  cost = 3, 
+  cost = 2, 
   stage = "Basic",
   ptype = "Grass",
   atlas = "Pokedex1", 
@@ -595,7 +595,7 @@ local caterpie={
 -- Metapod 011
 local metapod={
   name = "metapod",
-  config = {extra = {mult = 4, rounds = 3}},
+  config = {extra = {mult = 6, rounds = 3}},
   pos = {x = 10, y = 0}, 
   rarity = 1, 
   cost = 4, 
@@ -624,7 +624,7 @@ local metapod={
 local butterfree={
   name = "butterfree", 
   pos = {x = 11, y = 0},
-  config = {extra = {mult = 10}},
+  config = {extra = {mult = 12}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
 		return {vars = {center.ability.extra.mult}}
@@ -651,13 +651,13 @@ local butterfree={
 local weedle={
   name = "weedle", 
   pos = {x = 12, y = 0},
-  config = {extra = {chips = 16, rounds = 2}},
+  config = {extra = {chips = 20, rounds = 2}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
 		return {vars = {center.ability.extra.chips, center.ability.extra.rounds}}
   end,
   rarity = 1, 
-  cost = 3, 
+  cost = 2, 
   stage = "Basic", 
   atlas = "Pokedex1",
   ptype = "Grass",
@@ -679,7 +679,7 @@ local weedle={
 local kakuna={
   name = "kakuna", 
   pos = {x = 0, y = 1}, 
-  config = {extra = {chips = 32, rounds = 3}},
+  config = {extra = {chips = 40, rounds = 3}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
 		return {vars = {center.ability.extra.chips, center.ability.extra.rounds}}
@@ -1445,7 +1445,7 @@ local sandslash={
 local nidoranf={
   name = "nidoranf", 
   pos = {x = 2, y = 2},
-  config = {extra = {chips = 35, rounds = 4}},
+  config = {extra = {chips = 50, rounds = 4}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     return {vars = {center.ability.extra.chips, center.ability.extra.rounds}}
@@ -1480,7 +1480,7 @@ local nidoranf={
 local nidorina={
   name = "nidorina", 
   pos = {x = 3, y = 2},
-  config = {extra = {chips = 70}},
+  config = {extra = {chips = 75}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     info_queue[#info_queue+1] = G.P_CENTERS.c_poke_moonstone
