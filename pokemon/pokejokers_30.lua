@@ -29,7 +29,7 @@ local dreepy={
   atlas = "Pokedex8",
   perishable_compat = true,
   blueprint_compat = false,
-  eternal_compat = true,
+  eternal_compat = false,
   calculate = function(self, card, context)
     if context.selling_self and not context.blueprint then
       for k, v in ipairs(G.jokers.cards) do

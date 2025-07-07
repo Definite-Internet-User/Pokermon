@@ -260,9 +260,8 @@ return {
                 text = {
                     "{C:attention}Evolution Card{}",
                     "{br:2}ERROR - CONTACT STEAK",
-                    "Randomizes or removes {C:attention}enhancements{}",
-                    "of all cards held in hand",
-                    "{C:inactive}(Includes cards without enhancements){}"
+                    "{C:attention}Enhances{} all cards",
+                    "{C:attention}held{} in hand randomly",
                 }
             },
             c_poke_icestone = {
@@ -312,9 +311,11 @@ return {
                 text = {
                     "{C:attention}Evolution Card{}",
                     "{br:2}ERROR - CONTACT STEAK",
-                    "Earn {C:money}$#1#{} for each {C:attention}Drainable{} Joker",
-                    "you have and {C:attention}Drain {C:money}$1{} from them",
-                    "No {C:attention}Drain{} after {C:attention}#2#{} Rounds {C:inactive}(Round #3#)",
+                    "Earn {C:money}$#1#{} for each {C:attention}Drainable{} ",
+                    "Joker, then {C:attention}Drain {C:money}$1{} from them",
+                    "{br:2}ERROR - CONTACT STEAK",
+                    "After {C:attention}#2#{} {C:inactive}[#3#]{} Rounds, earn",
+                    "{C:money}$#1#{} for each Joker instead",
                     "{C:inactive}(Currently {C:money}$#4#{C:inactive}/$#5# Max)"
                 }
             },
@@ -871,8 +872,8 @@ return {
             j_poke_clefairy = {
                 name = "Clefairy",
                 text = {
-                    "Played {C:clubs}#2#{} cards",
-                    "give {C:mult}+#1#{} Mult when scored",
+                    "Played {C:clubs}#2#{} cards give",
+                    "{C:mult}+#1#{} Mult when scored",
                     "{C:inactive,s:0.8}(Evolves with a {C:attention,s:0.8}Moon Stone{C:inactive,s:0.8})"
                 } 
             },
@@ -909,8 +910,9 @@ return {
             j_poke_jigglypuff = {
                 name = "Jigglypuff",
                 text = {
-                    "Played {C:spades}#2#{} cards",
-                    "give {C:mult}+#1#{} Mult when scored",
+                    "Played {C:spades}#2#{} cards give",
+                    "{C:mult}+#1#{} Mult and {C:chips}+#3#{} Chips",
+                    "when scored",
                     "{C:inactive,s:0.8}(Evolves with a {C:attention,s:0.8}Moon Stone{C:inactive,s:0.8})"
                 } 
             },
@@ -1498,15 +1500,18 @@ return {
                 text = {
                     "Played {C:hearts}#2#{} cards give",
                     "{C:mult}+#1#{} Mult when scored",
+                    "{C:green}#4# in #5#{} chance for",
+                    "{C:mult}+#3#{} Mult instead",
                     "{C:inactive,s:0.8}(Evolves with a {C:attention,s:0.8}Leaf Stone{C:inactive,s:0.8})"
                 } 
             },
             j_poke_exeggutor = {
                 name = 'Exeggutor',      
                 text = {
-                    "{C:green}#4# in #5#{} chance for played",
-                    "{C:hearts}#3#{} cards to give {C:mult}+#1#{} Mult",
-                    "and {X:mult,C:white}X#2#{} Mult when scored",
+                    "Played {C:hearts}#3#{} cards give",
+                    "{C:mult}+#1#{} Mult when scored",
+                    "{C:green}#4# in #5#{} chance for",
+                    "{X:mult,C:white}X#2#{} Mult instead",
                 } 
             },
             j_poke_cubone = {
@@ -1663,7 +1668,7 @@ return {
                 name = 'Staryu',      
                 text = {
                     "Played {C:diamonds}#2#{} cards give",
-                    "{C:mult}+#1#{} Mult when scored",
+                    "{C:mult}+#1#{} Mult and {C:money}$#3#{} when scored",
                     "{C:inactive,s:0.8}(Evolves with a {C:attention,s:0.8}Water Stone{C:inactive,s:0.8})"
                 } 
             },
@@ -4512,9 +4517,10 @@ return {
             eitem = {
                 name = "Evolution Card",
                 text = {
-                    "When consumed, evolves leftmost",
-                    "or selected {C:attention}eligible{} Joker",
-                    "at end of next round",
+                    "When consumed, evolves",
+                    "leftmost or selected",
+                    "{C:attention}eligible{} Joker at",
+                    "end of next round",
                 }
             },
             --Infoqueue used by some Consumables
@@ -5080,7 +5086,8 @@ return {
             c_poke_goodasgold = "Good As Gold",
             c_poke_parenthood = "Parenthood",
             c_poke_littlecup = "Little Cup",
-            c_poke_hammertime = "Hammertime"
+            c_poke_hammertime = "Hammertime",
+            c_poke_lonesome = "Lonesome",
         },
         dictionary = {
             k_energy = "Energy",
@@ -5138,6 +5145,7 @@ return {
             poke_metal_ex = "Metal!",
             poke_dragon_ex = "Dragon!",
             poke_energized_ex = "Energized!",
+            poke_round_plus_ex = "Round Passed!",
             poke_unlimited_energy = "Infinity",
 
             --Some infoqueue/variable stuff

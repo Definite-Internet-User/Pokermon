@@ -66,11 +66,11 @@ local duskstone = {
     local jokers = (G.jokers and G.jokers.cards) and #G.jokers.cards or 0
     local joker_count = 0
     for i = 1, jokers do
-      if G.jokers.cards[i].sell_cost > 1 then
+      if G.jokers.cards[i].sell_cost > 1 or (G.GAME.round >= (card_info.round_on_add + card_info.rounds)) then
         joker_count = joker_count + 1
       end
     end
-    return {vars = {card_info.money, card_info.rounds, card_info.round_on_add + card_info.rounds, math.min(card_info.max, card_info.money * joker_count), card_info.max,}}
+    return {vars = {card_info.money, card_info.rounds, math.max(0, card_info.round_on_add + card_info.rounds - G.GAME.round), math.min(card_info.max, card_info.money * joker_count), card_info.max,}}
   end,
   pos = { x = 3, y = 4 },
   atlas = "Mart",
@@ -85,7 +85,7 @@ local duskstone = {
     set_spoon_item(card)
     local joker_count = 0
     for i = 1, #G.jokers.cards do
-      if G.jokers.cards[i].sell_cost > 1 then
+      if G.jokers.cards[i].sell_cost > 1 or (G.GAME.round >= (card.ability.extra.round_on_add + card.ability.extra.rounds)) then
         joker_count = joker_count + 1
         if not (G.GAME.round >= card.ability.extra.round_on_add + card.ability.extra.rounds) then
           poke_drain(card, G.jokers.cards[i], 1, true)

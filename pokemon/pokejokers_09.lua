@@ -2,7 +2,7 @@
 local miltank={
   name = "miltank",
   pos = {x = 9, y = 8},
-  config = {extra = {money = 5,}},
+  config = {extra = {money = 4,}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     return {vars = {center.ability.extra.money, center.ability.extra.money * #find_pokemon_type("Colorless")}}
@@ -297,10 +297,10 @@ local pupitar={
 local tyranitar={
   name = "tyranitar",
   pos = {x = 9, y = 9},
-  config = {extra = {chip_mod = 4, Xmult_multi = 0.04}},
+  config = {extra = {chip_mod_minus = 4, Xmult_multi = 0.04}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
-    return {vars = {center.ability.extra.chip_mod, center.ability.extra.Xmult_multi}}
+    return {vars = {center.ability.extra.chip_mod_minus, center.ability.extra.Xmult_multi}}
   end,
   rarity = "poke_safari",
   cost = 10,
@@ -313,11 +313,11 @@ local tyranitar={
   calculate = function(self, card, context)
     if context.individual and context.cardarea == G.play and context.scoring_hand and context.scoring_name == "Full House" then
       context.other_card.ability.nominal_drain = context.other_card.ability.nominal_drain or 0
-      local drained_vals = math.min(card.ability.extra.chip_mod, context.other_card.base.nominal - context.other_card.ability.nominal_drain - 1)
+      local drained_vals = math.min(card.ability.extra.chip_mod_minus, context.other_card.base.nominal - context.other_card.ability.nominal_drain - 1)
       if drained_vals > 0 then
         context.other_card.ability.nominal_drain = context.other_card.ability.nominal_drain + drained_vals
       end
-      local drain_bonus = math.min(context.other_card.ability.bonus + context.other_card.ability.perma_bonus, card.ability.extra.chip_mod - drained_vals)
+      local drain_bonus = math.min(context.other_card.ability.bonus + context.other_card.ability.perma_bonus, card.ability.extra.chip_mod_minus- drained_vals)
       if drain_bonus > 0 then
         context.other_card.ability.perma_bonus = context.other_card.ability.perma_bonus - drain_bonus
         drained_vals = drained_vals + drain_bonus
@@ -397,11 +397,13 @@ local ho_oh={
   ptype = "Fire",
   atlas = "Pokedex2",
   perishable_compat = true,
-  blueprint_compat = false,
+  blueprint_compat = true,
   eternal_compat = true,
   calculate = function(self, card, context)
-    if context.using_consumeable and (card.ability.extra.used < card.ability.extra.limit) and not context.blueprint then
-      card.ability.extra.used = card.ability.extra.used + 1
+    if context.using_consumeable and (card.ability.extra.used < card.ability.extra.limit) and not context.consumeable.config.center.jirachi_item then
+      if not context.blueprint then
+        card.ability.extra.used = card.ability.extra.used + 1
+      end
       if #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit then
         G.E_MANAGER:add_event(Event({
           func = function() 
@@ -415,7 +417,7 @@ local ho_oh={
         card_eval_status_text(card, 'extra', nil, nil, nil, {message = localize('k_duplicated_ex')})
       end
     end
-    if context.end_of_round and not context.individual and not context.repetition then
+    if context.end_of_round and not context.individual and not context.repetition and not context.blueprint then
       card.ability.extra.used = 0
     end
   end,
@@ -700,7 +702,7 @@ local torchic={
 local combusken={
   name = "combusken",
   pos = {x = 4, y = 0},
-  config = {extra = {mult = 3, cards_discarded = 0, mult_earned = 0, targets = {{value = "Ace", id = "14"}, {value = "King", id = "13"}, {value = "Queen", id = "12"}}, d_size = 1}, evo_rqmt = 150},
+  config = {extra = {mult = 2, cards_discarded = 0, mult_earned = 0, targets = {{value = "Ace", id = "14"}, {value = "King", id = "13"}, {value = "Queen", id = "12"}}, d_size = 1}, evo_rqmt = 150},
   loc_vars = function(self, info_queue, card)
     type_tooltip(self, info_queue, card)
     info_queue[#info_queue+1] = {set = 'Other', key = 'nature', vars = {"rank"}}
