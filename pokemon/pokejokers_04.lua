@@ -428,9 +428,9 @@ local voltorb={
   ptype = "Lightning",
   atlas = "Pokedex1",
   volatile = true,
-  blueprint_compat = false,
+  blueprint_compat = true,
   calculate = function(self, card, context)
-    if context.cardarea == G.jokers and context.scoring_hand and not context.blueprint then
+    if context.cardarea == G.jokers and context.scoring_hand then
       if context.joker_main and volatile_active(self, card, card.ability.extra.volatile) then
         G.E_MANAGER:add_event(Event({
           func = function()
@@ -465,9 +465,9 @@ local electrode={
   ptype = "Lightning",
   atlas = "Pokedex1", 
   volatile = true,
-  blueprint_compat = false,
+  blueprint_compat = true,
   calculate = function(self, card, context)
-    if context.cardarea == G.jokers and context.scoring_hand and not context.blueprint then
+    if context.cardarea == G.jokers and context.scoring_hand then
       if context.joker_main and volatile_active(self, card, card.ability.extra.volatile) then
         ease_poke_dollars(card, "electrode", card.ability.extra.money)
         G.E_MANAGER:add_event(Event({
