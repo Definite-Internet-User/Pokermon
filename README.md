@@ -5,9 +5,8 @@ This is a fork containing my own personal tweaks to the Balatro mod [Pokermon](h
 - Pidgeot gives planet of the highest leveled hand.
 - Mew percent chance increased to 80%
 - Gastly evo line will only target jokers without an edition
-- Gengar's percent chance increased to 33%
 - Crobat can't give stone cards
-- Porygon-Z additionally has Porygon2's effect.
+- Porygon-Z energy gen effect gives matching energy to leftmost joker.
 - Lower Deino line's evo reqs; Deino 6 triggers, Zwei 8 triggers.
 - Espeon rank select based on deck. Not suit select though.
 
