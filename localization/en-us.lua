@@ -620,19 +620,21 @@ return {
             j_poke_squirtle = {
                 name = "Squirtle",
                 text = {
-                    "{C:chips}+#3#{} hands",
-                    "Gains {C:chips}+#2#{} Chips for each hand",
-                    "remaining at end of round",
-                    "{C:inactive}(Evolves at {C:chips}+#1#{C:inactive} / +32 Chips)",
+                    "{C:chips}+#2#{} hands",
+                    "Gains {C:chips}+#4#{} Chips for each",
+                    "remaining {C:attention}hand{} when",
+                    "hand is played",
+                    "{C:inactive}(Evolves at {C:chips}+#1#{C:inactive} / +#3# Chips)",
                 } 
             },
             j_poke_wartortle = {
                 name = "Wartortle",
                 text = {
-                    "{C:chips}+#3#{} hands",
-                    "Gains {C:chips}+#2#{} Chips for each hand",
-                    "remaining at end of round",
-                    "{C:inactive}(Evolves at {C:chips}+#1#{C:inactive} / +72 Chips)",
+                    "{C:chips}+#2#{} hands",
+                    "Gains {C:chips}+#4#{} Chips for each",
+                    "remaining {C:attention}hand{} when",
+                    "hand is played",
+                    "{C:inactive}(Evolves at {C:chips}+#1#{C:inactive} / +#3# Chips)",
                 } 
             },
             j_poke_blastoise = {
@@ -1351,10 +1353,10 @@ return {
             j_poke_seel = {
                 name = 'Seel',      
                 text = {
-                    "{C:green}#1# in #2#{} chance to add a random {C:attention}seal{}",
-                    "to the leftmost scoring card",
+                    "{C:green}#1# in #2#{} chance to add a random",
+                    "{C:attention}seal{} to first scoring card",
                     "on {C:attention}first hand{} of round",
-                    "{C:inactive,s:0.8}(Evolves when your deck has {C:attention,s:0.8}#4#{C:inactive,s:0.8} / #3# {C:attention,s:0.8}seals{C:inactive,s:0.8})",
+                    "{C:inactive,s:0.8}(Evolves after {C:attention,s:0.8}#3#{C:inactive,s:0.8} rounds)",
                 } 
             },
             j_poke_dewgong = {
@@ -1422,18 +1424,17 @@ return {
             j_poke_gengar = {
                 name = 'Gengar',      
                 text = {
-                    "{C:green}#1#%{} chance give a random {C:attention}Joker{}",
-                    "{C:dark_edition}Negative{} at end of round",
-                    "{C:inactive,s:0.8}(Odds can't be increased){}",
+                    "Give a random {C:attention}Joker{}",
+                    "{C:dark_edition}Negative{} in {C:dark_edition}#1#{} rounds",
+                    "{C:inactive,s:0.8}(Gengar picks a new number!){}",
                     "{C:inactive,s:0.8}(Excludes Gengars){}",
                 } 
             },
             j_poke_mega_gengar = {
                 name = 'Mega Gengar',      
                 text = {
-                    "{C:dark_edition}Polychrome{} Jokers that would appear",
-                    "in the {C:attention}Shop{} and {C:attention}Booster Packs{}",
-                    "are {C:dark_edition}Negative{} instead",
+                    "Creates a {C:dark_edition}Negative{} {C:attention}tag{} when",
+                    "{C:attention}Small Blind{} or {C:attention}Big Blind{} is selected",
                 } 
             },
             j_poke_onix = {
@@ -1853,8 +1854,8 @@ return {
                     "{X:attention,C:white}1+{} : Create a {C:tarot}Tarot{} card",
                     "{X:attention,C:white}2+{} : Earn {C:money}$#2#{}",
                     "{X:attention,C:white}3+{} : Create a {C:item}Item{} card",
+                    "{C:inactive,s:0.8}(Trigger {C:attention,s:0.8}#3#{C:inactive,s:0.8} times to evolve)",
                     "{C:inactive,s:0.8}(Must have room)",
-                    "{C:inactive,s:0.8}(Evolves after triggering third level {C:attention,s:0.8}#3#{C:inactive,s:0.8} times)"
                 } 
             },
             j_poke_omastar = {
@@ -1874,8 +1875,7 @@ return {
                     "{C:attention}Ancient #1#s{}",
                     "{X:attention,C:white}1+{} : {C:chips}+#2#{} Chips",
                     "{X:attention,C:white}2+{} : {}Scoring {C:attention}#1#s{} permanently gain {C:chips}+#3#{} Chips",
-                    "{X:attention,C:white}3+{} : {C:chips}+#4#{} Chips",
-                    "{C:inactive,s:0.8}(Evolves after triggering third level {C:attention,s:0.8}#5#{C:inactive,s:0.8} times)"
+                    "{X:attention,C:white}3+{} : {C:chips}+#4#{} Chips {C:inactive,s:0.8}(Trigger {C:attention,s:0.8}#5#{C:inactive,s:0.8} times to evolve)",
                 } 
             },
             j_poke_kabutops = {
@@ -1885,8 +1885,7 @@ return {
                     "{X:attention,C:white}1+{} : {C:chips}+#2#{} Chips",
                     "{X:attention,C:white}2+{} : {}Scoring {C:attention}#1#s{} permanently gain {C:chips}+#3#{} Chips",
                     "{X:attention,C:white}3+{} : {C:chips}+#4#{} Chips",
-                    "{X:attention,C:white}4+{} : {}Retrigger {C:attention}first{} and {C:attention}second{}",
-                    "played cards {C:attention}#5#{} additional time"
+                    "{X:attention,C:white}4+{} : {}Retrigger all played {C:attention}#1#s{}",
                 } 
             },
             j_poke_aerodactyl = {
@@ -1950,7 +1949,7 @@ return {
                     "Gains {C:mult}+#2#{} Mult",
                     "if played hand has",
                     "{C:attention}#3#{} or fewer cards",
-                    "{C:inactive}(Evolves at {C:mult}+#1#{C:inactive} / +10 Mult)",
+                    "{C:inactive}(Evolves at {C:mult}+#1#{C:inactive} / +#4# Mult)",
                 } 
             },
             j_poke_dragonair = {
@@ -1959,7 +1958,7 @@ return {
                     "Gains {C:mult}+#2#{} Mult",
                     "if played hand has",
                     "{C:attention}#3#{} or fewer cards",
-                    "{C:inactive}(Evolves at {C:mult}+#1#{C:inactive} / +30 Mult)",
+                    "{C:inactive}(Evolves at {C:mult}+#1#{C:inactive} / +#4# Mult)",
                 } 
             },
             j_poke_dragonite = {
@@ -1975,7 +1974,7 @@ return {
             j_poke_mewtwo = {
                 name = 'Mewtwo',
                 text = {
-                    "At end of shop, create a",
+                    "When {C:attention}Boss Blind{} is defeated, create a",
                     "{C:dark_edition}Polychrome{} {C:attention}duplicate{} of leftmost",
                     "{C:attention}Joker{} and {C:pink}Energize{} the {C:attention}duplicate{}",
                     "then destroy leftmost {C:attention}Joker{}",
@@ -2017,8 +2016,9 @@ return {
                 name = 'Chikorita',
                 text = {
                     "{C:attention}+#1#{} hand size",
-                    "Every {C:attention}third{} card {C:attention}held in hand{}",
-                    "earns {C:money}$#2#{} at end of round",
+                    "Every card {C:attention}held{} in hand",
+                    "beyond the {C:attention}fourth{} earns",
+                    "{C:money}$#2#{} at end of round",
                     "{C:inactive,s:0.8}(Evolves after {C:attention,s:0.8}#3#{C:inactive,s:0.8} rounds)",
                 }
             },
@@ -2026,8 +2026,9 @@ return {
                 name = 'Bayleef',
                 text = {
                     "{C:attention}+#1#{} hand size",
-                    "Every {C:attention}other{} card {C:attention}held in hand{}",
-                    "earns {C:money}$#2#{} at end of round",
+                    "Every card {C:attention}held{} in hand",
+                    "beyond the {C:attention}second{} earns",
+                    "{C:money}$#2#{} at end of round",
                     "{C:inactive,s:0.8}(Evolves after {C:attention,s:0.8}#3#{C:inactive,s:0.8} rounds)",
                 }
             },
@@ -2367,7 +2368,9 @@ return {
             j_poke_aipom = {
               name = "Aipom",
               text = {
-                "{C:chips}-#3#{} hand",
+                "{C:attention}-#3#{} card selection limit",
+                "{C:inactive}(play/discard limits)",
+                "{br:2}ERROR - CONTACT STEAK",
                 "All {C:attention}Flushes{} and {C:attention}Straights{} can",
                 "be made with {C:attention}3{} cards",
                 "{C:inactive,s:0.8}(Evolves after playing {C:attention,s:0.8}#1#{C:inactive,s:0.8} Straights and {C:attention,s:0.8}#2#{C:inactive,s:0.8} Flushes){}"
@@ -2451,9 +2454,10 @@ return {
             j_poke_slowking = {
                 name = 'Slowking',
                 text = {
-                    "Played {C:attention}Kings{} give {X:mult,C:white}X#1#{} Mult when scored",
+                    "Played {C:attention}Kings{} give",
+                    "{X:mult,C:white}X#1#{} Mult when scored",
                     "Increases by {X:mult,C:white}X#2#{} Mult",
-                    "per hand played beyond the first",
+                    "when hand is played",
                     "{C:inactive,s:0.8}(Resets at end of round)",
                 }
             },
@@ -2508,11 +2512,10 @@ return {
             j_poke_forretress = {
               name = "Forretress",
               text = {
-                "Gains {C:chips}+#2#{} Chips when",
-                "a {C:attention}held{} {C:attention}Steel{} card triggers",
-                "{br:2}ERROR - CONTACT STEAK",
                 "{C:attention}Volatile Left{}",
                 "{C:chips}+#1#{} Chips and debuff self",
+                "Gives {C:attention}Double{} Chips if a",
+                "{C:attention}Steel{} card is {C:attention}held{} in hand",
               }
             },
             j_poke_dunsparce = {
@@ -2680,16 +2683,18 @@ return {
             j_poke_remoraid = {
               name = "Remoraid",
               text = {
-                "Retrigger the first {C:attention}#3#{} {C:inactive}[#4#]{}",
-                "cards scored each round",
+                "Retrigger all cards",
+                "in first played hand",
                 "{C:inactive}(Evolves after {C:attention}#2#{C:inactive} rounds)",
               }
             },
             j_poke_octillery = {
               name = "Octillery",
               text = {
-                "Retrigger the first {C:attention}#2#{} {C:inactive}[#3#]{}",
-                "cards scored each round",
+                "Retrigger all cards played",
+                "{br:2}ERROR - CONTACT STEAK",
+                "Debuffs self if scoring",
+                "hand doesn't contain an {C:attention}8{}"
               }
             },
             j_poke_delibird = {
@@ -2960,13 +2965,12 @@ return {
             j_poke_sceptile = {
                 name = "Sceptile",
                 text = {
-                    "{C:attention}+#3#{} hand size, {C:attention}Nature: {C:inactive}({C:attention}#5#, #6#, #7#{C:inactive}){}",
-                    "Played {C:attention}Nature{} cards earn {C:money}$#1#{} when scored",
-                    "{br:5}ERROR - CONTACT STEAK",
-                    "Earn {C:money}$#1#{} at end of round for",
-                    "each other {X:grass,C:white}Grass{} card you have",
+                    "{C:attention}+#3#{} hand size, {C:attention}Nature: {C:inactive}({C:attention}#6#, #7#, #8#{C:inactive}){}",
+                    "Played {C:attention}Nature{} cards earn {C:money}$#1#{}",
+                    "plus {C:money}$#5#{} for each other {X:grass,C:white}Grass{}",
+                    "card you have when scored",
                     "{C:inactive,s:0.8}(includes Jokers and Energy cards){}",
-                    "{C:inactive}(Currently {C:money}$#4#{C:inactive}, Max of {C:money}$14{C:inactive}){}"
+                    "{C:inactive}(Currently {C:money}$#4#{C:inactive} total){}"
                 } 
             },
             j_poke_torchic = {
@@ -3035,9 +3039,8 @@ return {
             j_poke_zigzagoon = {
               name = "Zigzagoon",
               text = {
-                "{C:attention}Holding Pickup{} {C:item}Item{}",
-                "{C:green}#1# in #2#{} chance to create an",
-                "{C:item}Item{} when hand is played",
+                "{C:green}#1# in #2#{} chance to create a",
+                "{C:attention}Pickup{} {C:item}Item{} when hand is played",
                 "{C:inactive}(Must have room)",
                 "{C:inactive,s:0.8}(Evolves after {C:attention}#3#{C:inactive,s:0.8} rounds)",
               }
@@ -3045,8 +3048,8 @@ return {
             j_poke_linoone = {
               name = "Linoone",
               text = {
-                "{C:green}#1# in #2#{} chance to create an",
-                "{C:item}Item{} when hand is played",
+                "{C:green}#1# in #2#{} chance to create a",
+                "{C:attention}Pickup{} {C:item}Item{} when hand is played",
                 "Guaranteed if hand",
                 "contains a {C:attention}Straight{}",
                 "{C:inactive}(Must have room)"
@@ -3160,7 +3163,7 @@ return {
                     "is a {C:attention}Four of a Kind{}",
                     "Gains {C:chips}+#2#{} Chips if scoring hand",
                     "contains an {C:attention}Ace",
-                    "{C:inactive}(Evolves at {C:chips}+#1#{C:inactive} / +64 Chips)",
+                    "{C:inactive}(Evolves at {C:chips}+#1#{C:inactive} / +#4# Chips)",
                 } 
             },
             j_poke_metang = {
@@ -3170,7 +3173,7 @@ return {
                     "is a {C:attention}Four of a Kind{}",
                     "Gains {C:chips}+#2#{} Chips if scoring hand",
                     "contains {C:attention}2+{} {C:attention}Aces",
-                    "{C:inactive}(Evolves at {C:chips}+#1#{C:inactive} / +256 Chips)",
+                    "{C:inactive}(Evolves at {C:chips}+#1#{C:inactive} / +#4# Chips)",
                 } 
             },
             j_poke_metagross = {
@@ -3180,7 +3183,7 @@ return {
                     "{br:3}ERROR - CONTACT STEAK",
                     "If played hand is a {C:attention}Four of a Kind{}",
                     "each played card gives {X:mult,C:white}X{} Mult",
-                    "equal to the {C:attention}cube root{} ",
+                    "equal to the {C:attention}fourth root{} ",
                     "of that card's total chips",
                 } 
             },
@@ -3257,7 +3260,7 @@ return {
               name = "Ambipom",
               text = {
                 "All {C:attention}Flushes{} and {C:attention}Straights{} can",
-                "be made with {C:attention}3{} cards",
+                "be made with {C:attention}exactly 3{} cards",
               }
             },
             j_poke_mismagius = {
@@ -3320,11 +3323,8 @@ return {
                 name = "Mantyke",
                 text = {
                   "{C:attention}Baby{}, {X:mult,C:white}X#2#{} Mult",
-                  "At end of round, a random",
-                  "card in {C:attention}deck{} becomes {C:attention}Gold{}",
-                  "{br:2}ERROR - CONTACT STEAK",
-                  "{C:attention}Gold{} cards {C:attention}held{} in hand",
-                  "give {C:chips}+#1#{} Chips",
+                  "Creates a {C:dark_edition}Negative{} copy of",
+                  "{C:attention}The Devil{} at end of round",
                   "{C:inactive,s:0.8}(Evolves after {C:attention,s:0.8}#3#{C:inactive,s:0.8} rounds)",
                 }
             },
@@ -3395,7 +3395,8 @@ return {
                     "If {C:attention}first discard{} of round has only",
                     "{C:attention}1{} card, destroy it and gain {C:mult}+#2#{} Mult",
                     "{br:4}ERROR - CONTACT STEAK",
-                    "Gains {X:mult,C:white}X#4#{} Mult for each card discarded",
+                    "Gains {X:mult,C:white}X#4#{} Mult when",
+                    "you use a discard",
                     "{C:inactive}(Currently {C:mult}+#1#{C:inactive} Mult, {X:mult,C:white}X#3#{C:inactive} Mult)",
                 } 
             },
@@ -3463,11 +3464,12 @@ return {
                     "{C:pink}+3{} Energy Limit",
                     "{X:mult,C:white} X#2# {} Mult per {C:pink}Energy{}",
                     "card used this {C:attention}run{}",
-                    "{C:inactive}(Currently {X:mult,C:white} X#1# {C:inactive} Mult)",
-                    "{br:2}ERROR - CONTACT STEAK",
-                    "When any {C:attention}Booster Pack{} is opened",
-                    "create an {C:pink}Energy{} card of",
-                    "the same {C:pink}Type{} of leftmost Joker",                } 
+                    "{br:2}text needs to be here to work",
+                    "Creates an {C:pink}Energy of",
+                    "the same {C:pink}Type{} of leftmost Joker",
+                    "when you use an {C:pink}Energy",
+                    "{C:inactive}(Currently {X:mult,C:white} X#1# {C:inactive} Mult)"
+                } 
             },
             j_poke_probopass = {
                 name = 'Probopass',      
@@ -3654,21 +3656,22 @@ return {
             j_poke_litwick = {
                 name = "Litwick",
                 text = {
+                    "{C:mult}+#4#{} Mult",
+                    "{C:attention}Tripled{} if this Joker has",
+                    "{C:money}$#5#{} or more sell value",
+                    "{br:3.5}ERROR - CONTACT STEAK",
                     "{C:attention}Drain {C:money}$#1#{} from adjacent",
                     "Jokers at end of round",
-                    "{br:3.5}ERROR - CONTACT STEAK",
-                    "Adds this Joker's sell value to Mult",
-                    "{C:inactive}(Currently {C:mult}+#3#{C:inactive} Mult){}",
-                    "{C:inactive,s:0.8}(Evolves at {C:money,s:0.8}$#2#{C:inactive,s:0.8} Sell Value)"
+                    "{C:inactive,s:0.8}(Evolves at {C:money,s:0.8}$#3#{C:inactive,s:0.8} / $#2# Sell Value)"
                 }
             },
             j_poke_lampent = {
               name = "Lampent",
               text = {
+                "Adds this Joker's sell value to Mult",
+                "{br:3.5}ERROR - CONTACT STEAK",
                 "{C:attention}Drain {C:money}$#1#{} from all other",
                 "Jokers at end of round",
-                "{br:3.5}ERROR - CONTACT STEAK",
-                "Adds {C:attention}double{} this Joker's sell value to Mult",
                 "{C:inactive}(Currently {C:mult}+#2#{C:inactive} Mult){}",
                 "{C:inactive,s:0.8}(Evolves with a {C:attention,s:0.8}Dusk Stone{C:inactive,s:0.8})"
               }
@@ -3676,11 +3679,11 @@ return {
             j_poke_chandelure = {
                 name = "Chandelure",
                 text = {
-                    "Each Joker with {C:money}1${} sell value",
-                    "gives {X:mult,C:white} X#1# {} Mult and earns {C:money}$#2#{}",
+                    "Adds this Joker's sell value to Mult",
                     "{br:3.5}ERROR - CONTACT STEAK",
-                    "Adds {C:attention}triple{} this Joker's sell value to Mult",
-                    "{C:inactive}(Currently {C:mult}+#3#{C:inactive} Mult){}",
+                    "Each Joker with {C:money}1${} sell",
+                    "value gives {X:mult,C:white} X#1# {} Mult",
+                    "{C:inactive}(Currently {C:mult}+#2#{C:inactive} Mult){}",
                 }
             },
             j_poke_golett = {
@@ -4119,7 +4122,6 @@ return {
             j_poke_unown_swarm = {
                 name = "Unown Swarm",
                 text = {
-                  "{C:attention}Holding{} {C:spectral}The Soul{}",
                   "Each {C:purple}Legendary{} Joker gives",
                   "{C:mult}+#1#{} Mult and {X:mult,C:white}X#2#{} Mult"
                 }
@@ -4222,6 +4224,7 @@ return {
                 text = {
                     "All Jokers are created",
                     "with random {C:pink}Type{} stickers",
+                    "and are {C:pink}Energized{} once",
                 },
             },
             sleeve_poke_telekineticsleeve = {
@@ -4664,8 +4667,8 @@ return {
                 text = {
                   "{C:attention}#1#{} - {C:attention}Safari{} Joker",
                   "{C:attention}#2#{} - {C:attention}Duplicate{} a random Joker",
-                  "{C:attention}#3#{} - {C:attention}Blueprint{}",
-                  "{C:attention}#4#{} - {C:attention}Unown Swarm",
+                  "{C:attention}#3#{} - {C:attention}Brainstorm{}",
+                  "{C:attention}#4#{} - {C:attention}Unown Swarm and The Soul",
                   "{C:inactive}(Rewards are not cumulative){}"
                 }
             },
@@ -4725,11 +4728,11 @@ return {
             pickup = {
               name = "Pickup",
               text = {
-                "{C:green}34%{} - {C:item}Item{} {C:attention}Card",
-                "{C:green}25%{} - {C:attention}Leftovers",
-                "{C:green}25%{} - {C:attention}Poke Ball",
-                "{C:green}15%{} - {C:attention}Great Ball",
-                "{C:green}1%{} - {C:attention}Ultra Ball",
+                "{C:green}34%{} - {C:item}Item{}",
+                "{C:green}25%{} - {C:item}Evolution Item",
+                "{C:green}20%{} - {C:item}Leftovers",
+                "{C:green}20%{} - {C:item}Twisted Spoon",
+                "{C:green}1%{} - {C:spectral}Transformation",
               }
             },
             pokeballs_group = {
@@ -5237,7 +5240,8 @@ return {
             poke_reload_ex = "Reload!",
             poke_shadow_tag_ex = "Shadow Tag!",
             poke_flees_ex = "Flees!",
-            poke_hidden_power_ex = "Hidden Power!"
+            poke_hidden_power_ex = "Hidden Power!",
+            poke_nasty_plot_ex = "Nasty Plot!"
         },
         --These are the Labels
         --You know how things like seals and editions have those badges at the bottom? That's what this is for!

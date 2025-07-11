@@ -9,11 +9,13 @@
 local mantyke={
   name = "mantyke",
   pos = {x = 1, y = 5},
-  config = {extra = {chips = 20, Xmult_minus = 0.75, rounds = 2,}},
+  config = {extra = {Xmult_minus = 0.75, rounds = 2,}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     info_queue[#info_queue+1] = {set = 'Other', key = 'designed_by', vars = {"FlamingRok"}}
     info_queue[#info_queue+1] = {set = 'Other', key = 'baby'}
+    info_queue[#info_queue+1] = {key = 'e_negative_consumable', set = 'Edition', config = {extra = 1}}
+    info_queue[#info_queue+1] = G.P_CENTERS.c_devil
     return {vars = {center.ability.extra.chips, center.ability.extra.Xmult_minus, center.ability.extra.rounds}}
   end,
   rarity = 2,
@@ -35,37 +37,12 @@ local mantyke={
         }
       end
     end
-    if context.individual and not context.end_of_round and context.cardarea == G.hand then
-      if SMODS.has_enhancement(context.other_card, 'm_gold') then 
-        if context.other_card.debuff then
-          return {
-            message = localize("k_debuffed"),
-            colour = G.C.RED,
-            card = card,
-          }
-        else
-          return {
-            h_chips = card.ability.extra.chips,
-            card = card,
-          }
-        end
-      end
-    end
     if context.end_of_round and not context.individual and not context.repetition and not card.debuff then
-      local target = nil
-      local unenhanced_cards = {}
-      
-      for k, v in pairs(G.playing_cards) do
-        if v.config.center == G.P_CENTERS.c_base then
-          unenhanced_cards[#unenhanced_cards + 1] = v
-        end
-      end
-      
-      if #unenhanced_cards > 0 then
-        target = pseudorandom_element(unenhanced_cards, pseudoseed('mantyke'))
-        target:set_ability(G.P_CENTERS.m_gold, nil, true)
-        card_eval_status_text(card, 'extra', nil, nil, nil, {message = localize("k_gold")})
-      end
+      local _card = create_card('Tarot', G.consumeables, nil, nil, nil, nil, 'c_devil')
+      local edition = {negative = true}
+      _card:set_edition(edition, true)
+      _card:add_to_deck()
+      G.consumeables:emplace(_card)
     end
     return level_evo(self, card, context, "j_poke_mantine")
   end
@@ -332,7 +309,7 @@ local electivire={
 local magmortar={
   name = "magmortar", 
   pos = {x = 10, y = 5}, 
-  config = {extra = {mult = 0, mult_mod = 2, Xmult = 1, Xmult_mod = 0.02}},
+  config = {extra = {mult = 0, mult_mod = 2, Xmult = 1, Xmult_mod = 0.05}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     return {vars = {center.ability.extra.mult, center.ability.extra.mult_mod, center.ability.extra.Xmult, center.ability.extra.Xmult_mod}}
@@ -349,21 +326,17 @@ local magmortar={
       local eval = function() return G.GAME.current_round.discards_used == 0 and not G.RESET_JIGGLES and not card.ability.extra.remove_triggered end
       juice_card_until(card, eval, true)
     end
-    if context.discard and not context.blueprint then
+    if context.pre_discard and not context.blueprint then
       card.ability.extra.Xmult = card.ability.extra.Xmult + card.ability.extra.Xmult_mod
+      card_eval_status_text(context.blueprint_card or card, 'extra', nil, nil, nil, {message = localize("k_upgrade_ex")})
+    end
+    if context.discard and not context.blueprint then
       if G.GAME.current_round.discards_used == 0 and context.full_hand and #context.full_hand == 1 and not card.ability.extra.remove_triggered then
         card.ability.extra.mult = card.ability.extra.mult + card.ability.extra.mult_mod
         card_eval_status_text(context.blueprint_card or card, 'extra', nil, nil, nil, {message = localize("k_upgrade_ex")})
         card.ability.extra.remove_triggered = true
         return {
           remove = true
-        }
-      else
-        return {
-            delay = 0.2,
-            message = localize{type='variable',key='a_xmult',vars={card.ability.extra.Xmult_mod}},
-            colour = G.C.RED,
-            card = card
         }
       end
     end
@@ -644,29 +617,28 @@ local porygonz={
     if context.cardarea == G.jokers and context.scoring_hand then
       if context.joker_main then
         local Xmult = 1 + ((G.GAME.energies_used or 0) * card.ability.extra.Xmult_mod)
-        return {
-          message = localize{type = 'variable', key = 'a_xmult', vars = {Xmult}}, 
-          colour = G.C.XMULT,
-          Xmult_mod = Xmult
-        }
+        if Xmult > 1 then
+          return {
+            message = localize{type = 'variable', key = 'a_xmult', vars = {Xmult}}, 
+            colour = G.C.XMULT,
+            Xmult_mod = Xmult
+          }
+        end
       end
     end
-    if context.open_booster and #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit then
-      local forced_key = matching_energy(G.jokers.cards[1]);
-      G.GAME.consumeable_buffer = G.GAME.consumeable_buffer + 1
+    if context.using_consumeable and context.consumeable.ability.set == 'Energy' then
       G.E_MANAGER:add_event(Event({
-          trigger = 'before',
+          trigger = 'immediate',
           delay = 0.0,
           func = (function()
-                  local card = create_card('Energy', G.consumeables, nil, nil, nil, nil, forced_key)
-                  card:add_to_deck()
-                  G.consumeables:emplace(card)
-                  G.GAME.consumeable_buffer = 0
+                  local forced_key = matching_energy(G.jokers.cards[1]);
+                  local _card = create_card('Energy', G.consumeables, nil, nil, nil, nil, forced_key)
+                  _card:add_to_deck()
+                  G.consumeables:emplace(_card)
               return true
           end)}))
       card_eval_status_text(card, 'extra', nil, nil, nil, {message = localize("poke_plus_energy"), colour = G.ARGS.LOC_COLOURS["pink"]})
     end
-    return item_evo(self, card, context, "j_poke_porygonz")
   end,
   add_to_deck = function(self, card, from_debuff)
     if not G.GAME.energy_plus then

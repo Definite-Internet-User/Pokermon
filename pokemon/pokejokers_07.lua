@@ -221,7 +221,7 @@ local sudowoodo={
         }
       end
     end
-    if context.repetition and context.cardarea == G.hand and (next(context.card_effects[1]) or #context.card_effects > 1) and context.other_card.config.center ~= G.P_CENTERS.c_base then
+    if context.repetition and context.cardarea == G.hand and (next(context.card_effects[1]) or #context.card_effects > 1) and context.other_card:is_face() then
       return {
         message = localize('k_again_ex'),
         repetitions = card.ability.extra.retriggers,
@@ -253,7 +253,7 @@ local weird_tree={
   custom_pool_func = true,
   calculate = function(self, card, context)
     return scaling_evo(self, card, context, "j_poke_sudowoodo", 
-                      ((not is_type(card, "Grass")) or find_other_poke_or_energy_type(card, "Water", true) > 0) and 1, 1, localize("poke_transform_success"))
+                      ((not is_type(card, "Grass")) or find_other_poke_or_energy_type(card, "Water", true) > 0) and 1 or 0, 1, localize("poke_transform_success"))
   end,
   set_ability = function(self, card, initial, delay_sprites)
     if initial then
@@ -459,12 +459,12 @@ local jumpluff={
 local aipom={
   name = "aipom",
   pos = {x = 8, y = 3},
-  config = {extra = {straights_played = 0, flushes_played = 0, hands = 1}, straight_rqmt = 5, flush_rqmt = 5},
+  config = {extra = {straights_played = 0, flushes_played = 0, limit = 2}, straight_rqmt = 5, flush_rqmt = 5},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     local straights_remaining = math.max(0, self.config.straight_rqmt - center.ability.extra.straights_played)
     local flushes_remaining = math.max(0, self.config.flush_rqmt - center.ability.extra.flushes_played)
-    return {vars = {straights_remaining, flushes_remaining, center.ability.extra.hands}}
+    return {vars = {straights_remaining, flushes_remaining, center.ability.extra.limit}}
   end,
   rarity = 3,
   cost = 7,
@@ -473,7 +473,7 @@ local aipom={
   atlas = "Pokedex2",
   perishable_compat = true,
   blueprint_compat = false,
-  eternal_compat = true,
+  eternal_compat = false,
   calculate = function(self, card, context)
     if context.cardarea == G.jokers and context.scoring_hand then
       if context.joker_main then
@@ -489,17 +489,15 @@ local aipom={
                        math.min(self.config.straight_rqmt, card.ability.extra.flushes_played), self.config.straight_rqmt + self.config.flush_rqmt)
   end,
   add_to_deck = function(self, card, from_debuff)
-    G.GAME.round_resets.hands = G.GAME.round_resets.hands - card.ability.extra.hands
-    local to_decrease = math.min(G.GAME.current_round.hands_left - 1, card.ability.extra.hands)
-    if to_decrease > 0 then
-      ease_hands_played(-to_decrease)
-    end
+		SMODS.change_play_limit(-card.ability.extra.limit)
+		SMODS.change_discard_limit(-card.ability.extra.limit)
   end,
   remove_from_deck = function(self, card, from_debuff)
-    G.GAME.round_resets.hands = G.GAME.round_resets.hands + card.ability.extra.hands
-    if not from_debuff then
-      ease_hands_played(card.ability.extra.hands)
-    end
+		SMODS.change_play_limit(card.ability.extra.limit)
+		SMODS.change_discard_limit(card.ability.extra.limit)
+		if not G.GAME.before_play_buffer then
+			G.hand:unhighlight_all()
+		end
   end, 
 }
 -- Sunkern 191
@@ -602,16 +600,16 @@ local yanma={
 local wooper={
   name = "wooper",
   pos = {x = 2, y = 4},
-  config = {extra = {mult = 15,mult_minus = 1, rounds = 4,}},
+  config = {extra = {mult = 15,mult_mod = 1, rounds = 4,}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     local mult_total = center.ability.extra.mult
     if G.deck and G.deck.cards then
       for k, v in pairs(G.deck.cards) do
-        if v:is_face() then mult_total = mult_total - center.ability.extra.mult_minus end
+        if v:is_face() then mult_total = mult_total - center.ability.extra.mult_mod end
       end
     end
-    return {vars = {center.ability.extra.mult, center.ability.extra.rounds, center.ability.extra.mult_minus, math.max(0, mult_total)}}
+    return {vars = {center.ability.extra.mult, center.ability.extra.rounds, center.ability.extra.mult_mod, math.max(0, mult_total)}}
   end,
   rarity = 1,
   cost = 5,
@@ -626,7 +624,7 @@ local wooper={
       if context.joker_main then
         local Mult = card.ability.extra.mult
         for k, v in pairs(G.deck.cards) do
-          if v:is_face() then Mult = Mult - card.ability.extra.mult_minus end
+          if v:is_face() then Mult = Mult - card.ability.extra.mult_mod end
         end
         if Mult > 0 then
           return {
@@ -644,16 +642,16 @@ local wooper={
 local quagsire={
   name = "quagsire",
   pos = {x = 3, y = 4},
-  config = {extra = {mult = 25, mult_minus = 1, rerolls = 1}},
+  config = {extra = {mult = 25, mult_mod = 1, rerolls = 1}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     local mult_total = center.ability.extra.mult
     if G.deck and G.deck.cards then
       for k, v in pairs(G.deck.cards) do
-        if v:is_face() then mult_total = mult_total - center.ability.extra.mult_minus end
+        if v:is_face() then mult_total = mult_total - center.ability.extra.mult_mod end
       end
     end
-    return {vars = {center.ability.extra.mult, center.ability.extra.mult_minus, math.max(0, mult_total), center.ability.extra.rerolls}}
+    return {vars = {center.ability.extra.mult, center.ability.extra.mult_mod, math.max(0, mult_total), center.ability.extra.rerolls}}
   end,
   rarity = 2,
   cost = 5,
@@ -668,7 +666,7 @@ local quagsire={
       if context.joker_main then
         local Mult = card.ability.extra.mult
         for k, v in pairs(G.deck.cards) do
-          if v:is_face() then Mult = Mult - card.ability.extra.mult_minus end
+          if v:is_face() then Mult = Mult - card.ability.extra.mult_mod end
         end
         if Mult > 0 then
           return {
@@ -902,7 +900,7 @@ local murkrow={
 local slowking={
   name = "slowking",
   pos = {x = 7, y = 4},
-  config = {extra = {Xmult_multi = 1, Xmult_multi2 = 0.1, oXmult = 1}},
+  config = {extra = {Xmult_multi = 1, Xmult_multi2 = 0.2, oXmult = 1}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     return {vars = {center.ability.extra.Xmult_multi, center.ability.extra.Xmult_multi2, }}
@@ -920,7 +918,7 @@ local slowking={
       card.ability.extra.oXmult = card.ability.extra.Xmult_multi
     end
     if context.cardarea == G.jokers and context.scoring_hand then
-      if context.before and G.GAME.current_round.hands_played > 0 and not context.blueprint then
+      if context.before and not context.blueprint then
         card.ability.extra.Xmult_multi = card.ability.extra.Xmult_multi + card.ability.extra.Xmult_multi2
         return {
           message = localize('k_upgrade_ex'),
@@ -1243,7 +1241,7 @@ local girafarig={
 local pineco={
   name = "pineco",
   pos = {x = 2, y = 5},
-  config = {extra = {chips = 80,rounds = 3, volatile = 'left'}},
+  config = {extra = {chips = 120,rounds = 3, volatile = 'left'}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     info_queue[#info_queue+1] = {set = 'Other', key = 'poke_volatile_'..center.ability.extra.volatile}
@@ -1282,7 +1280,7 @@ local pineco={
 local forretress={
   name = "forretress",
   pos = {x = 3, y = 5},
-  config = {extra = {chips = 120, chip_mod = 5, volatile = 'left'}},
+  config = {extra = {chips = 150, chip_mod = 5, volatile = 'left'}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     info_queue[#info_queue+1] = {set = 'Other', key = 'poke_volatile_'..center.ability.extra.volatile}
@@ -1300,6 +1298,13 @@ local forretress={
   calculate = function(self, card, context)
     if context.cardarea == G.jokers and context.scoring_hand then
       if context.joker_main and volatile_active(self, card, card.ability.extra.volatile) then
+        local multiplier = 1
+        for k, v in pairs(G.hand.cards) do
+          if SMODS.has_enhancement(v, 'm_steel') then
+            multiplier = 2
+            break
+          end
+        end
         G.E_MANAGER:add_event(Event({
           func = function()
               card.ability.fainted = G.GAME.round
@@ -1310,13 +1315,9 @@ local forretress={
         return {
           message = localize("poke_explosion_ex"),
           colour = G.C.CHIPS,
-          chip_mod = card.ability.extra.chips
+          chip_mod = card.ability.extra.chips * multiplier
         }
       end
-    end
-    if context.individual and not context.end_of_round and context.cardarea == G.hand and SMODS.has_enhancement(context.other_card, 'm_steel') then
-      card.ability.extra.chips = card.ability.extra.chips + card.ability.extra.chip_mod
-      card_eval_status_text(card, 'extra', nil, nil, nil, {message = localize("k_upgrade_ex"), colour = G.C.CHIPS})
     end
   end,
 }

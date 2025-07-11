@@ -245,7 +245,7 @@ local sneasel = {
 local teddiursa={
   name = "teddiursa",
   pos = {x = 4, y = 6},
-  config = {extra = {mult = 0,mult_mod = 2,},evo_rqmt = 16},
+  config = {extra = {mult = 0,mult_mod = 2,},evo_rqmt = 12},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     return {vars = {center.ability.extra.mult, center.ability.extra.mult_mod, self.config.evo_rqmt}}
@@ -577,13 +577,13 @@ local corsola={
 local remoraid={
   name = "remoraid",
   pos = {x = 1, y = 7},
-  config = {extra = {retriggers = 1,rounds = 4, card_max = 4, cards = 0}},
+  config = {extra = {retriggers = 1,rounds = 5}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
-    return {vars = {center.ability.extra.retriggers, center.ability.extra.rounds, center.ability.extra.card_max, center.ability.extra.card_max - center.ability.extra.cards}}
+    return {vars = {center.ability.extra.retriggers, center.ability.extra.rounds}}
   end,
-  rarity = 1,
-  cost = 4,
+  rarity = 2,
+  cost = 5,
   stage = "Basic",
   ptype = "Water",
   atlas = "Pokedex2",
@@ -591,18 +591,16 @@ local remoraid={
   blueprint_compat = true,
   eternal_compat = true,
   calculate = function(self, card, context)
-    if context.repetition and not context.end_of_round and context.cardarea == G.play and card.ability.extra.cards < card.ability.extra.card_max then
-      if not context.blueprint then
-        card.ability.extra.cards = card.ability.extra.cards + 1
-      end
+    if context.first_hand_drawn and not context.blueprint then
+      local eval = function() return G.GAME.current_round.hands_played == 0 and not G.RESET_JIGGLES end
+      juice_card_until(card, eval, true)
+    end
+    if context.repetition and not context.end_of_round and context.cardarea == G.play and G.GAME.current_round.hands_played == 0 then
       return {
         message = localize('k_again_ex'),
         repetitions = card.ability.extra.retriggers,
         card = card
       }
-    end
-    if context.end_of_round and not context.individual and not context.repetition then
-      card.ability.extra.cards = 0
     end
     return level_evo(self, card, context, "j_poke_octillery")
   end
@@ -616,7 +614,7 @@ local octillery={
     type_tooltip(self, info_queue, center)
     return {vars = {center.ability.extra.retriggers, center.ability.extra.card_max, center.ability.extra.card_max - center.ability.extra.cards}}
   end,
-  rarity = 2,
+  rarity = "poke_safari",
   cost = 6,
   stage = "One",
   ptype = "Water",
@@ -625,18 +623,31 @@ local octillery={
   blueprint_compat = true,
   eternal_compat = true,
   calculate = function(self, card, context)
-    if context.repetition and not context.end_of_round and context.cardarea == G.play and card.ability.extra.cards < card.ability.extra.card_max then
-      if not context.blueprint then
-        card.ability.extra.cards = card.ability.extra.cards + 1
-      end
+    if context.repetition and not context.end_of_round and context.cardarea == G.play then
       return {
         message = localize('k_again_ex'),
         repetitions = card.ability.extra.retriggers,
         card = card
       }
     end
-    if context.end_of_round and not context.individual and not context.repetition then
-      card.ability.extra.cards = 0
+    if context.cardarea == G.jokers and context.scoring_hand and not context.blueprint then
+      if context.joker_main then
+        local has_eight = nil
+        for k, v in ipairs(context.scoring_hand) do
+          if v:get_id() == 8 then
+            has_eight = true
+          end
+        end
+        if not has_eight then
+          G.E_MANAGER:add_event(Event({
+            func = function()
+                card.ability.fainted = G.GAME.round
+                card:set_debuff()
+                return true
+            end
+          })) 
+        end
+      end
     end
   end
 }
@@ -702,7 +713,7 @@ local delibird={
 local mantine={
   name = "mantine",
   pos = {x = 4, y = 7},
-  config = {extra = {chips = 0, chip_mod = 5,}},
+  config = {extra = {chips = 0, chip_mod = 4,}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     info_queue[#info_queue+1] = {set = 'Other', key = 'designed_by', vars = {"FlamingRok"}}
@@ -1493,7 +1504,7 @@ local elekid ={
 local magby={
   name = "magby",
   pos = {x = 8, y = 8},
-  config = {extra = {Xmult_minus = 0.75, d_size = 2, rounds = 2,}},
+  config = {extra = {Xmult_minus = 0.75, d_size = 1, rounds = 2,}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     info_queue[#info_queue+1] = {set = 'Other', key = 'baby'}

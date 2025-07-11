@@ -228,7 +228,7 @@ copy_scaled_values = function(card)
   local values = {mult = 0, chips = 0, Xmult = 0, money = 0}
   if card.ability and card.ability.extra and type(card.ability.extra) == "table" then
     for l, v in pairs(values) do
-      if card.ability.extra[l] and (card.ability.extra[l.."_mod"] or card.ability.extra[string.sub(l, 1, -2).."_mod"]) then
+      if card.ability.extra[l] and (card.ability.extra[l.."_mod"] or card.ability.extra[string.sub(l, 1, -2).."_mod"]) or card.config.center.copy_scaled then
         values[l] = card.ability.extra[l]
       end
     end
@@ -1267,6 +1267,37 @@ poke_draw_one = function()
       return true
     end
   }))
+end
+
+generate_pickup_item_key = function(seed)
+  local item_key = 'c_poke_transformation'
+  local item_chance = pseudorandom(seed)
+  if item_chance < .34 then item_key = nil
+  elseif item_chance < .59 then item_key = 'evo'
+  elseif item_chance < .79 then item_key = 'c_poke_leftovers'
+  elseif item_chance < .99 then item_key = 'c_poke_twisted_spoon'
+  end
+  
+  if item_key == "evo" then
+    local evo_item_keys = {}
+    for k, v in pairs(G.jokers.cards) do
+      if v.config.center.item_req then
+        if type(v.config.center.item_req) == "table" then
+          item_key = "c_poke_"..pseudorandom_element(v.config.center.item_req, pseudoseed(seed))
+        else
+          item_key = "c_poke_"..v.config.center.item_req
+        end
+        table.insert(evo_item_keys, item_key)
+      end
+    end
+    if #evo_item_keys > 0 then
+      item_key = pseudorandom_element(evo_item_keys, pseudoseed(seed))
+    else
+      item_key = nil
+    end
+  end
+  
+  return item_key
 end
 
 --[[ Putting this here for later use

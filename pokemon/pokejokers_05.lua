@@ -203,7 +203,7 @@ local electabuzz={
 local magmar={
   name = "magmar", 
   pos = {x = 8, y = 9}, 
-  config = {extra = {mult = 0, mult_mod = 3}},
+  config = {extra = {mult = 0, mult_mod = 2}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     info_queue[#info_queue+1] = G.P_CENTERS.c_poke_linkcable
@@ -520,6 +520,8 @@ local lapras={
           G.GAME.shop_d6ed = nil
           G.STATE_COMPLETE = false
           G.GAME.current_round.used_packs = {}
+          G.GAME.current_round.reroll_cost_increase = 0
+          calculate_reroll_cost(true)
           return true
         end,
       }))
@@ -942,7 +944,7 @@ local omastar={
 local kabuto={
   name = "kabuto", 
   pos = {x = 10, y = 10}, 
-  config = {extra = {rank = "2", chips1 = 20, chips2 = 2, chips3 = 60, third_times = 0}, evo_rqmt = 5},
+  config = {extra = {rank = "2", chips1 = 50, chips2 = 5, chips3 = 50, third_times = 0}, evo_rqmt = 5},
   loc_vars = function(self, info_queue, card)
    type_tooltip(self, info_queue, card)
    info_queue[#info_queue+1] = {set = 'Other', key = 'ancient', vars = {localize(card.ability.extra.rank, 'ranks')}}
@@ -1004,7 +1006,7 @@ local kabuto={
 local kabutops={
   name = "kabutops", 
   pos = {x = 11, y = 10}, 
-  config = {extra = {rank = "2", chips1 = 40, chips2 = 4, chips3 = 80, retriggers = 1}},
+  config = {extra = {rank = "2", chips1 = 70, chips2 = 5, chips3 = 70, retriggers = 1}},
   loc_vars = function(self, info_queue, center)
    type_tooltip(self, info_queue, center)
    info_queue[#info_queue+1] = {set = 'Other', key = 'ancient', vars = {localize(center.ability.extra.rank, 'ranks')}}
@@ -1058,7 +1060,7 @@ local kabutops={
       end
     end
     if context.repetition and context.cardarea == G.play and card.ability.extra.fourth_level then
-      if (context.other_card == context.scoring_hand[1]) or (context.other_card == context.scoring_hand[2]) then
+      if context.other_card:get_id() == 2 then
         return {
             message = localize('k_again_ex'),
             repetitions = card.ability.extra.retriggers,
@@ -1350,10 +1352,10 @@ local moltres={
 local dratini={
   name = "dratini", 
   pos = {x = 7, y = 11},
-  config = {extra = {mult = 0, mult_mod = 1, size = 3}, evo_rqmt = 10},
+  config = {extra = {mult = 0, mult_mod = 1, size = 3}, evo_rqmt = 15},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
-    return {vars = {center.ability.extra.mult, center.ability.extra.mult_mod, center.ability.extra.size}}
+    return {vars = {center.ability.extra.mult, center.ability.extra.mult_mod, center.ability.extra.size, self.config.evo_rqmt}}
   end,
   rarity = 2, 
   cost = 6, 
@@ -1382,10 +1384,10 @@ local dratini={
 local dragonair={
   name = "dragonair", 
   pos = {x = 8, y = 11}, 
-  config = {extra = {mult = 0, mult_mod = 1, size = 2}, evo_rqmt = 30},
+  config = {extra = {mult = 0, mult_mod = 2, size = 2}, evo_rqmt = 55},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
-    return {vars = {center.ability.extra.mult, center.ability.extra.mult_mod, center.ability.extra.size}}
+    return {vars = {center.ability.extra.mult, center.ability.extra.mult_mod, center.ability.extra.size, self.config.evo_rqmt}}
   end,
   rarity = "poke_safari", 
   cost = 8, 
@@ -1414,7 +1416,7 @@ local dragonair={
 local dragonite={
   name = "dragonite", 
   pos = {x = 9, y = 11},
-  config = {extra = {mult = 30, retriggers = 5}},
+  config = {extra = {mult = 55, retriggers = 5}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     return {vars = {center.ability.extra.mult, center.ability.extra.retriggers}} 
@@ -1469,7 +1471,7 @@ local mewtwo={
   atlas = "Pokedex1",
   blueprint_compat = false,
   calculate = function(self, card, context)
-    if context.ending_shop and not context.blueprint then
+    if (context.end_of_round and G.GAME.blind.boss) and not context.repetition and not context.individual and not context.blueprint then
       local leftmost = G.jokers.cards[1]
       if leftmost ~= card then
         card_eval_status_text(context.blueprint_card or card, 'extra', nil, nil, nil, {message = localize('k_duplicated_ex')})
