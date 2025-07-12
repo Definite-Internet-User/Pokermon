@@ -162,9 +162,9 @@ local gengar={
         card.ability.extra.trigger = true
         
         local gengar_chance = pseudorandom('gengar')
-        if gengar_chance < .05 then card.ability.extra.gengar_rounds = 2
-        elseif gengar_chance < .15 then card.ability.extra.gengar_rounds = 3
-        elseif gengar_chance < .35 then card.ability.extra.gengar_rounds = 4
+        if gengar_chance < .10 then card.ability.extra.gengar_rounds = 2
+        elseif gengar_chance < .20 then card.ability.extra.gengar_rounds = 3
+        elseif gengar_chance < .40 then card.ability.extra.gengar_rounds = 4
         elseif gengar_chance < .65 then card.ability.extra.gengar_rounds = 5
         elseif gengar_chance < .85 then card.ability.extra.gengar_rounds = 6
         elseif gengar_chance < .95 then card.ability.extra.gengar_rounds = 7
@@ -176,9 +176,9 @@ local gengar={
   set_ability = function(self, card, initial, delay_sprites)
     if initial then
       local gengar_chance = pseudorandom('gengar')
-      if gengar_chance < .05 then card.ability.extra.gengar_rounds = 2
-      elseif gengar_chance < .15 then card.ability.extra.gengar_rounds = 3
-      elseif gengar_chance < .35 then card.ability.extra.gengar_rounds = 4
+      if gengar_chance < .10 then card.ability.extra.gengar_rounds = 2
+      elseif gengar_chance < .20 then card.ability.extra.gengar_rounds = 3
+      elseif gengar_chance < .40 then card.ability.extra.gengar_rounds = 4
       elseif gengar_chance < .65 then card.ability.extra.gengar_rounds = 5
       elseif gengar_chance < .85 then card.ability.extra.gengar_rounds = 6
       elseif gengar_chance < .95 then card.ability.extra.gengar_rounds = 7
