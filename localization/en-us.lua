@@ -1332,22 +1332,21 @@ return {
             j_poke_doduo = {
                 name = 'Doduo',      
                 text = {
-                    "{C:mult}+#1#{} Mult if scoring hand",
-                    "contains at least {C:attention}2{} face cards",
-                    "{br:2}ERROR - CONTACT STEAK",
-                    "{C:mult}+#1#{} Mult if scoring hand",
-                    "contains a {C:attention}Full House{}",
+                    "First {C:attention}2{} played {C:attention}face{} cards",
+                    "give {C:mult}+#1#{} Mult when scored",
                     "{C:inactive,s:0.8}(Evolves after {C:attention,s:0.8}#2#{C:inactive,s:0.8} rounds)",
                 } 
             },
             j_poke_dodrio = {
                 name = 'Dodrio',
                 text = {
-                    "{C:mult}+#1#{} Mult if scoring hand",
-                    "contains at least {C:attention}3{} face cards",
+                    "First {C:attention}3{} played {C:attention}face{} cards",
+                    "give {C:mult}+#1#{} Mult when scored",
                     "{br:2}ERROR - CONTACT STEAK",
-                    "{C:mult}+#1#{} Mult if scoring hand",
-                    "contains a {C:attention}Full House{}",
+                    "If scoring hand is ",
+                    "{C:attention}exactly 3 face{} cards gain",
+                    "{C:attention}+#2#{} hand size this round"
+                    
                 } 
             },
             j_poke_seel = {
@@ -1484,7 +1483,8 @@ return {
                 name = 'Voltorb',      
                 text = {
                     "{C:attention}Volatile Right{}",
-                    "{X:mult,C:white} X#1# {} Mult and debuff self",
+                    "{X:mult,C:white} X#1# {} Mult then",
+                    "debuff self this round",
                     "{C:inactive,s:0.8}(Evolves after {C:attention,s:0.8}#2#{C:inactive,s:0.8} rounds)",
                 } 
             },
@@ -1493,7 +1493,7 @@ return {
                 text = {
                     "{C:attention}Volatile Right{}",
                     "{X:mult,C:white} X#1# {} Mult and earn {C:money}$#2#{}",
-                    "then debuff self"
+                    "then debuff self this round"
                 } 
             },
             j_poke_exeggcute = {
@@ -2505,7 +2505,8 @@ return {
               name = "Pineco",
               text = {
                 "{C:attention}Volatile Left{}",
-                "{C:chips}+#1#{} Chips and debuff self",
+                "{C:chips}+#1#{} Chips then",
+                "debuff self this round",
                 "{C:inactive}(Evolves after {C:attention}#2#{C:inactive} rounds)",
               }
             },
@@ -2513,7 +2514,8 @@ return {
               name = "Forretress",
               text = {
                 "{C:attention}Volatile Left{}",
-                "{C:chips}+#1#{} Chips and debuff self",
+                "{C:chips}+#1#{} Chips then",
+                "debuff self this round",
                 "Gives {C:attention}Double{} Chips if a",
                 "{C:attention}Steel{} card is {C:attention}held{} in hand",
               }
@@ -2693,7 +2695,7 @@ return {
               text = {
                 "Retrigger all cards played",
                 "{br:2}ERROR - CONTACT STEAK",
-                "Debuffs self if scoring",
+                "Debuffs self this round if scoring",
                 "hand doesn't contain an {C:attention}8{}"
               }
             },
@@ -3059,7 +3061,8 @@ return {
                 name = "Shroomish",
                 text = {
                   "When {C:attention}Blind{} is selected, gain",
-                  "{C:chips}+#1#{} hand, {C:mult}+#2#{} discard, or {C:attention}+#3#{} hand size",
+                  "{C:chips}+#1#{} hand, {C:mult}+#2#{} discard, or",
+                  "{C:attention}+#3#{} hand size this round",
                   "{C:inactive,s:0.8}(Evolves after defeating the {C:attention,s:0.8}Ante #4#{C:inactive,s:0.8} Boss Blind){}"
                 }
             }, 
@@ -3067,7 +3070,8 @@ return {
                 name = "Breloom",
                 text = {
                   "When {C:attention}Blind{} is selected, gain",
-                  "{C:chips}+#1#{} hands, {C:mult}+#2#{} discards, or {C:attention}+#3#{} hand size",
+                  "{C:chips}+#1#{} hands, {C:mult}+#2#{} discards, or",
+                  "{C:attention}+#3#{} hand size this round"
                 }
             }, 
             j_poke_azurill = {
@@ -3360,11 +3364,13 @@ return {
             j_poke_rhyperior = {
                 name = 'Rhyperior',
                 text = {
-                    "Each played {C:attention}Stone{} card permanently",
-                    "gains {C:chips}+#1#{} Chips when scored",
+                    "Each played {C:attention}Stone{} card ",
+                    "permanently gains {C:chips}+#1#{} Chips",
+                    "and retrigger when scored",
                     "{br:3}ERROR - CONTACT STEAK",
-                    "{C:attention}Stone{} cards retrigger for each",
-                    "{X:earth,C:white}Earth{} Joker you have",
+                    "{C:attention}Stone{} cards retrigger an",
+                    "additional time for every",
+                    "{C:attention}3{} {X:earth,C:white}Earth{} Jokers you have",
                     "{C:inactive}(Currently #2# retriggers)"
                 } 
             },
@@ -3403,12 +3409,11 @@ return {
             j_poke_togekiss = {
                 name = 'Togekiss',
                 text = {
+                    "Adds {C:attention}#6#{} to all {C:attention}listed{} {C:green,E:1,S:1.1}probabilities",
+                    "{br:4}ERROR - CONTACT STEAK",
                     "{C:attention}Lucky Cards{} have",
                     "a {C:green}#1# in #2#{} chance to give {C:chips}+#4#{} Chips",
                     "and a {C:green}#1# in #3#{} chance to give {X:mult,C:white}X#5#{} Mult",
-                    "{br:4}ERROR - CONTACT STEAK",
-                    "{C:attention}Lucky Card{} odds are {C:attention}Tripled{}",
-                    "{C:inactive}(ex: {C:green}2 in 5{C:inactive} -> {C:green}6 in 5{C:inactive})",
                 }
             },
             j_poke_yanmega = {
