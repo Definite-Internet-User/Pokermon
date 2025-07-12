@@ -3409,11 +3409,12 @@ return {
             j_poke_togekiss = {
                 name = 'Togekiss',
                 text = {
-                    "Adds {C:attention}#6#{} to all {C:attention}listed{} {C:green,E:1,S:1.1}probabilities",
-                    "{br:4}ERROR - CONTACT STEAK",
                     "{C:attention}Lucky Cards{} have",
                     "a {C:green}#1# in #2#{} chance to give {C:chips}+#4#{} Chips",
                     "and a {C:green}#1# in #3#{} chance to give {X:mult,C:white}X#5#{} Mult",
+                    "{br:4}ERROR - CONTACT STEAK",
+                    "{C:attention}Lucky Card{} odds are {C:attention}Tripled{}",
+                    "{C:inactive}(ex: {C:green}2 in 5{C:inactive} -> {C:green}6 in 5{C:inactive})",
                 }
             },
             j_poke_yanmega = {

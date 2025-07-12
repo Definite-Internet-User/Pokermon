@@ -370,14 +370,14 @@ local togekiss={
   calculate = function(self, card, context)
     if context.individual and context.cardarea == G.play and context.other_card and context.other_card.ability.effect == "Lucky Card" then
       local ret = nil
-      if pseudorandom('togekiss') < (G.GAME and G.GAME.probabilities.normal or 1) / card.ability.extra.chip_odds then
+      if pseudorandom('togekiss') < math.pow(3, #find_joker('togekiss')) * (G.GAME and G.GAME.probabilities.normal or 1) / card.ability.extra.chip_odds then
         ret = {
           message = localize{type = 'variable', key = 'a_chips', vars = {card.ability.extra.chips}},
           colour = G.C.CHIPS,
           chip_mod = card.ability.extra.chips
         }
       end
-      if pseudorandom('togekiss') < (G.GAME and G.GAME.probabilities.normal or 1) / card.ability.extra.Xmult_odds then
+      if pseudorandom('togekiss') < math.pow(3, #find_joker('togekiss')) * (G.GAME and G.GAME.probabilities.normal or 1) / card.ability.extra.Xmult_odds then
         local temp = {
           message = localize{type = 'variable', key = 'a_xmult', vars = {card.ability.extra.Xmult_multi}},
           colour = G.C.XMULT,
@@ -393,12 +393,6 @@ local togekiss={
       return ret
     end
   end,
-  add_to_deck = function(self, card, from_debuff)
-    G.GAME.probabilities.normal = G.GAME.probabilities.normal + card.ability.extra.plus_odds * math.max(1, (2 ^ #find_joker('Oops! All 6s')))
-  end,
-  remove_from_deck = function(self, card, from_debuff)
-    G.GAME.probabilities.normal = G.GAME.probabilities.normal - card.ability.extra.plus_odds * math.max(1, (2 ^ #find_joker('Oops! All 6s')))
-  end
 }
 -- Yanmega 469
 local yanmega={
