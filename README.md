@@ -2,7 +2,6 @@
 This is a fork containing my own personal tweaks to the Balatro mod [Pokermon](https://github.com/InertSteak/Pokermon)
 
 ## List of changes
-- Pidgeot gives planet of the highest leveled hand.
 - Mew percent chance increased to 80%
 - Gastly evo line will only target jokers without an edition
 - Crobat can't give stone cards
