@@ -4889,6 +4889,13 @@ return {
                 "Sketch resets when Joker is copied"
               }
             },
+            unlimited_energy_tooltip = {
+              name = "Unlimited Energy",
+              text = {
+                "Jokers can have {C:pink}Energy{} used",
+                "on them any number of times"
+              }
+            },
             precise_energy_tooltip = {
                 name = "Precise Energy Scaling",
                 text = {
@@ -4912,6 +4919,137 @@ return {
                 "{C:red}Discovering all objects can't be undone{}"
               }
             }, 
+            pokemononly_tooltip = {
+              name = "Pokemon Only",
+              text = {
+                "Only {C:attention}Pokemon{} Jokers will appear",
+              }
+            },
+            gen1_tooltip = {
+              name = "Gen 1 Allowed",
+              text = {
+                "{C:attention}Pokemon{} Jokers from the first",
+                "generation will appear"
+              }
+            },
+            gen2_tooltip = {
+              name = "Gen 2 Allowed",
+              text = {
+                "{C:attention}Pokemon{} Jokers from the second",
+                "generation will appear"
+              }
+            },
+            gen3_tooltip = {
+              name = "Gen 3 Allowed",
+              text = {
+                "{C:attention}Pokemon{} Jokers from the third",
+                "generation will appear"
+              }
+            },
+            gen4_tooltip = {
+              name = "Gen 4 Allowed",
+              text = {
+                "{C:attention}Pokemon{} Jokers from the fourth",
+                "generation will appear"
+              }
+            },
+            gen5_tooltip = {
+              name = "Gen 5 Allowed",
+              text = {
+                "{C:attention}Pokemon{} Jokers from the fifth",
+                "generation will appear"
+              }
+            },
+            gen6_tooltip = {
+              name = "Gen 6 Allowed",
+              text = {
+                "{C:attention}Pokemon{} Jokers from the sixth",
+                "generation will appear"
+              }
+            },
+            gen7_tooltip = {
+              name = "Gen 7 Allowed",
+              text = {
+                "{C:attention}Pokemon{} Jokers from the seventh",
+                "generation will appear"
+              }
+            },
+            gen8_tooltip = {
+              name = "Gen 8 Allowed",
+              text = {
+                "{C:attention}Pokemon{} Jokers from the eighth",
+                "generation will appear"
+              }
+            },
+            gen9_tooltip = {
+              name = "Gen 9 Allowed",
+              text = {
+                "{C:attention}Pokemon{} Jokers from the ninth",
+                "generation will appear"
+              }
+            },
+            hazards_on_tooltip = {
+              name = "Hazards Allowed",
+              text = {
+                "{C:attention}Pokemon{} Jokers with",
+                "{C:purple}Hazards{} will appear"
+              }
+            },
+            shinyplayingcard_tooltip = {
+              name = "Shiny on Playing Cards",
+              text = {
+                "Allows {C:attention}playing cards{} to",
+                "have the {C:dark_edition}Shiny{} edition"
+              }
+            },
+            legacycontent_tooltip = {
+              name = "Legacy Content",
+              text = {
+                "Enable content that",
+                "has been removed"
+              }
+            },
+            jokecontent_tooltip = {
+              name = "Joke Content",
+              text = {
+                "Enable content that is",
+                "meant to be humorous"
+              }
+            },
+            splashcard_tooltip = {
+              name = "Pokemon Splash Card",
+              text = {
+                "Replaces the usual splash card",
+                "with a random Pokemon Joker",
+              }
+            },
+            title_tooltip = {
+              name = "Pokemon Title Screen",
+              text = {
+                "Replaces the usual title screen",
+                "with the Pokermon version",
+              }
+            },
+            altart_tooltip = {
+              name = "Alt Art",
+              text = {
+                "Uses alternate sprites for",
+                "certain Pokemon Jokers",
+              }
+            },
+            animation_tooltip = {
+              name = "Enable Animations",
+              text = {
+                "Enables animated sprites for",
+                "certain Pokemon Jokers",
+              }
+            },
+            allowpokeballs_tooltip = {
+              name = "Allow Pokeballs",
+              text = {
+                "Allow Pokeball {C:item}items{} to appear",
+              }
+            },
             pokemaster_tooltip = {
               name = "Pokemon Master Mode",
               text = {
@@ -5187,15 +5325,25 @@ return {
             --Mod Menu stuff
             poke_settings_header_required = "Restart Required:",
             poke_settings_header_norequired = "No Restart Required:",
-            poke_settings_pokemon_only = "Pokemon only?",
+            poke_settings_pokemon_only = "Pokemon Only?",
             poke_settings_unlimited_energy = "Unlmited Energy?",
             poke_settings_shiny_playing_cards = "Shiny on playing cards?",
             poke_settings_jokers_only = "Jokers only?",
             poke_settings_no_evolutions = "No Evolutions?",
-            poke_settings_pokeballs = "Pokéballs?",
+            poke_settings_pokeballs = "Allow Pokéballs?",
             poke_settings_pokedex_number = "Pokedex Numbers?",
             poke_settings_pokemon_splash = "Pokémon Splash Card?",
-            poke_settings_pokemon_gen_one = "Gen 1 Only?",
+            poke_settings_pokemon_title = "Pokemon Title?",
+            poke_settings_pokemon_gen_one = "Gen 1 Allowed?",
+            poke_settings_pokemon_gen_two = "Gen 2 Allowed?",
+            poke_settings_pokemon_gen_three = "Gen 3 Allowed?",
+            poke_settings_pokemon_gen_four = "Gen 4 Allowed?",
+            poke_settings_pokemon_gen_five = "Gen 5 Allowed?",
+            poke_settings_pokemon_gen_six = "Gen 6 Allowed?",
+            poke_settings_pokemon_gen_seven = "Gen 7 Allowed?",
+            poke_settings_pokemon_gen_eight = "Gen 8 Allowed?",
+            poke_settings_pokemon_gen_nine = "Gen 9 Allowed?",
+            poke_settings_pokemon_hazards_on = "Hazards Allowed?",
             poke_settings_pokemon_precise_energy = "Use Precise Energy Scaling?",
             poke_settings_pokemon_discovery = "! Discovery?",
             poke_settings_pokemon_altart = "Alt Art?",

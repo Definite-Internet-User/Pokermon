@@ -14,6 +14,7 @@ local pansage = {
   stage = "Basic",
   ptype = "Grass",
   atlas = "Pokedex5",
+  gen = 5,
   item_req = "leafstone",
   blueprint_compat = false,
   calculate = function(self, card, context)
@@ -36,6 +37,7 @@ local simisage = {
   stage = "One",
   ptype = "Grass",
   atlas = "Pokedex5",
+  gen = 5,
   blueprint_compat = false,
   calculate = function(self, card, context)
     if context.before and context.cardarea == G.jokers and not context.blueprint then
@@ -79,6 +81,7 @@ local pansear = {
   stage = "Basic",
   ptype = "Fire",
   atlas = "Pokedex5",
+  gen = 5,
   item_req = "firestone",
   blueprint_compat = false,
   calculate = function(self, card, context)
@@ -102,6 +105,7 @@ local simisear = {
   stage = "One",
   ptype = "Fire",
   atlas = "Pokedex5",
+  gen = 5,
   blueprint_compat = false,
   calculate = function(self, card, context)
     if context.first_hand_drawn then
@@ -158,6 +162,7 @@ local panpour = {
   stage = "Basic",
   ptype = "Water",
   atlas = "Pokedex5",
+  gen = 5,
   item_req = "waterstone",
   blueprint_compat = false,
   calculate = function(self, card, context)
@@ -180,6 +185,7 @@ local simipour = {
   stage = "One",
   ptype = "Water",
   atlas = "Pokedex5",
+  gen = 5,
   blueprint_compat = false,
   calculate = function(self, card, context)
     if context.before and context.cardarea == G.jokers and not context.blueprint then
@@ -241,6 +247,8 @@ local roggenrola = {
   stage = "Basic",
   ptype = "Earth",
   atlas = "Pokedex5",
+  gen = 5,
+  hazard_poke = true,
   blueprint_compat = true,
   calculate = function(self, card, context)
     if context.setting_blind then
@@ -296,7 +304,9 @@ local boldore = {
   stage = "One",
   ptype = "Earth",
   atlas = "Pokedex5",
+  gen = 5,
   item_req = "linkcable",
+  hazard_poke = true,
   blueprint_compat = true,
   calculate = function(self, card, context)
     if context.setting_blind then
@@ -348,7 +358,9 @@ local gigalith = {
   stage = "Two",
   ptype = "Earth",
   atlas = "Pokedex5",
+  gen = 5,
   blueprint_compat = true,
+  hazard_poke = true,
   calculate = function(self, card, context)
     if context.setting_blind then
       poke_add_hazards(card.ability.extra.hazard_ratio)

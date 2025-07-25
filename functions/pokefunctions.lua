@@ -155,7 +155,9 @@ pokermon.family = {
 
 extended_family = {
   tauros = {"miltank"},
-  unown = {"ruins_of_alph", "unown_swarm"}
+  unown = {"ruins_of_alph", "unown_swarm"},
+  shuckle = {{item = true, name = "berry_juice"}, {item = true, name = "berry_juice_tarot"}, {item = true, name = "berry_juice_planet"}, {item = true, name = "berry_juice_spectral"}, 
+             {item = true, name = "berry_juice_item"}, {item = true, name = "berry_juice_energy"}, {item = true, name = "berry_juice_mystery"}}
 }
 
 type_sticker_applied = function(card)
@@ -617,7 +619,7 @@ get_previous_from_mega = function(name, prefix, full_key)
   if full_key then
     prev = "j_"..prefix.."_"..prev 
   end
-  return prev
+  return G.P_CENTERS[prev] and prev or nil
 end
 
 get_previous_evo = function(card, full_key)
@@ -626,6 +628,7 @@ get_previous_evo = function(card, full_key)
   local prev = nil
   local max = nil
   local choice = nil
+  local mega = nil
     if G.jokers.highlighted and #G.jokers.highlighted == 1 then
       choice = G.jokers.highlighted[1]
     else
@@ -637,7 +640,8 @@ get_previous_evo = function(card, full_key)
   else
     name = card.name or "bulbasaur"
   end
-  if string.sub(name,1,5) == "mega_" then return get_previous_from_mega(name, prefix, full_key) end
+  if string.sub(name,1,5) == "mega_" then mega = get_previous_from_mega(name, prefix, full_key) end
+  if mega then return mega end
   for k, v in ipairs(pokermon.family) do
     for x, y in ipairs(v) do
       local cur_name = (type(y) == "table" and y.key) or y
@@ -699,7 +703,16 @@ get_family_keys = function(cardname, custom_prefix, card)
   for k, v in pairs(extended_family) do
     if k == cardname then
       for x, y in pairs(v) do
-        table.insert(keys, custom_prefix..y)
+        if type(y) == "table" then
+          if y.item then
+            local item_prefix = y.custom_prefix or "c_poke_"
+            table.insert(keys, item_prefix..y.name)
+          else
+            table.insert(keys, custom_prefix..y.name)
+          end
+        else
+          table.insert(keys, custom_prefix..y)
+        end
       end
     end
   end
@@ -999,7 +1012,7 @@ get_random_poke_key = function(pseed, stage, pokerarity, area, poketype, exclude
   end
   
   for k, v in pairs(G.P_CENTERS) do
-    if v.stage and v.stage ~= "Other" and not (stage and v.stage ~= stage) and not (pokerarity and v.rarity ~= pokerarity) and get_gen_allowed(v.atlas)
+    if v.stage and v.stage ~= "Other" and not (stage and v.stage ~= stage) and not (pokerarity and v.rarity ~= pokerarity) and get_gen_allowed(v)
        and not (poketype and poketype ~= v.ptype) and pokemon_in_pool(v) and not v.aux_poke and not exclude_keys[v.key] then
       local no_dup = true
       if G.jokers and G.jokers.cards and not next(find_joker("Showman")) then
@@ -1031,10 +1044,21 @@ create_random_poke_joker = function(pseed, stage, pokerarity, area, poketype)
   return SMODS.create_card(create_args)
 end
 
-get_gen_allowed = function(atlas)
-  local gen_allowed = true
-  if pokermon_config.gen_one and atlas ~= "poke_Pokedex1" and atlas ~= "poke_others" then
-    gen_allowed = false
+get_gen_allowed = function(card)
+  local gen_allowed = false
+  if card.gen then
+    local gen = card.gen
+    if gen == 1 and pokermon_config.gen_oneb then gen_allowed = true end
+    if gen == 2 and pokermon_config.gen_two then gen_allowed = true end
+    if gen == 3 and pokermon_config.gen_three then gen_allowed = true end
+    if gen == 4 and pokermon_config.gen_four then gen_allowed = true end
+    if gen == 5 and pokermon_config.gen_five then gen_allowed = true end
+    if gen == 6 and pokermon_config.gen_six then gen_allowed = true end
+    if gen == 7 and pokermon_config.gen_seven then gen_allowed = true end
+    if gen == 8 and pokermon_config.gen_eight then gen_allowed = true end
+    if gen == 9 and pokermon_config.gen_nine then gen_allowed = true end
+  else
+    gen_allowed = true
   end
   return gen_allowed
 end
@@ -1339,6 +1363,27 @@ create_holding_item = function(key, edition, has_evolved)
     _card:add_to_deck()
     G.consumeables:emplace(_card)
     card_eval_status_text(_card, 'extra', nil, nil, nil, {message = localize('poke_plus_pokeitem'), colour = G.ARGS.LOC_COLOURS.item})
+  end
+end
+
+poke_set_sprites = function(self, card, front)
+  if card and card.ability and card.ability.extra then
+    if not card.ability.extra.loaded_pos and card.ability.extra.loaded_sprite then
+      card.ability.extra.loaded_pos = card.config.center.pos
+    end
+    card.children.center:set_sprite_pos(card.ability.extra.loaded_pos)
+  end
+end
+
+poke_set_sprite_ability = function(self, card, initial, delay_sprites)
+  if initial and card and card.ability and card.ability.extra and not card.ability.extra.loaded_pos then
+    card.ability.extra.loaded_pos = card.config.center.pos
+  end
+end
+
+poke_load_individual_sprite = function(self, card, card_table, other_card)
+  if card and card.ability and card.ability.extra then
+    card.ability.extra.loaded_sprite = true
   end
 end
 

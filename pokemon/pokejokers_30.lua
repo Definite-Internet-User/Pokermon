@@ -27,6 +27,7 @@ local dreepy={
   stage = "Basic",
   ptype = "Psychic",
   atlas = "Pokedex8",
+  gen = 8,
   perishable_compat = true,
   blueprint_compat = false,
   eternal_compat = false,
@@ -74,6 +75,7 @@ local drakloak={
   stage = "One",
   ptype = "Psychic",
   atlas = "Pokedex8",
+  gen = 8,
   perishable_compat = true,
   blueprint_compat = true,
   eternal_compat = true,
@@ -130,6 +132,7 @@ local dragapult={
   stage = "Two",
   ptype = "Psychic",
   atlas = "Pokedex8",
+  gen = 8,
   perishable_compat = true,
   blueprint_compat = true,
   eternal_compat = true,
@@ -185,6 +188,7 @@ local dreepy_dart={
   stage = "Basic",
   ptype = "Psychic",
   atlas = "Pokedex8",
+  gen = 8,
   aux_poke = true,
   perishable_compat = true,
   blueprint_compat = false,
@@ -238,6 +242,7 @@ local wyrdeer={
   stage = "One",
   ptype = "Psychic",
   atlas = "Pokedex8",
+  gen = 8,
   perishable_compat = true,
   blueprint_compat = true,
   eternal_compat = true,
@@ -253,13 +258,15 @@ local wyrdeer={
         local highest = nil
         local highest_card = nil
         for k, v in pairs(G.scry_view.cards) do
-          if not highest then highest = v.base.id; highest_card = v end
-          if v.base.id > highest then
-            highest = v.base.id
-            highest_card = v
+          if not SMODS.has_no_suit(v) then
+            if not highest then highest = v.base.id; highest_card = v end
+            if v.base.id > highest then
+              highest = v.base.id
+              highest_card = v
+            end
           end
         end
-        if context.other_card == highest_card then
+        if highest_card and context.other_card == highest_card then
           local Mult = 2 * highest_card.base.nominal
           return {
             message = localize{type = 'variable', key = 'a_mult', vars = {Mult}},
@@ -305,6 +312,7 @@ local kleavor={
   stage = "One",
   ptype = "Earth",
   atlas = "Pokedex8",
+  gen = 8,
   perishable_compat = false,
   blueprint_compat = true,
   calculate = function(self, card, context)
