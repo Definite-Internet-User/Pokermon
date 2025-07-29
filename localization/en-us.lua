@@ -4156,7 +4156,7 @@ return {
             j_poke_everstone = {
                 name = 'Everstone',
                 text = {
-                    "Pokemon {C:attention}can't{} evolve",
+                    "Pokemon {C:attention}can't{} evolve or transform",
                     "{br:3.5}ERROR - CONTACT STEAK",
                     "{C:attention}Basic{} and {C:attention}Baby{} Pokemon each give {X:mult,C:white} X#1# {} Mult",
                 } 
@@ -5013,6 +5013,14 @@ return {
                 "have the {C:dark_edition}Shiny{} edition"
               }
             },
+            detailed_tooltips_tooltip = {
+              name = "Detailed Tooltips",
+              text = {
+                "All tooltips will be displayed",
+                "Turning this off will remove most",
+                "tooltips from Pokemon Jokers",
+              }
+            },
             legacycontent_tooltip = {
               name = "Legacy Content",
               text = {
@@ -5339,6 +5347,7 @@ return {
             poke_settings_pokemon_only = "Pokemon Only?",
             poke_settings_unlimited_energy = "Unlmited Energy?",
             poke_settings_shiny_playing_cards = "Shiny on playing cards?",
+            poke_settings_pokemon_detailed_tooltips = "Detailed Tooltips?",
             poke_settings_jokers_only = "Jokers only?",
             poke_settings_no_evolutions = "No Evolutions?",
             poke_settings_pokeballs = "Allow Pokéballs?",
@@ -5512,7 +5521,7 @@ return {
           },
         },
         v_dictionary = {
-            
+          poke_discards = "+#1# Discards",
         },
         v_text = {
            ch_c_poke_add_joker_slots = {"{C:attention}+1{} Joker Slot when Boss Blind defeated {C:inactive}(up to 5)"},
