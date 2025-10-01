@@ -12,9 +12,9 @@ local elgyem={
     if pokermon_config.detailed_tooltips then
       info_queue[#info_queue+1] = {key = 'e_negative_consumable', set = 'Edition', config = {extra = 1}}
     end
-    info_queue[#info_queue+1] = {set = 'Other', key = 'designed_by', vars = {"bayleef0909"}}
     return {vars = {card.ability.extra.top_planets, card.ability.extra.current_planet_count, self.config.evo_rqmt}}
   end,
+  designer = "bayleef0909",
   rarity = 3,
   cost = 7,
   stage = "Basic",
@@ -92,9 +92,9 @@ local beheeyem={
     if pokermon_config.detailed_tooltips then
       info_queue[#info_queue+1] = {key = 'e_negative_consumable', set = 'Edition', config = {extra = 1}}
     end
-    info_queue[#info_queue+1] = {set = 'Other', key = 'designed_by', vars = {"bayleef0909"}}
     return {vars = {center.ability.extra.top_planets, center.ability.extra.boosters_to_open}}
   end,
+  designer = "bayleef0909",
   rarity = "poke_safari",
   cost = 10,
   stage = "One",
@@ -297,7 +297,7 @@ local chandelure={
         }
       end
     end
-    if context.other_joker and context.other_joker.config and context.other_joker.sell_cost == 1 and context.other_joker.ability.set == 'Joker' and not context.post_trigger then
+    if context.other_joker and context.other_joker.config and context.other_joker.sell_cost < 2 and context.other_joker.ability.set == 'Joker' and not context.post_trigger then
         G.E_MANAGER:add_event(Event({
           func = function()
               context.other_joker:juice_up(0.5, 0.5)
@@ -328,26 +328,16 @@ local chandelure={
 local golett={
   name = "golett",
   pos = {x = 2, y = 9},
-  config = {extra = {hazard_ratio = 10, interval = 4, Xmult_multi = 1.4, rounds = 5}},
+  config = {extra = {hazards = 4, Xmult_multi = 1.2, rounds = 5, num = 1, dem = 4}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     -- just to shorten function
     local abbr = center.ability.extra
-    info_queue[#info_queue+1] = {set = 'Other', key = 'poke_hazards'}
+    info_queue[#info_queue+1] = {set = 'Other', key = 'poke_hazards', vars = {abbr.hazards}}
     info_queue[#info_queue+1] = G.P_CENTERS.m_poke_hazard
     
-    local to_add = math.floor(52 / abbr.hazard_ratio)
-    if G.playing_cards then
-      local count = #G.playing_cards
-      for _, v in pairs(G.playing_cards) do
-        if SMODS.has_enhancement(v, "m_poke_hazard") then
-          count = count - 1
-        end
-      end
-      to_add = math.floor(count / abbr.hazard_ratio)
-    end
-    
-    return {vars = {to_add, abbr.hazard_ratio, abbr.Xmult_multi, abbr.rounds}}
+    local num, dem = SMODS.get_probability_vars(center, center.ability.extra.num, center.ability.extra.dem, 'golett')
+    return {vars = {abbr.hazards, abbr.Xmult_multi, abbr.rounds, num, dem}}
   end,
   rarity = 3,
   cost = 7,
@@ -361,17 +351,10 @@ local golett={
   hazard_poke = true,
   calculate = function(self, card, context)
     if context.setting_blind then
-      poke_add_hazards(card.ability.extra.hazard_ratio)
+      poke_set_hazards(card.ability.extra.hazards)
     end
-    if context.individual and not context.end_of_round and context.cardarea == G.hand and #G.hand.cards >= card.ability.extra.interval then
-      local score = nil
-      for i = card.ability.extra.interval, #G.hand.cards, card.ability.extra.interval do
-        if G.hand.cards[i] == context.other_card then
-          score = true
-          break
-        end
-      end
-      if score then
+    if context.individual and not context.end_of_round and context.cardarea == G.hand then
+      if SMODS.has_enhancement(context.other_card, "m_poke_hazard") or SMODS.pseudorandom_probability(card, 'golett', card.ability.extra.num, card.ability.extra.dem, 'golett') then
         if context.other_card.debuff then
             return {
                 message = localize('k_debuffed'),
@@ -393,26 +376,16 @@ local golett={
 local golurk={
   name = "golurk",
   pos = {x = 3, y = 9},
-  config = {extra = {hazard_ratio = 10, interval = 3, Xmult_multi = 1.6}},
+  config = {extra = {hazards = 4, interval = 3, Xmult_multi = 1.4, num = 1, dem = 3}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     -- just to shorten function
     local abbr = center.ability.extra
-    info_queue[#info_queue+1] = {set = 'Other', key = 'poke_hazards'}
+    info_queue[#info_queue+1] = {set = 'Other', key = 'poke_hazards', vars = {abbr.hazards}}
     info_queue[#info_queue+1] = G.P_CENTERS.m_poke_hazard
     
-    local to_add = math.floor(52 / abbr.hazard_ratio)
-    if G.playing_cards then
-      local count = #G.playing_cards
-      for _, v in pairs(G.playing_cards) do
-        if SMODS.has_enhancement(v, "m_poke_hazard") then
-          count = count - 1
-        end
-      end
-      to_add = math.floor(count / abbr.hazard_ratio)
-    end
-    
-    return {vars = {to_add, abbr.hazard_ratio, abbr.Xmult_multi}}
+    local num, dem = SMODS.get_probability_vars(center, center.ability.extra.num, center.ability.extra.dem, 'golurk')
+    return {vars = {abbr.hazards, abbr.Xmult_multi, num, dem}}
   end,
   rarity = "poke_safari",
   cost = 7,
@@ -426,17 +399,10 @@ local golurk={
   eternal_compat = true,
   calculate = function(self, card, context)
     if context.setting_blind then
-      poke_add_hazards(card.ability.extra.hazard_ratio)
+      poke_set_hazards(card.ability.extra.hazards)
     end
-    if context.individual and not context.end_of_round and context.cardarea == G.hand and #G.hand.cards >= card.ability.extra.interval then
-      local score = nil
-      for i = card.ability.extra.interval, #G.hand.cards, card.ability.extra.interval do
-        if G.hand.cards[i] == context.other_card then
-          score = true
-          break
-        end
-      end
-      if score then
+    if context.individual and not context.end_of_round and context.cardarea == G.hand then
+      if SMODS.has_enhancement(context.other_card, "m_poke_hazard") or SMODS.pseudorandom_probability(card, 'golurk', card.ability.extra.num, card.ability.extra.dem, 'golurk') then
         if context.other_card.debuff then
             return {
                 message = localize('k_debuffed'),

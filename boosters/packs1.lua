@@ -1,4 +1,7 @@
 local create_energy = function(self, card)
+  if pseudoseed('rainbow') < .10 then
+    return create_card("Spectral", G.pack_cards, nil, nil, true, true, 'c_poke_double_rainbow_energy', nil)
+  end
   local match_type = pseudorandom(pseudoseed('match'))
   if match_type > .50 and #G.jokers.cards > 0 then
     local energy_types = {}
@@ -99,7 +102,7 @@ local pack1 = {
   name = "Pocket Pack",
 	key = "pokepack_normal_1",
 	kind = "Energy",
-	atlas = "pokepack",
+	atlas = "AtlasBoosterpacksBasic",
 	pos = { x = 0, y = 0 },
 	config = { extra = 4, choose = 1, c_keys = {}},
 	cost = 4,
@@ -124,7 +127,7 @@ local pack2 = {
 	name = "Pocket Pack",
 	key = "pokepack_normal_2",
 	kind = "Energy",
-	atlas = "pokepack",
+	atlas = "AtlasBoosterpacksBasic",
 	pos = { x = 1, y = 0 },
 	config = { extra = 4, choose = 1, c_keys = {} },
 	cost = 4,
@@ -149,7 +152,7 @@ local pack3 = {
 	name = "Jumbo Pocket Pack",
 	key = "pokepack_jumbo_1",
 	kind = "Energy",
-	atlas = "pokepack",
+	atlas = "AtlasBoosterpacksBasic",
 	pos = { x = 2, y = 0 },
 	config = { extra = 6, choose = 1, c_keys = {} },
 	cost = 6,
@@ -174,7 +177,7 @@ local pack4 = {
 	name = "Mega Pocket Pack",
 	key = "pokepack_mega_1",
 	kind = "Energy",
-	atlas = "pokepack",
+	atlas = "AtlasBoosterpacksBasic",
 	pos = { x = 3, y = 0 },
 	config = { extra = 6, choose = 2, c_keys = {} },
 	cost = 8,
@@ -199,7 +202,7 @@ local pack5 = {
   name = "Pocket Pack",
 	key = "pokepack_normal_3",
 	kind = "Energy",
-	atlas = "pokepack",
+	atlas = "AtlasBoosterpacksBasic",
 	pos = { x = 0, y = 1 },
 	config = { extra = 4, choose = 1, c_keys = {}},
 	cost = 4,
@@ -224,7 +227,7 @@ local pack6 = {
 	name = "Pocket Pack",
 	key = "pokepack_normal_4",
 	kind = "Energy",
-	atlas = "pokepack",
+	atlas = "AtlasBoosterpacksBasic",
 	pos = { x = 1, y = 1 },
 	config = { extra = 4, choose = 1, c_keys = {} },
 	cost = 4,
@@ -249,7 +252,7 @@ local pack7 = {
 	name = "Jumbo Pocket Pack",
 	key = "pokepack_jumbo_2",
 	kind = "Energy",
-	atlas = "pokepack",
+	atlas = "AtlasBoosterpacksBasic",
 	pos = { x = 2, y = 1 },
 	config = { extra = 6, choose = 1, c_keys = {} },
 	cost = 6,
@@ -274,7 +277,7 @@ local pack8 = {
 	name = "Mega Pocket Pack",
 	key = "pokepack_mega_2",
 	kind = "Energy",
-	atlas = "pokepack",
+	atlas = "AtlasBoosterpacksBasic",
 	pos = { x = 3, y = 1 },
 	config = { extra = 6, choose = 2, c_keys = {} },
 	cost = 8,
@@ -299,7 +302,7 @@ local wish_pack = {
 	name = "Wish Pack",
 	key = "pokepack_wish_pack",
 	kind = "Spectral",
-	atlas = "pokepack",
+	atlas = "AtlasBoosterpacksBasic",
 	pos = { x = 4, y = 0 },
 	config = { extra = 6, choose = 1 },
 	cost = 999,
@@ -316,6 +319,7 @@ local wish_pack = {
 
     local jirachi_cards = {'c_poke_fake_banker', 'c_poke_fake_booster', 'c_poke_fake_power', 'c_poke_fake_copy', 'c_poke_fake_fixer', 'c_poke_fake_masterball', }
     local temp_card = {area = G.pack_cards, key = jirachi_cards[1 + (i-1)%6], no_edition = true, skip_materialize = true}
+    if not G.P_CENTERS[temp_card.key] then temp_card.key = 'c_judgement' end
     return SMODS.create_card(temp_card)
 	end,
 	loc_vars = function(self, info_queue, card)
@@ -354,7 +358,93 @@ local wish_pack = {
 	group_key = "k_poke_wish_pack",
 }
 
-local pack_list = {pack1, pack2, pack3, pack4, pack5, pack6, pack7, pack8, wish_pack}
+local starter_pack = {
+	name = "Starter Pack",
+	key = "pokepack_starter_pack",
+	kind = "Spectral",
+	atlas = "AtlasBoosterpacksBasic",
+	pos = { x = 4, y = 1 },
+	config = { extra = 4, choose = 1 },
+	cost = 6,
+	order = 5,
+	weight = 0,
+  draw_hand = false,
+  unlocked = true,
+  discovered = true,
+	create_card = function(self, card, i)
+    local grass_starters = {}
+    local fire_starters = {}
+    local water_starters = {}
+    local pseudo_starters = {}
+    local pika_eevee = {}
+    local pack_key = nil
+    for k, v in ipairs(G.P_CENTER_POOLS["Joker"]) do
+      if not poke_family_present(v) then
+        if v.starter and v.ptype == "Grass" then
+          grass_starters[#grass_starters + 1] = v.key
+        end
+        if v.starter and v.ptype == "Fire" then
+          fire_starters[#fire_starters + 1] = v.key
+        end
+        if v.starter and v.ptype == "Water" then
+          water_starters[#water_starters + 1] = v.key
+        end
+        if v.pseudol then
+          pseudo_starters[#pseudo_starters + 1] = v.key
+        end
+        if v.name == "pikachu" or v.name == "eevee" then
+          pika_eevee[#pika_eevee + 1] = v.key
+        end
+      end
+    end
+    
+    if i == 1 and #grass_starters > 0 then
+      pack_key = pseudorandom_element(grass_starters, pseudoseed('grass'))
+    elseif i == 2 and #fire_starters > 0 then
+      pack_key = pseudorandom_element(fire_starters, pseudoseed('fire'))
+    elseif i == 3 and #water_starters > 0 then
+      pack_key = pseudorandom_element(water_starters, pseudoseed('water'))
+    elseif i == 4 and #pika_eevee > 0 then
+      pack_key = pseudorandom_element(pika_eevee, pseudoseed('pikaeevee'))
+    elseif i == 5 and #pseudo_starters > 0 then
+      pack_key = pseudorandom_element(pseudo_starters, pseudoseed('pseudo'))
+    else
+      if G.P_CENTERS['j_poke_caterpie'] then
+        pack_key = 'j_poke_caterpie'
+      else
+        pack_key = nil
+      end
+    end
+    
+    local temp_card = {area = G.pack_cards, key = pack_key, no_edition = true, skip_materialize = true}
+    return SMODS.create_card(temp_card)
+	end,
+	loc_vars = function(self, info_queue, card)
+		return { vars = { card.config.center.config.choose, card.ability.extra} }
+	end,
+  in_pool = function(self)
+    return false
+  end,
+  ease_background_colour = function(self)
+     ease_background_colour{new_colour = HEX('FFFFFF'), contrast = 3}
+  end,
+  particles = function(self)
+    G.booster_pack_stars = Particles(1, 1, 0,0, {
+      timer = 0.07,
+      scale = 0.1,
+      initialize = true,
+      lifespan = 15,
+      speed = 0.1,
+      padding = -4,
+      attach = G.ROOM_ATTACH,
+      colours = {G.C.RED, G.C.BLUE, G.C.GREEN},
+      fill = true
+    })
+	end,
+	group_key = "k_poke_starter_pack",
+}
+
+local pack_list = {pack1, pack2, pack3, pack4, pack5, pack6, pack7, pack8, wish_pack, starter_pack}
 
 for k, v in pairs(pack_list) do
   if not v.ease_background_colour then

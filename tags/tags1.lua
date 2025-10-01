@@ -1,6 +1,6 @@
 local pocket_tag = {
 	object_type = "Tag",
-	atlas = "poketag",
+	atlas = "AtlasTags",
 	name = "pocket_tag",
 	order = 25,
 	pos = { x = 0, y = 0 },
@@ -46,7 +46,7 @@ local pocket_tag = {
 
 local shiny_tag = {
 	object_type = "Tag",
-	atlas = "poketag",
+	atlas = "AtlasTags",
 	name = "shiny_tag",
 	order = 26,
 	pos = { x = 1, y = 0 },
@@ -82,7 +82,7 @@ local shiny_tag = {
 
 local stage_one_tag = {
 	object_type = "Tag",
-	atlas = "poketag",
+	atlas = "AtlasTags",
 	name = "stage_one_tag",
 	order = 27,
 	pos = { x = 2, y = 0 },
@@ -116,7 +116,7 @@ local stage_one_tag = {
 
 local safari_tag = {
 	object_type = "Tag",
-	atlas = "poketag",
+	atlas = "AtlasTags",
 	name = "safari_tag",
 	order = 27,
 	pos = { x = 3, y = 0 },
@@ -149,7 +149,7 @@ local safari_tag = {
 
 local jirachi_tag = {
 	object_type = "Tag",
-	atlas = "poketag",
+	atlas = "AtlasTags",
 	name = "jirachi_tag",
 	order = 999,
 	pos = { x = 4, y = 0 },
@@ -211,6 +211,74 @@ local jirachi_tag = {
   end
 }
 
+local starter_tag = {
+	object_type = "Tag",
+	atlas = "AtlasTags",
+	name = "starter_tag",
+	order = 28,
+	pos = { x = 4, y = 0 },
+	config = { type = "new_blind_choice" },
+	key = "starter_tag",
+  discovered = true,
+  min_ante = 2,
+	loc_vars = function(self, info_queue)
+		info_queue[#info_queue + 1] = { set = "Other", key = "p_poke_pokepack_starter_pack", specific_vars = {1, 4} }
+	end,
+	apply = function(self, tag, context)
+		if context and context.type == "new_blind_choice" then
+			tag:yep("+", G.C.SECONDARY_SET.Spectral, function()
+				local key = "p_poke_pokepack_starter_pack"
+				local card = Card(
+					G.play.T.x + G.play.T.w / 2 - G.CARD_W * 1.27 / 2,
+					G.play.T.y + G.play.T.h / 2 - G.CARD_H * 1.27 / 2,
+					G.CARD_W * 1.27,
+					G.CARD_H * 1.27,
+					G.P_CARDS.empty,
+					G.P_CENTERS[key],
+					{ bypass_discovery_center = true, bypass_discovery_ui = true }
+				)
+				card.cost = 0
+				card.from_tag = true
+				G.FUNCS.use_card({ config = { ref_table = card } })
+				card:start_materialize()
+				return true
+			end)
+			tag.triggered = true
+			return true
+		end
+	end,
+  in_pool = function(self)
+    local grass_starters = {}
+    local fire_starters = {}
+    local water_starters = {}
+    local pseudo_starters = {}
+    local pika_eevee = {}
+    local pack_key = nil
+    for k, v in ipairs(G.P_CENTER_POOLS["Joker"]) do
+      if not poke_family_present(v) then
+        if v.starter and v.ptype == "Grass" then
+          grass_starters[#grass_starters + 1] = v.key
+        end
+        if v.starter and v.ptype == "Fire" then
+          fire_starters[#fire_starters + 1] = v.key
+        end
+        if v.starter and v.ptype == "Water" then
+          water_starters[#water_starters + 1] = v.key
+        end
+        if v.pseudol then
+          pseudo_starters[#pseudo_starters + 1] = v.key
+        end
+        if v.name == "pikachu" or v.name == "eevee" then
+          pika_eevee[#pika_eevee + 1] = v.key
+        end
+      end
+    end
+    if #grass_starters == 0 or #fire_starters == 0 or #water_starters == 0 or #pseudo_starters == 0 or #pika_eevee == 0 then
+      return false
+    end
+  end
+}
+
 return {name = "Tags",
-        list = {pocket_tag, shiny_tag, stage_one_tag, safari_tag, jirachi_tag}
+        list = {pocket_tag, shiny_tag, stage_one_tag, safari_tag, jirachi_tag, starter_tag}
 }

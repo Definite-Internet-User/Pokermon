@@ -1,37 +1,66 @@
 local pokedex={ 
   name = "pokedex",
   pos = {x = 0, y = 0},
-  config = {extra = {mult = 0, mult_mod = 2}},
+  config = {extra = {}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
-		return {vars = {center.ability.extra.mult, center.ability.extra.mult_mod}}
+		return {vars = {}}
   end,
   rarity = 2, 
   cost = 5, 
   stage = "Other",
   atlas = "others",
   blueprint_compat = true,
-  calculate = function(self, card, context)
-    if context.cardarea == G.jokers and context.scoring_hand then
-      if context.joker_main and card.ability.extra.mult > 0 then
-        return {
-          message = localize{type = 'variable', key = 'a_mult', vars = {card.ability.extra.mult}}, 
-          colour = G.C.MULT,
-          mult_mod = card.ability.extra.mult
-        }
+}
+
+local rotomdex={ 
+  name = "rotomdex",
+  pos = {x = 0, y = 0},
+  config = {extra = {}},
+  loc_vars = function(self, info_queue, center)
+    type_tooltip(self, info_queue, center)
+		return {vars = {G.GAME.rotom_discount or 0}}
+  end,
+  rarity = 1, 
+  cost = 6, 
+  stage = "Other",
+  atlas = "placeholder_joker",
+  blueprint_compat = false,
+  update = function(self, card, dt)
+    if G.STAGE == G.STAGES.RUN then
+      local type_amount = 0
+      local poketype = nil
+      local poketype_list = {}
+      for k, v in pairs(G.jokers.cards) do
+        if (v.ability and v.ability.extra and type(v.ability.extra) == "table" and v.ability.extra.ptype) or type_sticker_applied(v) then
+          poketype = get_type(v)
+          if not poketype_list[poketype] then
+            poketype_list[poketype] = true
+            type_amount = type_amount + 1
+          end
+        end
+      end
+      if type_amount ~= (G.GAME.rotom_discount or 0) then
+        G.GAME.rotom_discount = type_amount
+        for k, v in pairs(G.I.CARD) do
+          if v.set_cost then v:set_cost() end
+        end
       end
     end
   end,
-  update = function(self, card, dt)
-    if G.STAGE == G.STAGES.RUN then
-      local pokemon_amount = 0
-      for k, v in pairs(G.jokers.cards) do
-        if (v.ability and v.ability.extra and type(v.ability.extra) == "table" and v.ability.extra.ptype) or type_sticker_applied(v) then
-          pokemon_amount = pokemon_amount + 1
-        end
+  add_to_deck = function(self, card, from_debuff)
+    G.E_MANAGER:add_event(Event({func = function()
+      for k, v in pairs(G.I.CARD) do
+          if v.set_cost then v:set_cost() end
       end
-      card.ability.extra.mult = pokemon_amount * card.ability.extra.mult_mod
-    end
+      return true end }))
+  end,
+  remove_from_deck = function(self, card, from_debuff)
+    G.E_MANAGER:add_event(Event({func = function()
+      for k, v in pairs(G.I.CARD) do
+          if v.set_cost then v:set_cost() end
+      end
+      return true end }))
   end
 }
 
@@ -70,10 +99,11 @@ local everstone={
 local tall_grass={
   name = "tall_grass",
   pos = {x = 2, y = 0},
-  config = {extra = {odds = 2,}},
+  config = {extra = {num = 1, dem = 2}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
-    return {vars = {''..(G.GAME and G.GAME.probabilities.normal or 1), center.ability.extra.odds, }}
+    local num, dem = SMODS.get_probability_vars(center, center.ability.extra.num, center.ability.extra.dem, 'tall_grass')
+    return {vars = {num, dem }}
   end,
   rarity = 1,
   cost = 6,
@@ -93,7 +123,7 @@ local tall_grass={
           end
         end
         
-        if has_wild or pseudorandom('tallgrass') < G.GAME.probabilities.normal/card.ability.extra.odds then
+        if has_wild or SMODS.pseudorandom_probability(card, 'tall_grass', card.ability.extra.num, card.ability.extra.dem, 'tall_grass') then
           G.GAME.joker_buffer = G.GAME.joker_buffer + 1
           G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()
             G.GAME.joker_buffer = 0
@@ -466,11 +496,11 @@ local rival = {
   end,
   set_sprites = function(self, card, front)
     if card.ability and card.ability.extra and card.ability.extra.form > 1 then
-      card.children.center:set_sprite_pos({x = 5, y = 1})
+      card.children.center:set_sprite_pos({x = 4, y = 2})
     elseif card.ability and card.ability.extra and card.ability.extra.form == 1 then
-      card.children.center:set_sprite_pos({x = 4, y = 1})
+      card.children.center:set_sprite_pos({x = 2, y = 2})
     else
-      card.children.center:set_sprite_pos({x = 3, y = 1})
+      card.children.center:set_sprite_pos({x = 0, y = 2})
     end
   end
 }
@@ -680,12 +710,84 @@ local billion_lions = {
   end
 }
 
+local professor={
+  name = "professor",
+  pos = {x = 0, y = 1},
+  config = {extra = {rounds_total = 2, rounds_current = 0}},
+  loc_vars = function(self, info_queue, center)
+    type_tooltip(self, info_queue, center)
+    return {vars = {center.ability.extra.rounds_total, center.ability.extra.rounds_current}}
+  end,
+  rarity = 1,
+  cost = 6,
+  stage = "Other",
+  atlas = "others",
+  perishable_compat = true,
+  blueprint_compat = true,
+  eternal_compat = false,
+  calculate = function(self, card, context)
+    if context.selling_self and (card.ability.extra.rounds_current >= card.ability.extra.rounds_total) and not context.blueprint then
+      G.E_MANAGER:add_event(Event({
+          func = (function()
+              add_tag(Tag('tag_poke_starter_tag'))
+              play_sound('generic1', 0.9 + math.random() * 0.1, 0.8)
+              play_sound('holo1', 1.2 + math.random() * 0.1, 0.4)
+              return true
+          end)
+      }))
+    end
+    if context.end_of_round and context.game_over == false and context.main_eval and not context.blueprint then
+      card.ability.extra.rounds_current = card.ability.extra.rounds_current + 1
+      if card.ability.extra.rounds_current == card.ability.extra.rounds_total then
+          local eval = function(card) return not card.REMOVED end
+          juice_card_until(card, eval, true)
+      end
+      return {
+          message = (card.ability.extra.rounds_current < card.ability.extra.rounds_total) and
+              (card.ability.extra.rounds_current .. '/' .. card.ability.extra.rounds_total) or
+              localize('k_active_ex'),
+          colour = G.C.FILTER
+      }
+    end
+  end,
+  in_pool = function(self)
+    local grass_starters = {}
+    local fire_starters = {}
+    local water_starters = {}
+    local pseudo_starters = {}
+    local pika_eevee = {}
+    local pack_key = nil
+    for k, v in ipairs(G.P_CENTER_POOLS["Joker"]) do
+      if not poke_family_present(v) then
+        if v.starter and v.ptype == "Grass" then
+          grass_starters[#grass_starters + 1] = v.key
+        end
+        if v.starter and v.ptype == "Fire" then
+          fire_starters[#fire_starters + 1] = v.key
+        end
+        if v.starter and v.ptype == "Water" then
+          water_starters[#water_starters + 1] = v.key
+        end
+        if v.pseudol then
+          pseudo_starters[#pseudo_starters + 1] = v.key
+        end
+        if v.name == "pikachu" or v.name == "eevee" then
+          pika_eevee[#pika_eevee + 1] = v.key
+        end
+      end
+    end
+    if #grass_starters == 0 or #fire_starters == 0 or #water_starters == 0 or #pseudo_starters == 0 or #pika_eevee == 0 then
+      return false
+    end
+  end
+}
+
 if pokermon_config.pokemon_aprilfools then
   return {name = "Other Jokers",
-        list = {pokedex, everstone, tall_grass, jelly_donut, treasure_eatery, mystery_egg, rival, ruins_of_alph, unown_swarm, billion_lions}
+        list = {pokedex, rotomdex, everstone, tall_grass, jelly_donut, treasure_eatery, mystery_egg, rival, ruins_of_alph, unown_swarm, professor, billion_lions}
   }
 else
   return {name = "Other Jokers",
-        list = {pokedex, everstone, tall_grass, jelly_donut, treasure_eatery, mystery_egg, rival, ruins_of_alph, unown_swarm}
+        list = {pokedex, rotomdex, everstone, tall_grass, jelly_donut, treasure_eatery, mystery_egg, rival, ruins_of_alph, unown_swarm, professor}
   }
 end

@@ -2,25 +2,15 @@
 local qwilfish = {
   name = "qwilfish", 
   pos = {x = 9, y = 5},
-  config = {extra = {hazard_ratio = 10, chips = 0, chip_mod = 3}},
+  config = {extra = {hazards = 4, chips = 0, chip_mod = 25}},
   loc_vars = function(self, info_queue, card)
     type_tooltip(self, info_queue, card)
     -- just to shorten function
     local abbr = card.ability.extra
-    info_queue[#info_queue+1] = {set = 'Other', key = 'poke_hazards'}
+    info_queue[#info_queue+1] = {set = 'Other', key = 'poke_hazards', vars = {abbr.hazards}}
     info_queue[#info_queue+1] = G.P_CENTERS.m_poke_hazard
-
-    local to_add = math.floor(52 / abbr.hazard_ratio)
-    if G.playing_cards then
-      local count = #G.playing_cards
-      for _, v in pairs(G.playing_cards) do
-        if SMODS.has_enhancement(v, "m_poke_hazard") then
-          count = count - 1
-        end
-      end
-      to_add = math.floor(count / abbr.hazard_ratio)
-    end
-    return {vars = {to_add, abbr.hazard_ratio, abbr.chip_mod, abbr.chips}}
+    
+    return {vars = {abbr.hazards, abbr.chip_mod, abbr.chips}}
   end,
   rarity = 2,
   cost = 7,
@@ -32,7 +22,7 @@ local qwilfish = {
   blueprint_compat = true,
   calculate = function(self, card, context)
     if context.setting_blind then
-      poke_add_hazards(card.ability.extra.hazard_ratio)
+      poke_set_hazards(card.ability.extra.hazards)
     end
     if context.cardarea == G.jokers and context.scoring_hand then
       if context.joker_main then
@@ -43,13 +33,13 @@ local qwilfish = {
         }
       end
     end
-    if context.individual and not context.end_of_round and context.cardarea == G.hand and SMODS.has_enhancement(context.other_card, "m_poke_hazard") and not context.blueprint then
-      card.ability.extra.chips = card.ability.extra.chips + card.ability.extra.chip_mod
-      return {
-        message = localize('k_upgrade_ex'),
-        colour = G.C.CHIPS,
-        card = card
-      }
+    if context.remove_playing_cards and not context.blueprint then
+      for _, removed_card in ipairs(context.removed) do
+        if removed_card.config.center ~= G.P_CENTERS.c_base then
+          card.ability.extra.chips = card.ability.extra.chips + card.ability.extra.chip_mod
+          card_eval_status_text(card, 'extra', nil, nil, nil, {message = localize("k_upgrade_ex"), colour = G.C.CHIPS})
+        end
+      end
     end
   end,
 }
@@ -166,6 +156,7 @@ local mega_scizor={
   stage = "Mega",
   ptype = "Metal",
   atlas = "Megas",
+  gen = 2,
   perishable_compat = true,
   blueprint_compat = true,
   eternal_compat = true,
@@ -187,7 +178,7 @@ local mega_scizor={
     if context.end_of_round and not context.individual and not context.repetition then
       card:juice_up()
       for k, v in pairs(G.jokers.cards) do
-        if v.config.center.rarity == 1 then
+        if v.config.center.rarity == 1 and not v.ability.eternal then
           v:start_dissolve({HEX("57ecab")}, nil, 1.6)
           play_sound('slice1', 0.96+math.random()*0.08)
         end
@@ -278,17 +269,6 @@ local mega_heracross={
   pos = {x = 6, y = 2},
   soul_pos = {x = 7, y = 2},
   config = {extra = {retriggers = 2}},
-  loc_txt = {
-    name = "Mega Heracross",
-    text = {
-      "Retrigger all played cards {C:attention}twice{}",
-      "{br:2}ERROR - CONTACT STEAK",
-      "Debuffs self this round",
-      "if you play or discard",
-      "less than {C:attention}5{} cards",
-      "{C:inactive}(debuffs before scoring)"
-    }
-  },
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     return {vars = {}}
@@ -565,10 +545,11 @@ local magcargo={
 local swinub={
   name = "swinub",
   pos = {x = 8, y = 6},
-  config = {extra = {mult = 5,money = 3,odds = 2,rounds = 5,}},
+  config = {extra = {mult = 5,money = 3,num = 1, dem = 2,rounds = 5,}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
-    return {vars = {center.ability.extra.mult, center.ability.extra.money, ''..(G.GAME and G.GAME.probabilities.normal or 1), center.ability.extra.odds, center.ability.extra.rounds, }}
+    local num, dem = SMODS.get_probability_vars(center, center.ability.extra.num, center.ability.extra.dem, 'swinub')
+    return {vars = {center.ability.extra.mult, center.ability.extra.money, num, dem, center.ability.extra.rounds, }}
   end,
   rarity = 2,
   cost = 6,
@@ -600,7 +581,7 @@ local swinub={
     return level_evo(self, card, context, "j_poke_piloswine")
   end,
   calc_dollar_bonus = function(self, card)
-    if pseudorandom('swinub') < G.GAME.probabilities.normal/card.ability.extra.odds then
+    if SMODS.pseudorandom_probability(card, 'swinub', card.ability.extra.num, card.ability.extra.dem, 'swinub') then
       return ease_poke_dollars(card, "2swinub", card.ability.extra.money, true)
     end
   end,
@@ -609,11 +590,11 @@ local swinub={
 local piloswine={
   name = "piloswine",
   pos = {x = 9, y = 6},
-  config = {extra = {mult = 10,money = 6,odds = 2,scored = 0,}, evo_rqmt = 15},
+  config = {extra = {mult = 10,money = 6,num = 1, dem = 2,scored = 0,}, evo_rqmt = 15},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
-    return {vars = {center.ability.extra.mult, center.ability.extra.money, ''..(G.GAME and G.GAME.probabilities.normal or 1), center.ability.extra.odds, 
-                    math.max(0, self.config.evo_rqmt - center.ability.extra.scored)}}
+    local num, dem = SMODS.get_probability_vars(center, center.ability.extra.num, center.ability.extra.dem, 'piloswine')
+    return {vars = {center.ability.extra.mult, center.ability.extra.money, num, dem, math.max(0, self.config.evo_rqmt - center.ability.extra.scored)}}
   end,
   rarity = 3,
   cost = 8,
@@ -648,7 +629,7 @@ local piloswine={
     return scaling_evo(self, card, context, "j_poke_mamoswine", card.ability.extra.scored, self.config.evo_rqmt)
   end,
   calc_dollar_bonus = function(self, card)
-    if pseudorandom('piloswine') < G.GAME.probabilities.normal/card.ability.extra.odds then
+    if SMODS.pseudorandom_probability(card, 'piloswine', card.ability.extra.num, card.ability.extra.dem, 'piloswine') then
       return ease_poke_dollars(card, "2piloswine", card.ability.extra.money, true)
     end
   end,
@@ -864,9 +845,9 @@ local mantine={
   config = {extra = {chips = 0, chip_mod = 4,}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
-    info_queue[#info_queue+1] = {set = 'Other', key = 'designed_by', vars = {"FlamingRok"}}
     return {vars = {center.ability.extra.chips, center.ability.extra.chip_mod,}}
   end,
+  designer = "FlamingRok",
   rarity = 3,
   cost = 8,
   enhancement_gate = "m_gold",
@@ -911,33 +892,26 @@ local mantine={
 local skarmory = {
   name = "skarmory", 
   pos = {x = 5, y = 7},
-  config = {extra = {hazard_ratio = 10, Xmult_mod = 0.40}},
+  config = {extra = {hazards = 4, Xmult_mod = 0.50}},
   loc_vars = function(self, info_queue, card)
     type_tooltip(self, info_queue, card)
     -- just to shorten function
     local abbr = card.ability.extra
-    info_queue[#info_queue+1] = {set = 'Other', key = 'poke_hazards'}
+    info_queue[#info_queue+1] = {set = 'Other', key = 'poke_hazards', vars = {abbr.hazards}}
     info_queue[#info_queue+1] = G.P_CENTERS.m_poke_hazard
-
-    local to_add = math.floor(52 / abbr.hazard_ratio)
-    if G.playing_cards then
-      local count = #G.playing_cards
-      for _, v in pairs(G.playing_cards) do
-        if SMODS.has_enhancement(v, "m_poke_hazard") then
-          count = count - 1
-        end
-      end
-      to_add = math.floor(count / abbr.hazard_ratio)
+    if pokermon_config.detailed_tooltips then
+      info_queue[#info_queue+1] = G.P_CENTERS.m_steel
     end
+
     local hazard_count = 0
     if G.hand and G.hand.cards and #G.hand.cards > 0 then
       for i=1, #G.hand.cards do
-        if SMODS.has_enhancement(G.hand.cards[i], "m_poke_hazard") then
+        if SMODS.has_enhancement(G.hand.cards[i], "m_poke_hazard") or SMODS.has_enhancement(G.hand.cards[i], "m_steel") then
           hazard_count = hazard_count + 1
         end
       end 
     end
-    return {vars = {to_add, abbr.hazard_ratio, abbr.Xmult_mod, 1 + abbr.Xmult_mod * hazard_count}}
+    return {vars = {abbr.hazards, abbr.Xmult_mod, 1 + abbr.Xmult_mod * hazard_count}}
   end,
   rarity = 3,
   cost = 7,
@@ -949,14 +923,14 @@ local skarmory = {
   blueprint_compat = true,
   calculate = function(self, card, context)
     if context.setting_blind then
-      poke_add_hazards(card.ability.extra.hazard_ratio)
+      poke_set_hazards(card.ability.extra.hazards)
     end
     if context.cardarea == G.jokers and context.scoring_hand then
       if context.joker_main then
         local hazard_count = 0
         if G.hand and G.hand.cards and #G.hand.cards > 0 then
           for i=1, #G.hand.cards do
-            if SMODS.has_enhancement(G.hand.cards[i], "m_poke_hazard") then
+            if SMODS.has_enhancement(G.hand.cards[i], "m_poke_hazard") or SMODS.has_enhancement(G.hand.cards[i], "m_steel")  then
               hazard_count = hazard_count + 1
             end
           end 
@@ -1110,18 +1084,6 @@ local mega_houndoom={
   pos = {x = 8, y = 2},
   soul_pos = {x = 9, y = 2},
   config = {extra = {Xmult = 1, Xmult_mod = 2, oXmult = 1}},
-  loc_txt = {
-    name = "Mega Houndoom",
-    text = {
-      "Discarding also discards",
-      "{C:attention}all{} cards {C:attention}held{} in hand",
-      "{br:2}ERROR - CONTACT STEAK",
-      "Gains {X:mult,C:white} X#2# {} Mult whenever",
-      "cards are discarded",
-      "resets at end of round",
-      "{C:inactive}(Currently {X:mult,C:white} X#1# {C:inactive} Mult)"
-    }
-  },
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     return {vars = {center.ability.extra.Xmult, center.ability.extra.Xmult_mod}}
@@ -1129,7 +1091,7 @@ local mega_houndoom={
   rarity = "poke_mega",
   cost = 12,
   stage = "Mega",
-  ptype = "Fire",
+  ptype = "Dark",
   atlas = "Megas",
   gen = 2,
   perishable_compat = true,
@@ -1811,31 +1773,6 @@ local magby={
   end
 }
 
-return {name = "Pokemon Jokers 211-240", 
-        init = function()
-            local game_init_object = Game.init_game_object;
-            function Game:init_game_object()
-                local game = game_init_object(self)
-                game.current_round.sneaselcard = {rank = 'Ace'}
-                return game
-            end
-            
-            local rmr = reset_mail_rank;
-            function reset_mail_rank()
-              rmr()
-              G.GAME.current_round.sneaselcard = {rank = 'Ace'}
-              local valid_sneasel_cards = {}
-              for k, v in ipairs(G.playing_cards) do
-                if v.ability.effect ~= 'Stone Card' then
-                  valid_sneasel_cards[#valid_sneasel_cards+1] = v
-                end
-              end
-              if valid_sneasel_cards[1] then
-                local sneasel_card = pseudorandom_element(valid_sneasel_cards, pseudoseed('sneasel'..G.GAME.round_resets.ante))
-                G.GAME.current_round.sneaselcard.rank = sneasel_card.base.value
-                G.GAME.current_round.sneaselcard.id = sneasel_card.base.id
-              end
-            end
-        end,
+return {name = "Pokemon Jokers 211-240",
         list = {qwilfish, scizor, mega_scizor, shuckle, heracross, mega_heracross, sneasel, teddiursa, ursaring, slugma, magcargo, swinub, piloswine, corsola, remoraid, octillery, delibird, mantine, skarmory, houndour, houndoom, mega_houndoom, kingdra, phanpy, donphan, porygon2, stantler, smeargle, tyrogue, hitmontop, smoochum, elekid, magby},
 }

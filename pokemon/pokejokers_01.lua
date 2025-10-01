@@ -17,6 +17,7 @@ local bulbasaur={
   ptype = "Grass",
   atlas = "Pokedex1",
   gen = 1,
+  starter = true,
   blueprint_compat = true,
   calculate = function(self, card, context)
     if context.individual and context.cardarea == G.hand and context.other_card:get_id() == G.GAME.current_round.bulb1card.id then
@@ -210,6 +211,7 @@ local charmander={
   ptype = "Fire",
   atlas = "Pokedex1",
   gen = 1,
+  starter = true,
   perishable_compat = false,
   blueprint_compat = true,
   calculate = function(self, card, context)
@@ -423,6 +425,7 @@ local squirtle={
   ptype = "Water",
   atlas = "Pokedex1",
   gen = 1,
+  starter = true,
   perishable_compat = false,
   blueprint_compat = true,
   calculate = function(self, card, context)
@@ -1235,7 +1238,7 @@ local pikachu={
     end
     return {vars = {center.ability.extra.money}}
   end,
-  rarity = 2, 
+  rarity = 1, 
   cost = 6,
   item_req = "thunderstone",
   stage = "Basic", 
@@ -1312,21 +1315,20 @@ local sandshrew={
       local card_to_copy = nil
       for k, v in ipairs(context.removed) do
         if v.shattered and card.ability.extra.glass_restored <= 0 then
-          card_to_copy = v
 
           G.E_MANAGER:add_event(Event({
               func = function()
-                  local copy = copy_card(card_to_copy, nil, nil, G.playing_card)
+                  local copy = copy_card(v, nil, nil, G.playing_card)
                   copy:add_to_deck()
                   G.deck.config.card_limit = G.deck.config.card_limit + 1
                   table.insert(G.playing_cards, copy)
                   G.hand:emplace(copy)
                   copy.states.visible = nil
                   copy:start_materialize()
+                  playing_card_joker_effects({copy})
                   return true
               end
           }))
-          playing_card_joker_effects({copy})
           
           card.ability.extra.glass_restored = card.ability.extra.glass_restored + 1
         end
@@ -1393,21 +1395,19 @@ local sandslash={
       local card_to_copy = nil
       for k, v in ipairs(context.removed) do
         if v.shattered and card.ability.extra.glass_restored < card.ability.extra.glass_limit then
-          card_to_copy = v
-
           G.E_MANAGER:add_event(Event({
               func = function()
-                  local copy = copy_card(card_to_copy, nil, nil, G.playing_card)
+                  local copy = copy_card(v, nil, nil, G.playing_card)
                   copy:add_to_deck()
                   G.deck.config.card_limit = G.deck.config.card_limit + 1
                   table.insert(G.playing_cards, copy)
                   G.hand:emplace(copy)
                   copy.states.visible = nil
                   copy:start_materialize()
+                  playing_card_joker_effects({copy})
                   return true
               end
           }))
-          playing_card_joker_effects({copy})
           
           card.ability.extra.glass_restored = card.ability.extra.glass_restored + 1
         end
@@ -1525,31 +1525,5 @@ local nidorina={
 }
 
 return {name = "Pokemon Jokers 01-30",
-        init = function()
-            local game_init_object = Game.init_game_object;
-            function Game:init_game_object()
-                local game = game_init_object(self)
-                game.current_round.bulb1card = {rank = 'Ace'}
-                return game
-            end
-            
-            local rmr = reset_mail_rank;
-            function reset_mail_rank()
-              rmr()
-              G.GAME.current_round.bulb1card = {rank = 'Ace'}
-              local valid_bulb_cards = {}
-              for k, v in ipairs(G.playing_cards) do
-                if v.ability.effect ~= 'Stone Card' and not SMODS.has_no_rank(v) then
-                  valid_bulb_cards[#valid_bulb_cards+1] = v
-                end
-              end
-              if valid_bulb_cards[1] then
-                local bulb_card = pseudorandom_element(valid_bulb_cards, pseudoseed('bulb'..G.GAME.round_resets.ante))
-                G.GAME.current_round.bulb1card.rank = bulb_card.base.value
-                G.GAME.current_round.bulb1card.id = bulb_card.base.id
-              end
-            end
-              
-        end,
         list = { bulbasaur, ivysaur, venusaur, mega_venusaur, charmander, charmeleon, charizard, mega_charizard_x, mega_charizard_y, squirtle, wartortle, blastoise, mega_blastoise, caterpie, metapod, butterfree, weedle, kakuna, beedrill, mega_beedrill, pidgey, pidgeotto, pidgeot, mega_pidgeot, rattata, raticate, spearow, fearow, ekans, arbok, pikachu, raichu, sandshrew, sandslash, nidoranf, nidorina, },
 }

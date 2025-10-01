@@ -6,6 +6,7 @@ if SMODS.current_mod then
 end
 
 pokermon = {}
+SMODS.current_mod.optional_features = { quantum_enhancements = true }
 
 --Undiscovered sprites, mostly for testing some localization things since the game crashes without them
 --This can probably have a better integration or just be removed altogether since everything is discovered anyways
@@ -149,6 +150,14 @@ if load_error then
   sendDebugMessage ("The error is: "..load_error)
 else
   UI()
+end
+
+--Load quip file
+local quip, load_error = SMODS.load_file("pokequips.lua")
+if load_error then
+  sendDebugMessage ("The error is: "..load_error)
+else
+  quip()
 end
 
 --Load pokemon file
@@ -521,6 +530,14 @@ function get_flush(hand)
     return ret
   end
 end
+
+function SMODS.current_mod.reset_game_globals(run_start)
+  reset_bulba_rank()
+  reset_espeon_card()
+  reset_gligar_suit()
+  reset_sneasel_rank()
+end
+
 --Tutorial WIP
 --[[
 local gu = Game.update

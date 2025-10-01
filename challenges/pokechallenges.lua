@@ -62,6 +62,7 @@ local nuzlocke = {
             {id = 'tag_poke_shiny_tag'},
             {id = 'tag_poke_stage_one_tag'},
             {id = 'tag_poke_safari_tag'},
+            {id = 'tag_poke_starter_tag'},
         },
         banned_other = {
             {id = 'bl_final_leaf', type = 'blind'}
@@ -178,7 +179,8 @@ local parenthood = {
             {id = 'tag_top_up'},
             {id = 'tag_poke_shiny_tag'},
             {id = 'tag_poke_stage_one_tag'},
-            {id = 'tag_poke_safari_tag'}
+            {id = 'tag_poke_safari_tag'},
+            {id = 'tag_poke_starter_tag'},
         },
         banned_other = {
             {id = 'bl_final_heart', type = 'blind'},
@@ -285,6 +287,7 @@ local lonesome = {
             {id = 'tag_poke_shiny_tag'},
             {id = 'tag_poke_stage_one_tag'},
             {id = 'tag_poke_safari_tag'},
+            {id = 'tag_poke_starter_tag'},
         },
         banned_other = {
             { id = 'bl_final_heart', type = 'blind' },
@@ -294,10 +297,31 @@ local lonesome = {
     }
 }
 
-
+local randomizer = {
+    object_type = "Challenge",
+    key = "randomizer",
+    rules = {
+        custom = {
+            { id = 'apply_randomizer' },
+        },
+    },
+    jokers = {
+    },
+    restrictions = {
+        banned_cards = {
+        },
+        banned_tags = {
+        },
+        banned_other = {
+        },
+    },
+    deck = {
+      type = 'Challenge Deck',
+    },
+}
 
 
 
 return {name = "Challenges", 
-        list = {nuzlocke, goodasgold, parenthood, littlecup, hammertime, lonesome}
+        list = {nuzlocke, goodasgold, parenthood, littlecup, hammertime, lonesome, randomizer}
 }

@@ -2,13 +2,14 @@ local jd_def = JokerDisplay.Definitions
 
 
 -- Pokedex
+--[[
 jd_def["j_poke_pokedex"] = {
     text = {
         { text = "+" },
         { ref_table = "card.ability.extra", ref_value = "mult", retrigger_type = "mult" }
     },
     text_config = { colour = G.C.MULT },
-}
+}]]--
 
 -- Everstone 
 jd_def["j_poke_everstone"] = {
@@ -52,7 +53,8 @@ jd_def["j_poke_tall_grass"] = {
     },
     extra_config = { colour = G.C.GREEN, scale = 0.3 },
     calc_function = function(card)
-        card.joker_display_values.odds = localize { type = 'variable', key = "jdis_odds", vars = { (G.GAME and G.GAME.probabilities.normal or 1), card.ability.extra.odds } }
+        local num, dem = SMODS.get_probability_vars(card, card.ability.extra.num, card.ability.extra.dem, 'tall_grass')
+        card.joker_display_values.odds = localize { type = 'variable', key = "jdis_odds", vars = { num, dem } }
     end
 }
 

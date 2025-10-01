@@ -60,7 +60,9 @@ local mega_ampharos={
         G.GAME.round_resets.temp_handsize = (G.GAME.round_resets.temp_handsize or 0) + increase
       end
       ease_discard(-G.GAME.current_round.discards_left, nil, true)
-      ease_hands_played(-G.GAME.round_resets.hands + 1)
+      if G.GAME.blind.name ~= "The Needle" then
+        ease_hands_played(-G.GAME.current_round.hands_left + 1)
+      end
     end
     if context.joker_main and card.ability.extra.Xmult > 0 and card.ability.extra.Xmult ~= 1  then
       return {
@@ -104,7 +106,7 @@ local bellossom={
       local odds = {}
       for k, v in ipairs(context.scoring_hand) do
           local upgrade = pseudorandom(pseudoseed('bellossom'))
-          if (v:get_id() == 3 or v:get_id() == 5 or v:get_id() == 7 or v:get_id() == 9 or v:get_id() == 14) and upgrade > .50 and not v.edition then
+          if poke_is_odd(v) and upgrade > .50 and not v.edition then
               odds[#odds+1] = v
               if v.ability.name == 'Wild Card' and not v.edition then
                 local edition = poll_edition('aura', nil, true, true)
@@ -135,11 +137,7 @@ local bellossom={
       end
     end
     if context.individual and context.cardarea == G.play and not context.other_card.debuff then
-      if context.other_card:get_id() == 3 or 
-         context.other_card:get_id() == 5 or 
-         context.other_card:get_id() == 7 or 
-         context.other_card:get_id() == 9 or 
-         context.other_card:get_id() == 14 then
+      if poke_is_odd(context.other_card) then
           if context.other_card.bellossom_score then
             return {
               mult = card.ability.extra.mult,
@@ -324,8 +322,8 @@ local politoed={
   config = {extra = {mult = 7, suits = {"Spades", "Hearts", "Clubs", "Diamonds"}, indice = 1,}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
-    return {vars = {center.ability.extra.mult, localize(center.ability.extra.suits[center.ability.extra.indice],'suits_singular'),  
-                    colours = {G.C.SUITS[center.ability.extra.suits[center.ability.extra.indice]]}, localize("Spades", 'suits_plural'), localize("Hearts", 'suits_plural'), 
+    return {vars = {center.ability.extra.mult, localize(G.GAME.poke_poli_suit or "Spades",'suits_singular'),  
+                    colours = {G.C.SUITS[G.GAME.poke_poli_suit or "Spades"]}, localize("Spades", 'suits_plural'), localize("Hearts", 'suits_plural'), 
                     localize("Clubs", 'suits_plural'), localize("Diamonds", 'suits_plural'), #find_pokemon_type("Water")}}
   end,
   rarity = "poke_safari", 
@@ -339,16 +337,16 @@ local politoed={
     if context.cardarea == G.jokers and context.scoring_hand then
       if context.joker_main then
         if not context.blueprint then
-          if card.ability.extra.indice == 4 then
-            card.ability.extra.indice = 1
-          else
-            card.ability.extra.indice = card.ability.extra.indice + 1
-          end
+          poke_change_poli_suit()
+          G.GAME.poke_poli_suit_change_triggered = true
         end
+      end
+      if context.after and G.GAME.poke_poli_suit_change_triggered then
+        G.GAME.poke_poli_suit_change_triggered = false
       end
     end
     if context.individual and not context.end_of_round and context.cardarea == G.play and not context.other_card.debuff then
-      local scoring_suit = card.ability.extra.suits[card.ability.extra.indice]
+      local scoring_suit = G.GAME.poke_poli_suit or "Spades"
       if context.other_card:is_suit(scoring_suit) then
         return {
           message = localize{type = 'variable', key = 'a_mult', vars = {card.ability.extra.mult}}, 
@@ -359,7 +357,7 @@ local politoed={
       end
     end
     if context.repetition and not context.end_of_round and context.cardarea == G.play then
-      local scoring_suit = card.ability.extra.suits[card.ability.extra.indice]
+      local scoring_suit = G.GAME.poke_poli_suit or "Spades"
       if context.other_card:is_suit(scoring_suit) then
         local total = #find_pokemon_type("Water")
         local cards = #context.scoring_hand
@@ -628,11 +626,12 @@ local sunflora={
 local yanma={
   name = "yanma",
   pos = {x = 1, y = 4},
-  config = {extra = {mult = 3,chips = 6, mult2 = 6, chips2 = 12, odds = 3, scored = 0}, evo_rqmt = 36},
+  config = {extra = {mult = 3,chips = 6, mult2 = 6, chips2 = 12, num = 1, dem = 3, scored = 0}, evo_rqmt = 36},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
+    local num, dem = SMODS.get_probability_vars(center, center.ability.extra.num, center.ability.extra.dem, 'yanma')
     return {vars = {center.ability.extra.mult, center.ability.extra.chips, center.ability.extra.mult2, center.ability.extra.chips2, 
-                    ''..(G.GAME and G.GAME.probabilities.normal or 1), center.ability.extra.odds, math.max(0, self.config.evo_rqmt - center.ability.extra.scored)}}
+                    num, dem, math.max(0, self.config.evo_rqmt - center.ability.extra.scored)}}
   end,
   rarity = 1,
   cost = 4,
@@ -651,7 +650,7 @@ local yanma={
         end
         local Mult = card.ability.extra.mult
         local Chips = card.ability.extra.chips
-        if pseudorandom('yanma') < G.GAME.probabilities.normal/card.ability.extra.odds then
+        if SMODS.pseudorandom_probability(card, 'yanma', card.ability.extra.num, card.ability.extra.dem, 'yanma') then
           Mult = card.ability.extra.mult2
           Chips = card.ability.extra.chips2
         end
@@ -758,8 +757,8 @@ local espeon={
   config = {extra = {retriggers = 1, Xmult_multi = 1.2}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
-    return {vars = {center.ability.extra.retriggers, center.ability.extra.Xmult_multi, localize(G.GAME.current_round.espeon_rank or "2", 'ranks'),
-                    localize(G.GAME.current_round.espeon_suit or "Clubs", 'suits_singular'), colours = {G.C.SUITS[G.GAME.current_round.espeon_suit or "Clubs"]}}}
+    return {vars = {center.ability.extra.retriggers, center.ability.extra.Xmult_multi, localize(G.GAME.current_round.espeon_rank or "Ace", 'ranks'),
+                    localize(G.GAME.current_round.espeon_suit or "Spades", 'suits_singular'), colours = {G.C.SUITS[G.GAME.current_round.espeon_suit or "Spades"]}}}
   end,
   rarity = "poke_safari", 
   cost = 7, 
@@ -769,36 +768,6 @@ local espeon={
   gen = 2,
   blueprint_compat = true,
   calculate = function(self, card, context)
-    if context.reroll_shop and not context.blueprint then
-      if not G.GAME.current_round.espeon_triggered then
-        local rank_ids = {}
-        if G.playing_cards then
-          for k, v in ipairs(G.playing_cards) do
-            if v.ability.effect ~= 'Stone Card' then
-              rank_ids[#rank_ids+1] = v
-            end
-          end
-        end
-        if rank_ids[1] then 
-          local rank_id = pseudorandom_element(rank_ids, pseudoseed('espeon'))
-          G.GAME.current_round.espeon_rank = rank_id.base.value
-          G.GAME.current_round.espeon_id = rank_id.base.id
-        end
-        local suits = {'Spades','Hearts','Diamonds','Clubs'}
-        G.GAME.current_round.espeon_suit = pseudorandom_element(suits, pseudoseed('espeon'..G.GAME.round))
-
-        G.GAME.current_round.espeon_triggered = true
-        G.E_MANAGER:add_event(Event({
-          trigger = 'immediate',
-          func = function()
-            G.GAME.current_round.espeon_triggered = false
-            return true
-          end
-        }))
-      end
-      card:juice_up()
-      card_eval_status_text(card, 'extra', nil, nil, nil, {message = localize(G.GAME.current_round.espeon_rank or "2", 'ranks').."s and "..localize(G.GAME.current_round.espeon_suit, 'suits_plural')})
-    end
     if context.individual and context.cardarea == G.play and not context.end_of_round and context.other_card:is_suit(G.GAME.current_round.espeon_suit) then
       return {
         x_mult = card.ability.extra.Xmult_multi,
@@ -813,40 +782,15 @@ local espeon={
       }
     end
   end,
-  set_ability = function(self, card, initial, delay_sprites)
-    if initial and not next(SMODS.find_card("j_poke_espeon")) then
-      local rank_ids = {}
-      if G.playing_cards then
-        for k, v in ipairs(G.playing_cards) do
-          if v.ability.effect ~= 'Stone Card' then
-            rank_ids[#rank_ids+1] = v
-          end
-        end
-      end
-      if rank_ids[1] then
-          local rank_id = pseudorandom_element(rank_ids, pseudoseed('espeon'))
-            G.GAME.current_round.espeon_rank = rank_id.base.value
-            G.GAME.current_round.espeon_id = rank_id.base.id
-      end
-      
-      local suits = {'Spades','Hearts','Diamonds','Clubs'}
-      G.GAME.current_round.espeon_suit = pseudorandom_element(suits, pseudoseed('espeon'))
-    end
- end
 }
 -- Umbreon 197
 local umbreon={
   name = "umbreon", 
   pos = {x = 5, y = 4},
-  config = {extra = {hand_played = "High Card", decrease_goal = 3, decreases = 0}},
+  config = {extra = {hand_played = "High Card"}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
-    if pokermon_config.detailed_tooltips then
-      info_queue[#info_queue+1] = {key = 'tag_orbital', set = 'Tag', specific_vars = {"Random Hand", 3}}
-      info_queue[#info_queue+1] = {key = 'tag_negative', set = 'Tag'}
-    end
-    return {vars = {center.ability.extra.hand_played and localize(center.ability.extra.hand_played, 'poker_hands') or localize('poke_none'), 
-                    center.ability.extra.decrease_goal, center.ability.extra.decreases}}
+    return {vars = {center.ability.extra.hand_played and localize(center.ability.extra.hand_played, 'poker_hands') or localize('poke_none'),}}
   end,
   rarity = "poke_safari", 
   cost = 7, 
@@ -856,7 +800,7 @@ local umbreon={
   gen = 2,
   blueprint_compat = false,
   calculate = function(self, card, context)
-    if context.reroll_shop and not context.blueprint then
+     if context.end_of_round and not context.individual and not context.repetition and not context.blueprint then
       --cycle hand_name
       local hands = {"High Card", "Pair", "Two Pair", "Three of a Kind", "Straight", "Flush", "Full House", "Four of a Kind", "Straight Flush", "Five of a Kind", "Flush House", "Flush Five"}
       local visible_hands = {}
@@ -876,51 +820,35 @@ local umbreon={
           break
         end
       end
-      card_eval_status_text(card, 'extra', nil, nil, nil, {message = card.ability.extra.hand_played})
     end
-    if context.cardarea == G.jokers and context.scoring_hand and context.scoring_name == card.ability.extra.hand_played and not context.blueprint then
+    if context.pre_discard and not context.blueprint and not context.hook then
+      local text = G.FUNCS.get_poker_hand_info(G.hand.highlighted)
       local can_level = nil
       if (SMODS.Mods["Talisman"] or {}).can_load then
         can_level = to_big(G.GAME.hands[card.ability.extra.hand_played].level) > to_big(1)
       else
         can_level = G.GAME.hands[card.ability.extra.hand_played].level > 1
       end
-      if context.before and can_level then
+      if can_level and G.GAME.hands[card.ability.extra.hand_played] == G.GAME.hands[text] then
         level_up_hand(card, card.ability.extra.hand_played, nil, -1)
-        if card.ability.extra.decreases < card.ability.extra.decrease_goal - 1 then
-          card.ability.extra.decreases = card.ability.extra.decreases + 1
-          card_eval_status_text(card, 'extra', nil, nil, nil, {message = card.ability.extra.decreases.."/"..card.ability.extra.decrease_goal})
-        else
-          if pseudorandom('umbreon') > .5 then
-            G.E_MANAGER:add_event(Event({
-              func = (function()
-                  add_tag(Tag('tag_negative'))
-                  play_sound('generic1', 0.9 + math.random()*0.1, 0.8)
-                  play_sound('holo1', 1.2 + math.random()*0.1, 0.4)
-                  return true
-              end)
-            }))
-          else
-            local tag = Tag('tag_orbital')
-            local _poker_hands = {}
-            for k, v in pairs(G.GAME.hands) do
-              if v.visible then
-                _poker_hands[#_poker_hands + 1] = k
-              end
+        local highest_played = 0
+        local highest_hands = {}
+        for handname, values in pairs(G.GAME.hands) do
+          if SMODS.is_poker_hand_visible(handname) then
+            if values.played > highest_played then
+              highest_hands = {}
+              highest_hands[#highest_hands + 1] = handname
+              highest_played = values.played
+            elseif values.played == highest_played then
+              highest_hands[#highest_hands + 1] = handname
             end
-            tag.ability.orbital_hand = pseudorandom_element(_poker_hands, pseudoseed('umbreon'))
-            G.E_MANAGER:add_event(Event({
-              func = (function()
-                  add_tag(tag)
-                  play_sound('generic1', 0.9 + math.random()*0.1, 0.8)
-                  play_sound('holo1', 1.2 + math.random()*0.1, 0.4)
-                  return true
-              end)
-            }))
           end
-          card.ability.extra.decreases = 0
-          card_eval_status_text(card, 'extra', nil, nil, nil, {message = card.ability.extra.decrease_goal.."/"..card.ability.extra.decrease_goal})
         end
+        local text =  pseudorandom_element(highest_hands, pseudoseed('umbreon'))
+        return {
+          level_up = true,
+          level_up_hand = text
+        }
       end
     end
   end,
@@ -1177,15 +1105,13 @@ local unown={
     end
   end,
   set_sprites = function(self, card, front)
-    card.children.center:set_sprite_pos({x = 9, y = 4})
+    card.children.center:set_sprite_pos({x = 0, y = 0})
     if card.ability and card.ability.extra and card.ability.extra.form then
-      local forms = {A = {x = 0, y = 0}, B = {x = 1, y = 0}, C = {x = 2, y = 0}, D = {x = 3, y = 0}, E = {x = 4, y = 0}, F = {x = 5, y = 0}, G = {x = 6, y = 0},
-                     H = {x = 0, y = 1}, I = {x = 1, y = 1}, J = {x = 2, y = 1}, K = {x = 3, y = 1}, L = {x = 4, y = 1}, M = {x = 5, y = 1}, N = {x = 6, y = 1},
-                     O = {x = 0, y = 2}, P = {x = 1, y = 2}, Q = {x = 2, y = 2}, R = {x = 3, y = 2}, S = {x = 4, y = 2}, T = {x = 5, y = 2}, U = {x = 6, y = 2},
-                     V = {x = 0, y = 3}, W = {x = 1, y = 3}, X = {x = 2, y = 3}, Y = {x = 3, y = 3}, Z = {x = 4, y = 3}, ZEx = {x = 5, y = 3}, ZQu = {x = 6, y = 3}
+      local forms = {A = {x = 1, y = 0}, B = {x = 2, y = 0}, C = {x = 3, y = 0}, D = {x = 4, y = 0}, E = {x = 5, y = 0}, F = {x = 6, y = 0}, G = {x = 7, y = 0},
+                     H = {x = 8, y = 0}, I = {x = 9, y = 0}, J = {x = 0, y = 1}, K = {x = 1, y = 1}, L = {x = 2, y = 1}, M = {x = 3, y = 1}, N = {x = 4, y = 1},
+                     O = {x = 5, y = 1}, P = {x = 6, y = 1}, Q = {x = 7, y = 1}, R = {x = 8, y = 1}, S = {x = 9, y = 1}, T = {x = 0, y = 2}, U = {x = 1, y = 2},
+                     V = {x = 2, y = 2}, W = {x = 3, y = 2}, X = {x = 4, y = 2}, Y = {x = 5, y = 2}, Z = {x = 6, y = 2}, ZEx = {x = 7, y = 2}, ZQu = {x = 8, y = 2}
                     }
-      local unown_atlas = (card.edition and card.edition.poke_shiny) and "poke_shiny_unown_dex" or "poke_unown_dex"              
-      card.children.floating_sprite.atlas = G.ASSET_ATLAS[unown_atlas]
       card.children.floating_sprite:set_sprite_pos(forms[card.ability.extra.form])
     end
   end,
@@ -1661,24 +1587,5 @@ local granbull = {
 }
 
 return {name = "Pokemon Jokers 181-210",
-        init = function()
-          local game_init_object = Game.init_game_object;
-          function Game:init_game_object()
-              local game = game_init_object(self)
-              game.current_round.sneaselcard = {rank = 'Ace'}
-              return game
-          end
-          
-          local rac = reset_ancient_card;
-          function reset_ancient_card()
-            rac()
-            local gligar_suits = {}
-            for k, v in ipairs({'Spades','Hearts','Clubs','Diamonds'}) do
-                if v ~= G.GAME.current_round.gligar_suit then gligar_suits[#gligar_suits + 1] = v end
-            end
-            local gligar_card = pseudorandom_element(gligar_suits, pseudoseed('gligar'..G.GAME.round_resets.ante))
-            G.GAME.current_round.gligar_suit = gligar_card
-          end
-        end,
         list = {ampharos, mega_ampharos, bellossom, marill, azumarill, sudowoodo, weird_tree, politoed, hoppip, skiploom, jumpluff, aipom, sunkern, sunflora, yanma, wooper, quagsire, espeon, umbreon, murkrow, slowking, misdreavus, unown, wobbuffet, girafarig, pineco, forretress, dunsparce, gligar, steelix, mega_steelix, snubbull, granbull},
 }

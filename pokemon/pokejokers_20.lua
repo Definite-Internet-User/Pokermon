@@ -2,7 +2,7 @@
 local zoroark = {
   name = "zoroark", 
   pos = { x = 7, y = 5 },
-  soul_pos = { x = 8, y = 12 },
+  soul_pos = { x = 99, y = 99 },
   config = {extra = {hidden_key = nil}},
   rarity = "poke_safari",
   cost = 12,
@@ -46,7 +46,7 @@ local zoroark = {
     end
   end,
   set_ability = function(self, card, initial, delay_sprites)
-    if not type_sticker_applied(card) then
+    if not type_sticker_applied(card) and not poke_is_in_collection(card) and not G.SETTINGS.paused then
       apply_type_sticker(card, "Dark")
     end
     if card.area ~= G.jokers and not poke_is_in_collection(card) and not G.SETTINGS.paused then
@@ -115,9 +115,9 @@ local zoroark = {
           card.children.floating_sprite:set_sprite_pos(self.soul_pos)
         end
       else
-        card.children.center.atlas = G.ASSET_ATLAS[card.edition and card.edition.poke_shiny and "poke_Shinydex5" or "poke_Pokedex5"]
+        card.children.center.atlas = G.ASSET_ATLAS[card.edition and card.edition.poke_shiny and "poke_AtlasJokersBasicNatdexShiny" or "poke_AtlasJokersBasicNatdex"]
         card.children.center:set_sprite_pos(self.pos)
-        card.children.floating_sprite.atlas = G.ASSET_ATLAS[card.edition and card.edition.poke_shiny and "poke_Shinydex5" or "poke_Pokedex5"]
+        card.children.floating_sprite.atlas = G.ASSET_ATLAS[card.edition and card.edition.poke_shiny and "poke_AtlasJokersBasicNatdexShiny" or "poke_AtlasJokersBasicNatdex"]
         card.children.floating_sprite:set_sprite_pos(self.soul_pos)
       end
     elseif poke_is_in_collection(card) and card.children.center.sprite_pos ~= self.pos and card.children.center.atlas.name ~= self.atlas then
@@ -453,14 +453,199 @@ local vanilluxe={
 -- Foongus 590
 -- Amoonguss 591
 -- Frillish 592
+local frillish = {
+	name = "frillish", 
+	pos = {x = 0, y = 7},
+	config = {extra = {chips = 0, chip_mod = 2}, evo_rqmt = 60},
+	loc_vars = function(self, info_queue, center)
+		type_tooltip(self, info_queue, center)
+		return {vars = {center.ability.extra.chips, center.ability.extra.chip_mod, self.config.evo_rqmt}}
+	end,
+  designer = "Hwang2760",
+	rarity = 2,
+	cost = 7,
+	stage = "Basic", 
+	ptype = "Water",
+	atlas = "Pokedex5",
+	gen = 5,
+	blueprint_compat = true,
+	perishable_compat = false,
+	calculate = function(self, card, context)
+		if context.cardarea == G.jokers then
+			if context.discard and not context.blueprint then
+				if context.other_card:is_face() then
+					card.ability.extra.chips = card.ability.extra.chips + card.ability.extra.chip_mod
+					return {
+						message = localize('k_upgrade_ex'),
+						colour = G.C.CHIPS,
+						delay = 0.45,
+					}
+				end
+			end
+
+			if context.scoring_hand and context.joker_main and card.ability.extra.chips > 0 then
+				return {
+					message = localize{type = 'variable', key = 'a_chips', vars = {card.ability.extra.chips}}, 
+					colour = G.C.CHIPS,
+					chip_mod = card.ability.extra.chips
+				}
+			end
+		end
+		return scaling_evo(self, card, context, "j_poke_jellicent", card.ability.extra.chips, self.config.evo_rqmt)
+	end,
+}
+
 -- Jellicent 593
+local jellicent = {
+	name = "jellicent", 
+	pos = {x = 1, y = 7},
+	config = {extra = {chips = 60, chip_mod = 4}},
+	loc_vars = function(self, info_queue, center)
+		type_tooltip(self, info_queue, center)
+		return {vars = {center.ability.extra.chips, center.ability.extra.chip_mod}}
+	end,
+  designer = "Hwang2760",
+	rarity = "poke_safari", 
+	cost = 10,
+	stage = "One", 
+	ptype = "Water",
+	atlas = "Pokedex5",
+	gen = 5,
+	blueprint_compat = true,
+	perishable_compat = false,
+	calculate = function(self, card, context)
+		if context.cardarea == G.jokers then
+			if context.discard and not context.blueprint then
+				if context.other_card:is_face() then
+					local card_id = context.other_card:get_id() 
+
+					if card_id == 12 or card_id == 13 then
+						card.ability.extra.chips = card.ability.extra.chips + (card.ability.extra.chip_mod * 2)
+					else
+						card.ability.extra.chips = card.ability.extra.chips + card.ability.extra.chip_mod
+					end
+
+					return {
+						message = localize('k_upgrade_ex'),
+						colour = G.C.CHIPS,
+						delay = 0.45,
+					}
+				end
+			end
+
+			if context.scoring_hand and context.joker_main then
+				return {
+					message = localize{type = 'variable', key = 'a_chips', vars = {card.ability.extra.chips}}, 
+					colour = G.C.CHIPS,
+					chip_mod = card.ability.extra.chips
+				}
+			end
+		end
+	end,
+}
 -- Alomomola 594
 -- Joltik 595
 -- Galvantula 596
 -- Ferroseed 597
+local ferroseed={
+  name = "ferroseed",
+  pos = {x = 5, y = 7},
+  config = {extra = {rounds = 5}},
+  loc_txt = {
+    name = "Ferroseed",
+    text = {
+      "{C:attention}Wild{} cards and {C:attention}Hazard{} cards",
+      "are also {C:attention}Steel{} cards",
+      "{C:inactive,s:0.8}(Evolves after {C:attention,s:0.8}#1#{C:inactive,s:0.8} rounds)",
+    }
+  },
+  loc_vars = function(self, info_queue, center)
+    type_tooltip(self, info_queue, center)
+    if pokermon_config.detailed_tooltips then
+      info_queue[#info_queue+1] = G.P_CENTERS.m_wild
+      info_queue[#info_queue+1] = G.P_CENTERS.m_steel
+      info_queue[#info_queue+1] = G.P_CENTERS.m_poke_hazard
+    end
+    return {vars = {center.ability.extra.rounds}}
+  end,
+  rarity = 2,
+  cost = 6,
+  gen = 5,
+  stage = "Basic",
+  ptype = "Grass",
+  atlas = "Pokedex5",
+  perishable_compat = true,
+  blueprint_compat = true,
+  eternal_compat = true,
+  calculate = function(self, card, context)
+    if context.check_enhancement then
+      if context.other_card.config.center.key == "m_wild" or context.other_card.config.center.key == "m_poke_hazard" then
+          return {m_steel = true}
+      end
+    end
+    return level_evo(self, card, context, "j_poke_ferrothorn")
+  end,
+}
 -- Ferrothorn 598
+local ferrothorn={
+  name = "ferrothorn",
+  pos = {x = 6, y = 7},
+  config = {extra = {retriggers = 1}},
+  loc_txt = {
+    name = "Ferrothorn",
+    text = {
+      "{C:attention}Wild{} cards and {C:attention}Hazard{} cards",
+      "are also {C:attention}Steel{} cards",
+      "{br:2}ERROR - CONTACT STEAK",
+      "If played hand contains",
+      "a {C:attention}Flush{}, retrigger all",
+      "{C:attention}Steel{} cards {C:attention}held{} in hand",
+    }
+  },
+  loc_vars = function(self, info_queue, center)
+    type_tooltip(self, info_queue, center)
+    if pokermon_config.detailed_tooltips then
+      info_queue[#info_queue+1] = G.P_CENTERS.m_wild
+      info_queue[#info_queue+1] = G.P_CENTERS.m_steel
+      info_queue[#info_queue+1] = G.P_CENTERS.m_poke_hazard
+    end
+    return {vars = {}}
+  end,
+  rarity = "poke_safari",
+  cost = 8,
+  gen = 5,
+  stage = "One",
+  ptype = "Grass",
+  atlas = "Pokedex5",
+  perishable_compat = true,
+  blueprint_compat = true,
+  eternal_compat = true,
+  calculate = function(self, card, context)
+    if context.check_enhancement then
+      if context.other_card.config.center.key == "m_wild" or context.other_card.config.center.key == "m_poke_hazard" then
+          return {m_steel = true}
+      end
+    end
+    if context.cardarea == G.jokers and context.scoring_hand then
+      if context.before and next(context.poker_hands['Flush']) then
+        card.ability.extra.retrigger_hand = true
+      end
+      if context.after and card.ability.extra.retrigger_hand then
+        card.ability.extra.retrigger_hand = nil
+      end
+    end
+    if context.repetition and context.cardarea == G.hand and (next(context.card_effects[1]) or #context.card_effects > 1) and card.ability.extra.retrigger_hand 
+       and SMODS.has_enhancement(context.other_card, 'm_steel') then
+      return {
+        message = localize('k_again_ex'),
+        repetitions = card.ability.extra.retriggers,
+        card = card
+      }
+    end
+  end,
+}
 -- Klink 599
 -- Klang 600
 return {name = "Pokemon Jokers 570-600", 
-        list = {zoroark, gothita, gothorita, gothitelle, vanillite, vanillish, vanilluxe},
+        list = {zoroark, gothita, gothorita, gothitelle, vanillite, vanillish, vanilluxe, frillish, jellicent, ferroseed, ferrothorn},
 }

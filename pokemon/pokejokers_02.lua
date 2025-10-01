@@ -231,7 +231,7 @@ local clefable={
 local vulpix={
   name = "vulpix", 
   pos = {x = 10, y = 2},
-  config = {extra = {odds = 3}},
+  config = {extra = {num = 1, dem = 3}},
   rarity = 1, 
   cost = 4, 
   item_req = "firestone",
@@ -245,12 +245,13 @@ local vulpix={
     if pokermon_config.detailed_tooltips then
       info_queue[#info_queue+1] = G.P_CENTERS.c_poke_firestone
     end
-    return {vars = {''..(G.GAME and G.GAME.probabilities.normal or 1), center.ability.extra.odds}}
+    local num, dem = SMODS.get_probability_vars(center, center.ability.extra.num, center.ability.extra.dem, 'vulpix')
+    return {vars = {num, dem}}
   end,
   calculate = function(self, card, context)
     if context.individual and context.cardarea == G.play then
       if #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit then
-        if (context.other_card:get_id() == 9) and (not context.other_card.debuff) and (pseudorandom('vulpix') < G.GAME.probabilities.normal/card.ability.extra.odds) then
+        if (context.other_card:get_id() == 9) and (not context.other_card.debuff) and SMODS.pseudorandom_probability(card, 'vulpix', card.ability.extra.num, card.ability.extra.dem, 'vulpix') then
           G.GAME.consumeable_buffer = G.GAME.consumeable_buffer + 1
           return {
             extra = {focus = card, message = localize('k_plus_tarot'), colour = G.C.PURPLE, func = function()
@@ -278,7 +279,7 @@ local vulpix={
 local ninetales={
   name = "ninetales", 
   pos = {x = 11, y = 2},
-  config = {extra = {odds = 2}},
+  config = {extra = {num = 1, dem = 2}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     if pokermon_config.detailed_tooltips then
@@ -286,7 +287,8 @@ local ninetales={
       info_queue[#info_queue+1] = { set = 'Spectral', key = 'c_medium'}
       info_queue[#info_queue+1] = {key = 'purple_seal', set = 'Other'}
     end
-    return {vars = {''..(G.GAME and G.GAME.probabilities.normal or 1), center.ability.extra.odds}}
+    local num, dem = SMODS.get_probability_vars(center, center.ability.extra.num, center.ability.extra.dem, 'ninetales')
+    return {vars = {num, dem}}
   end,
   rarity = "poke_safari", 
   cost = 8, 
@@ -298,7 +300,7 @@ local ninetales={
   calculate = function(self, card, context)
     if context.individual and context.cardarea == G.play then
       if #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit then
-        if (context.other_card:get_id() == 9) and (not context.other_card.debuff) and (pseudorandom('ninetails') < G.GAME.probabilities.normal/card.ability.extra.odds) then
+        if (context.other_card:get_id() == 9) and (not context.other_card.debuff) and SMODS.pseudorandom_probability(card, 'ninetales', card.ability.extra.num, card.ability.extra.dem, 'ninetales') then
           G.GAME.consumeable_buffer = G.GAME.consumeable_buffer + 1
           return {
             extra = {focus = card, message = localize('k_plus_tarot'), colour = G.C.PURPLE, func = function()
@@ -547,11 +549,7 @@ local oddish={
   blueprint_compat = true,
   calculate = function(self, card, context)
     if context.individual and context.cardarea == G.play and not context.other_card.debuff then
-      if context.other_card:get_id() == 3 or 
-         context.other_card:get_id() == 5 or 
-         context.other_card:get_id() == 7 or 
-         context.other_card:get_id() == 9 or 
-         context.other_card:get_id() == 14 then
+      if poke_is_odd(context.other_card) then
           local value
           if pseudorandom('oddish') < .50 then
             value = card.ability.extra.mult
@@ -591,11 +589,7 @@ local gloom={
   blueprint_compat = true,
   calculate = function(self, card, context)
     if context.individual and context.cardarea == G.play and not context.other_card.debuff then
-      if context.other_card:get_id() == 3 or 
-         context.other_card:get_id() == 5 or 
-         context.other_card:get_id() == 7 or 
-         context.other_card:get_id() == 9 or 
-         context.other_card:get_id() == 14 then
+      if poke_is_odd(context.other_card) then
           local value
           if pseudorandom('gloom') < .50 then
             value = card.ability.extra.mult
@@ -629,11 +623,7 @@ local vileplume={
   blueprint_compat = true,
   calculate = function(self, card, context)
     if context.individual and context.cardarea == G.play and not context.other_card.debuff then
-      if context.other_card:get_id() == 3 or 
-         context.other_card:get_id() == 5 or 
-         context.other_card:get_id() == 7 or 
-         context.other_card:get_id() == 9 or 
-         context.other_card:get_id() == 14 then
+      if poke_is_odd(context.other_card) then
           if pseudorandom('vileplume') < .50 then
             return { 
               x_mult = card.ability.extra.Xmult_multi,
@@ -748,14 +738,14 @@ local venonat={
   gen = 1,
   blueprint_compat = false,
   calculate = function(self, card, context)
+    if context.mod_probability and not context.blueprint then
+      return 
+      {
+        numerator = context.numerator + card.ability.extra.plus_odds
+      }
+    end
     return level_evo(self, card, context, "j_poke_venomoth")
   end,
-  add_to_deck = function(self, card, from_debuff)
-    G.GAME.probabilities.normal = G.GAME.probabilities.normal + card.ability.extra.plus_odds * math.max(1, (2 ^ #find_joker('Oops! All 6s')))
-  end,
-  remove_from_deck = function(self, card, from_debuff)
-    G.GAME.probabilities.normal = G.GAME.probabilities.normal - card.ability.extra.plus_odds * math.max(1, (2 ^ #find_joker('Oops! All 6s')))
-  end
 }
 -- Venomoth 049
 local venomoth={
@@ -773,12 +763,14 @@ local venomoth={
   atlas = "Pokedex1",
   gen = 1,
   blueprint_compat = false,
-  add_to_deck = function(self, card, from_debuff)
-    G.GAME.probabilities.normal = G.GAME.probabilities.normal + card.ability.extra.plus_odds * math.max(1, (2 ^ #find_joker('Oops! All 6s')))
+  calculate = function(self, card, context)
+    if context.mod_probability and not context.blueprint then
+      return 
+      {
+        numerator = context.numerator + card.ability.extra.plus_odds
+      }
+    end
   end,
-  remove_from_deck = function(self, card, from_debuff)
-    G.GAME.probabilities.normal = G.GAME.probabilities.normal - card.ability.extra.plus_odds * math.max(1, (2 ^ #find_joker('Oops! All 6s')))
-  end
 }
 -- Diglett 050
 local diglett={
@@ -927,10 +919,11 @@ local meowth={
 local persian={
   name = "persian", 
   pos = {x = 0, y = 4}, 
-  config = {extra = {money = 1, money_mod = 2, limit = 1, triggers = 0, odds = 5}},
+  config = {extra = {money = 1, money_mod = 2, limit = 1, triggers = 0, num = 1, dem = 5}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
-		return {vars = {center.ability.extra.money, center.ability.extra.money_mod, ''..(G.GAME and G.GAME.probabilities.normal or 1), center.ability.extra.odds}}
+    local num, dem = SMODS.get_probability_vars(center, center.ability.extra.num, center.ability.extra.dem, 'persian')
+		return {vars = {center.ability.extra.money, center.ability.extra.money_mod, num, dem}}
   end,
   rarity = "poke_safari", 
   cost = 9, 
@@ -952,7 +945,7 @@ local persian={
   end,
   calc_dollar_bonus = function(self, card)
     local payout = card.ability.extra.money
-    if pseudorandom('persian') < G.GAME.probabilities.normal/card.ability.extra.odds then
+    if SMODS.pseudorandom_probability(card, 'persian', card.ability.extra.num, card.ability.extra.dem, 'persian') then
       payout = payout * 2
     end
     return ease_poke_dollars(card, "persian", payout, true)
@@ -1170,11 +1163,11 @@ local arcanine={
 local poliwag={
   name = "poliwag", 
   pos = {x = 7, y = 4},
-  config = {extra = {mult = 4, suits = {"Spades", "Hearts", "Clubs", "Diamonds"}, indice = 1, rounds = 5}},
+  config = {extra = {mult = 4, rounds = 5}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
-    return {vars = {center.ability.extra.mult, center.ability.extra.rounds, localize(center.ability.extra.suits[center.ability.extra.indice],'suits_singular'),  
-                    colours = {G.C.SUITS[center.ability.extra.suits[center.ability.extra.indice]]}, localize("Spades", 'suits_plural'), localize("Hearts", 'suits_plural'), 
+    return {vars = {center.ability.extra.mult, center.ability.extra.rounds, localize(G.GAME.poke_poli_suit or "Spades",'suits_singular'),  
+                    colours = {G.C.SUITS[G.GAME.poke_poli_suit or "Spades"]}, localize("Spades", 'suits_plural'), localize("Hearts", 'suits_plural'), 
                     localize("Clubs", 'suits_plural'), localize("Diamonds", 'suits_plural')}}
   end,
   rarity = 1, 
@@ -1188,16 +1181,16 @@ local poliwag={
     if context.cardarea == G.jokers and context.scoring_hand then
       if context.joker_main then
         if not context.blueprint then
-          if card.ability.extra.indice == 4 then
-            card.ability.extra.indice = 1
-          else
-            card.ability.extra.indice = card.ability.extra.indice + 1
-          end
+          poke_change_poli_suit()
+          G.GAME.poke_poli_suit_change_triggered = true
         end
+      end
+      if context.after and G.GAME.poke_poli_suit_change_triggered then
+        G.GAME.poke_poli_suit_change_triggered = false
       end
     end
     if context.individual and not context.end_of_round and context.cardarea == G.play then
-      local scoring_suit = card.ability.extra.suits[card.ability.extra.indice]
+      local scoring_suit = G.GAME.poke_poli_suit or "Spades"
       if context.other_card:is_suit(scoring_suit) then
         if context.other_card.debuff then
           return {

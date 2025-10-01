@@ -75,7 +75,7 @@ calc_function = function(card)
     if scoring_hand and #scoring_hand > 0 then
         count = #hand - #scoring_hand
     end
-        card.joker_display_values.chips = count * card.ability.extra.chips 
+        card.joker_display_values.chips = count * card.ability.extra.chips
 end
 }
 
@@ -87,9 +87,97 @@ end
 --	Drifloon
 --	Drifblim
 --	Buneary
+jd_def["j_poke_buneary"] = {
+  text = {
+    { text = "+", colour = G.C.MULT },
+    { ref_table = "card.joker_display_values", ref_value = "mult", retrigger_type = "mult", colour = G.C.MULT }
+  },
+  calc_function = function(card)
+    local count = 0
+    local hand = JokerDisplay.current_hand
+    local _, _, scoring_hand = JokerDisplay.evaluate_hand()
+    if scoring_hand and #scoring_hand > 0 then
+      count = #hand - #scoring_hand
+    end
+    card.joker_display_values.mult = card.ability.extra.mult * count
+  end
+}
+
 --	Lopunny
+jd_def["j_poke_lopunny"] = {
+  text = {
+    { text = "+", colour = G.C.MULT },
+    { ref_table = "card.joker_display_values", ref_value = "mult", retrigger_type = "mult", colour = G.C.MULT },
+    { text = " "},
+    {
+      border_nodes = {
+        { text = "X" },
+        { ref_table = "card.joker_display_values", ref_value = "Xmult", retrigger_type = "exp" },
+      },
+    },
+  },
+  calc_function = function(card)
+    local Xmult = 1
+    local count = 0
+    local found_ranks = {}
+    local hand = JokerDisplay.current_hand
+    local _, _, scoring_hand = JokerDisplay.evaluate_hand()
+    if scoring_hand and #scoring_hand > 0 then
+      count = #hand - #scoring_hand
+    end
+    for _, playing_card in pairs(hand) do
+      local is_scoring = false
+      for _, scoring_card in pairs(scoring_hand) do
+        if playing_card == scoring_card then
+          is_scoring = true
+          break
+        end
+      end
+      if is_scoring == false then
+        found_ranks[playing_card:get_id()] = true
+      end
+    end
+    if G.scry_view then
+      for _, scry_card in pairs(G.scry_view.cards) do
+        if found_ranks[scry_card:get_id()] then
+          Xmult = card.ability.extra.Xmult
+          break
+        end
+      end
+    end
+    card.joker_display_values.mult = card.ability.extra.mult * count
+    card.joker_display_values.Xmult = Xmult
+  end
+}
+
+--	Mega Lopunny
+jd_def["j_poke_mega_lopunny"] = {
+  text = {
+    {
+      border_nodes = {
+        { text = "X" },
+        { ref_table = "card.joker_display_values", ref_value = "Xmult", retrigger_type = "exp" },
+      },
+    },
+  },
+  calc_function = function(card)
+    local Xmult = 1
+    if G.scry_view then
+      local text, poker_hands, _ = JokerDisplay.evaluate_hand(G.scry_view.cards)
+      if poker_hands[text] and next(poker_hands[text]) then
+        if (SMODS.Mods["Talisman"] or {}).can_load then
+          Xmult = to_number(G.GAME.hands[text].level) or 1
+        else
+          Xmult = G.GAME.hands[text].level or 1
+        end
+      end
+    end
+    card.joker_display_values.Xmult = Xmult
+  end
+}
+
 --	Mismagius
-jd_def["j_poke_mismagius"] = { 
+jd_def["j_poke_mismagius"] = {
   text = {
       { text = "+" },
       { ref_table = "card.ability.extra", ref_value = "chips", retrigger_type = "mult" }
@@ -103,7 +191,8 @@ jd_def["j_poke_mismagius"] = {
     },
   },
   calc_function = function(card)
-  card.joker_display_values.odds = localize { type = 'variable', key = "jdis_odds", vars = { (G.GAME and G.GAME.probabilities.normal or 1), card.ability.extra.chip_odds }}
+  local num, dem = SMODS.get_probability_vars(card, card.ability.extra.num, card.ability.extra.dem, 'mismagius')
+  card.joker_display_values.odds = localize { type = 'variable', key = "jdis_odds", vars = { num, dem }}
   end
 }
 
@@ -356,7 +445,7 @@ jd_def["j_poke_tangrowth"] = {
     calc_function = function(card)
         local count = 0
         local playing_hand = next(G.play.cards)
-        local chance = math.min((G.GAME.probabilities.normal / card.ability.extra.odds),1)
+        local chance = math.min((card.ability.extra.num / card.ability.extra.dem),1)
         local hand = next(G.play.cards) and G.play.cards or G.hand.highlighted
         local text, _, scoring_hand = JokerDisplay.evaluate_hand(hand)
         if text ~= "Unknown" then
@@ -468,12 +557,13 @@ calc_function = function(card)
     end
     card.joker_display_values.chips = count * card.ability.extra.chips
     card.joker_display_values.mult = count * card.ability.extra.mult
-    card.joker_display_values.odds = localize { type = 'variable', key = "jdis_odds", vars = { (G.GAME and G.GAME.probabilities.normal or 1), card.ability.extra.odds } }
+    local num, dem = SMODS.get_probability_vars(card, card.ability.extra.num, card.ability.extra.dem, 'yanmega')
+    card.joker_display_values.odds = localize { type = 'variable', key = "jdis_odds", vars = { num, dem } }
     card.joker_display_values.localized_text = "(3,6)"
 end,
 retrigger_function = function(playing_card, scoring_hand, held_in_hand, joker_card)
     if held_in_hand then return 0 end
-    if G.GAME.probabilities.normal >= joker_card.ability.extra.odds then
+    if joker_card.ability.extra.num >= joker_card.ability.extra.dem then
       return (playing_card:get_id() == 3 or playing_card:get_id() == 6) and joker_card.ability.extra.retriggers * JokerDisplay.calculate_joker_triggers(joker_card) or 0
     end
 end
@@ -482,9 +572,13 @@ end
 --	Leafeon
 jd_def["j_poke_leafeon"] = {
   reminder_text = {
-    { text = "Rerolls: ", colour = G.C.GREY },
-    { ref_table = "card.ability.extra", ref_value = "rerolls", colour = G.C.ORANGE }
+      { text = "(" },
+      { ref_table = "card.ability.extra",        ref_value = "h_size" },
+      { text = "/" },
+      { ref_table = "card.ability.extra", ref_value = "h_size_limit" },
+      { text = ")" },
   },
+  reminder_text_config = { scale = 0.35 },
 }
 
 --	Glaceon
@@ -497,7 +591,8 @@ jd_def["j_poke_glaceon"] = {
     },
   },
   calc_function = function(card)
-    card.joker_display_values.odds = localize { type = 'variable', key = "jdis_odds", vars = { (G.GAME and G.GAME.probabilities.normal or 1), card.ability.extra.odds } }
+    local num, dem = SMODS.get_probability_vars(card, card.ability.extra.num, card.ability.extra.dem, 'glaceon')
+    card.joker_display_values.odds = localize { type = 'variable', key = "jdis_odds", vars = { num, dem } }
   end
 }
 
@@ -563,7 +658,7 @@ jd_def["j_poke_mamoswine"] = {
     },
     {
       { text = "(", colour = G.C.GREEN, scale = 0.3 },
-      { ref_table = "card.joker_display_values", ref_value = "odds",colour = G.C.GREEN, scale = 0.3 },
+      { ref_table = "card.joker_display_values", ref_value = "odds", colour = G.C.GREEN, scale = 0.3 },
       { text = ")", colour = G.C.GREEN, scale = 0.3 },
     },
   },
@@ -586,7 +681,8 @@ jd_def["j_poke_mamoswine"] = {
     end
     card.joker_display_values.mult = card.ability.extra.mult * count * first_card_triggers
     card.joker_display_values.money_triggers = money_triggers
-    card.joker_display_values.odds = localize { type = 'variable', key = "jdis_odds", vars = { (G.GAME and G.GAME.probabilities.normal or 1), card.ability.extra.odds } }
+    local num, dem = SMODS.get_probability_vars(card, card.ability.extra.num, card.ability.extra.dem, 'mamoswine')
+    card.joker_display_values.odds = localize { type = 'variable', key = "jdis_odds", vars = { num, dem } }
   end
 }
 

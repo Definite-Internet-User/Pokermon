@@ -40,7 +40,8 @@ jd_def["j_poke_treecko"] = {
     card.joker_display_values.nature1 = localize(card.ability.extra.targets[1].value, 'ranks')
     card.joker_display_values.nature2 = localize(card.ability.extra.targets[2].value, 'ranks')
     card.joker_display_values.nature3 = localize(card.ability.extra.targets[3].value, 'ranks')
-    card.joker_display_values.odds = localize { type = 'variable', key = "jdis_odds", vars = { (G.GAME and G.GAME.probabilities.normal or 1), card.ability.extra.odds } }
+    local num, dem = SMODS.get_probability_vars(card, card.ability.extra.num, card.ability.extra.dem, 'treecko')
+    card.joker_display_values.odds = localize { type = 'variable', key = "jdis_odds", vars = { num, dem } }
   end
 }
 
@@ -84,7 +85,8 @@ jd_def["j_poke_grovyle"] = {
     card.joker_display_values.nature1 = localize(card.ability.extra.targets[1].value, 'ranks')
     card.joker_display_values.nature2 = localize(card.ability.extra.targets[2].value, 'ranks')
     card.joker_display_values.nature3 = localize(card.ability.extra.targets[3].value, 'ranks')
-    card.joker_display_values.odds = localize { type = 'variable', key = "jdis_odds", vars = { (G.GAME and G.GAME.probabilities.normal or 1), card.ability.extra.odds } }
+    local num, dem = SMODS.get_probability_vars(card, card.ability.extra.num, card.ability.extra.dem, 'grovyle')
+    card.joker_display_values.odds = localize { type = 'variable', key = "jdis_odds", vars = { num, dem } }
   end
 }
 
@@ -326,7 +328,21 @@ jd_def["j_poke_swampert"] = {
 }
 
 --	Poochyena
+jd_def["j_poke_poochyena"] = {
+  text = {
+    { text = "+" , colour = G.C.MULT},
+    { ref_table = "card.ability.extra", ref_value = "mult", retrigger_type = "mult", colour = G.C.MULT},
+  },
+}
+
 --	Mightyena
+jd_def["j_poke_mightyena"] = {
+  text = {
+    { text = "+" , colour = G.C.MULT},
+    { ref_table = "card.ability.extra", ref_value = "mult", retrigger_type = "mult", colour = G.C.MULT},
+  },
+}
+
 --	Zigzagoon
 jd_def["j_poke_zigzagoon"] = {
   text = {
@@ -342,7 +358,8 @@ jd_def["j_poke_zigzagoon"] = {
   },
   calc_function = function(card)
     card.joker_display_values.count = 1
-    card.joker_display_values.odds = localize { type = 'variable', key = "jdis_odds", vars = { (G.GAME and G.GAME.probabilities.normal or 1), card.ability.extra.odds } }
+    local num, dem = SMODS.get_probability_vars(card, card.ability.extra.num, card.ability.extra.dem, 'zigzagoon')
+    card.joker_display_values.odds = localize { type = 'variable', key = "jdis_odds", vars = { num, dem } }
   end
 }
 
@@ -366,7 +383,8 @@ jd_def["j_poke_linoone"] = {
   },
   calc_function = function(card)
     card.joker_display_values.count = 1
-    card.joker_display_values.odds = localize { type = 'variable', key = "jdis_odds", vars = { (G.GAME and G.GAME.probabilities.normal or 1), card.ability.extra.odds } }
+    local num, dem = SMODS.get_probability_vars(card, card.ability.extra.num, card.ability.extra.dem, 'linoone')
+    card.joker_display_values.odds = localize { type = 'variable', key = "jdis_odds", vars = { num, dem } }
     card.joker_display_values.localized_text = localize('Straight', 'poker_hands')
   end
 }
@@ -497,7 +515,65 @@ jd_def["j_poke_aggron"] = {
 --	Wailmer
 --	Wailord
 --	Numel
+jd_def["j_poke_numel"] = {
+  text = {
+    {
+      border_nodes = {
+        { text = "X" },
+        { ref_table = "card.joker_display_values", ref_value = "Xmult", retrigger_type = "exp" },
+      },
+    },
+  },
+  reminder_text = {
+    { ref_table ="card.joker_display_values", ref_value = "active", colour = G.C.GREY }
+  },
+  calc_function = function(card)
+    if card.ability.extra.cards_scored >= card.ability.extra.score_goal then
+      card.joker_display_values.Xmult = card.ability.extra.Xmult
+      card.joker_display_values.active = localize("jdis_active")
+    else
+      card.joker_display_values.Xmult = 1
+      card.joker_display_values.active = localize("jdis_inactive")
+    end
+  end
+}
+
 --	Camerupt
+jd_def["j_poke_camerupt"] = {
+  text = {
+    {
+      border_nodes = {
+        { text = "X" },
+        { ref_table = "card.joker_display_values", ref_value = "Xmult", retrigger_type = "exp" },
+      },
+    },
+  },
+  reminder_text = {
+    { ref_table ="card.joker_display_values", ref_value = "active", colour = G.C.GREY }
+  },
+  calc_function = function(card)
+    if card.ability.extra.cards_scored >= card.ability.extra.score_goal then
+      card.joker_display_values.Xmult = card.ability.extra.Xmult
+      card.joker_display_values.active = localize("jdis_active")
+    else
+      card.joker_display_values.Xmult = 1
+      card.joker_display_values.active = localize("jdis_inactive")
+    end
+  end
+}
+
+--	Mega Camerupt
+jd_def["j_poke_mega_camerupt"] = {
+  text = {
+    {
+      border_nodes = {
+        { text = "X" },
+        { ref_table = "card.ability.extra", ref_value = "Xmult", retrigger_type = "exp" },
+      },
+    },
+  },
+}
+
 --	Torkoal
 --	Spoink
 --	Grumpig

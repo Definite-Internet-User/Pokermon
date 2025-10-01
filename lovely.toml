@@ -39,7 +39,7 @@ match_indent = true
 target = "functions/state_events.lua"
 pattern = "if next(find_joker('Splash')) then"
 position = "at"
-payload = "if next(find_joker('Splash')) or next(SMODS.find_card('j_poke_magikarp')) or next(SMODS.find_card('j_poke_feebas')) then"
+payload = "if next(find_joker('Splash')) or applies_splash() then"
 match_indent = true
 
 # Magikarp functionality better calc
@@ -48,7 +48,9 @@ match_indent = true
 target = "functions/state_events.lua"
 pattern = "local splashed = SMODS.always_scores(G.play.cards[i]) or next(find_joker('Splash'))"
 position = "at"
-payload = "local splashed = SMODS.always_scores(G.play.cards[i]) or next(find_joker('Splash')) or next(SMODS.find_card('j_poke_magikarp')) or next(SMODS.find_card('j_poke_feebas'))"
+payload = '''
+local splashed = SMODS.always_scores(G.play.cards[i]) or next(find_joker('Splash')) or applies_splash()
+'''
 match_indent = true
 
 # Mimikyu Localization Functionality
@@ -100,7 +102,7 @@ match_indent = true
 [[patches]]
 [patches.pattern]
 target = "card.lua"
-pattern = "G.GAME.pack_choices = self.ability.choose or self.config.center.config.choose or 1"
+pattern = "booster_obj = self.config.center"
 position = "after"
 payload = '''
 if self.ability.name:find('Celestial') and next(find_joker("xatu")) then
@@ -153,6 +155,8 @@ if (self.ability.set == 'Planet' or (self.ability.set == 'Booster' and self.abil
 '''
 position = "after"
 payload = '''
+if self.ability.set == 'Booster' then self.cost = math.max(0, self.cost - 1 * #find_joker('rotom')) end
+if self.ability.set == 'Booster' then self.cost = math.max(0, self.cost - (G.GAME.rotom_discount or 0) * #find_joker('rotomdex')) end
 if (self.ability.set == 'Planet' or (self.ability.set == 'Booster' and self.ability.name:find('Celestial'))) and #find_joker('gothita') > 0 then self.cost = math.max(0, self.cost - 2 * #find_joker('gothita')) end
 if (self.ability.set == 'Planet' or (self.ability.set == 'Booster' and self.ability.name:find('Celestial'))) and #find_joker('gothorita') > 0 then self.cost = math.max(0, self.cost - 3 * #find_joker('gothorita')) end
 if (self.ability.set == 'Planet' or (self.ability.set == 'Booster' and self.ability.name:find('Celestial'))) and #find_joker('gothitelle') > 0 then self.cost = 0 end
@@ -396,6 +400,17 @@ position = "at"
 payload = "if self.ability.perish_tally and self.ability.perish_tally == 1 and not (self.ability and self.ability.extra and type(self.ability.extra) == 'table' and self.ability.extra.rounds and self.ability.extra.rounds <= 1) then"
 match_indent = true
 
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = "self.ability.perish_tally = 0"
+position = "after"
+payload = '''
+if self.edition and self.edition.poke_shiny then
+  SMODS.change_booster_limit(-1)
+end
+'''
+match_indent = true
 
 # Jirachi Double Payout and DRE
 [[patches]]
@@ -660,87 +675,6 @@ offset = {x=(args.type == 'sell' and -1 or 1)*((args.card_width or 0) - 0.17 - a
 '''
 match_indent = true
 
-# Hazard negative logic
-[[patches]]
-[patches.pattern]
-target = "cardarea.lua"
-pattern = "function CardArea:emplace(*"
-position = "after"
-payload = '''
-    if not card.debuff and card.ability and card.ability.card_limit and (self == G.hand) then
-        self.config.real_card_limit = (self.config.real_card_limit or self.config.card_limit) + card.ability.card_limit
-        self.config.card_limit = math.max(0, self.config.real_card_limit)
-    end
-'''
-match_indent = true
-
-[[patches]]
-[patches.pattern]
-target = "cardarea.lua"
-pattern = "card:remove_from_area()"
-position = "before"
-payload = '''
-if not card.debuff and card.ability and card.ability.card_limit and (self == G.hand) then
-    self.config.real_card_limit = (self.config.real_card_limit or self.config.card_limit) - card.ability.card_limit
-    self.config.card_limit = math.max(0, self.config.real_card_limit)
-end
-'''
-match_indent = true
-
-[[patches]]
-[patches.pattern]
-target = "functions/state_events.lua"
-pattern = "limit = limit - 1 + (not card.debuff and card.edition and card.edition.card_limit or 0)"
-position = "at"
-payload = """limit = limit - 1 + (not card.debuff and (card.edition and card.edition.card_limit or card.ability and card.ability.card_limit) or 0)"""
-match_indent = true
-
-[[patches]]
-[patches.pattern]
-target = "card.lua"
-pattern = '''
-if self.ability and old_center and old_center.config.bonus then
-    self.ability.bonus = self.ability.bonus - old_center.config.bonus
-end
-'''
-position = "after"
-payload = '''
-if self.ability and old_center and old_center.config.card_limit and not self.from_quantum then
-    if self.area == G.hand and not self.debuff then
-      if G.hand.config.real_card_limit then
-        G.hand.config.real_card_limit = G.hand.config.real_card_limit - self.ability.card_limit
-      end
-      G.hand.config.card_limit = G.hand.config.card_limit - self.ability.card_limit
-    end
-    self.ability.card_limit = self.ability.card_limit - old_center.config.card_limit
-end
-'''
-match_indent = true
-
-[[patches]]
-[patches.pattern]
-target = "card.lua"
-pattern = '''
-if self.ability.perishable and self.ability.perish_tally <= 0 then 
-    if not self.debuff then
-        self.debuff = true
-        if self.area == G.jokers then self:remove_from_deck(true) end
-    end
-    return
-end
-'''
-position = "after"
-payload = '''
-if not should_debuff and self.area == G.hand and self.ability and self.ability.card_limit and self.debuff then
-  if G.hand.config.real_card_limit then
-    G.hand.config.real_card_limit = G.hand.config.real_card_limit + self.ability.card_limit
-  end
-  G.hand.config.card_limit = G.hand.config.card_limit + self.ability.card_limit
-  draw_card(G.deck,G.hand, nil,'up', true)
-end
-'''
-match_indent = true
-
 #Smeargle Tooltip loc_vars fix
 [[patches]]
 [patches.pattern]
@@ -923,3 +857,24 @@ payload = '''
     end
 '''
 match_indent = false
+
+# Garbodor functionality
+[[patches]]
+[patches.pattern]
+target = "functions/state_events.lua"
+pattern = "G.GAME.current_round.discards_used = G.GAME.current_round.discards_used + 1"
+position = "after"
+payload = '''
+G.GAME.poke_ante_discards_used = (G.GAME.poke_ante_discards_used or 0) + 1
+'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = "functions/common_events.lua"
+pattern = "G.GAME.round_resets.ante = G.GAME.round_resets.ante + mod"
+position = "after"
+payload = '''
+G.GAME.poke_ante_discards_used = 0
+'''
+match_indent = true

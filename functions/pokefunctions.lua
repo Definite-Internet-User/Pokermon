@@ -73,6 +73,8 @@ pokermon.family = {
     {"cyndaquil", "quilava", "typhlosion"},
     {"totodile", "croconaw", "feraligatr"},
     {"tyrogue", "hitmonlee", "hitmonchan", "hitmontop"},
+    {"poochyena", "mightyena"},
+    {"numel", "camerupt", "mega_camerupt"},
     {"feebas", "milotic"},
     {"snorunt", "glalie", "froslass"},
     {"nosepass", "probopass"},
@@ -118,26 +120,37 @@ pokermon.family = {
     {"zigzagoon", "linoone"},
     {"shroomish", "breloom"},
     {"aron","lairon","aggron"},
+    {"duskull", "dusclops", "dusknoir"},
+    {"bidoof", "bibarel"},
+    {"kricketot", "kricketune"},
     {"buizel", "floatzel"},
+    {"buneary", "lopunny", "mega_lopunny"},
+    {"riolu", "lucario"},
+    {"rotom", "rotomh", "rotomw", "rotomf", "rotomfan", "rotomm"},
     {"gothita", "gothorita", "gothitelle"},
     {"vanillite", "vanillish", "vanilluxe"},
+    {"frillish", "jellicent"},
     {"elgyem", "beheeyem"},
+    {"trubbish", "garbodor"},
     {"litwick", "lampent", "chandelure"},
     {"pansage", "simisage"},
     {"pansear", "simisear"},
     {"panpour", "simipour"},
     {"golett", "golurk"},
     {"roggenrola", "boldore", "gigalith"},
+    {"ferroseed", "ferrothorn"},
     {"zorua", "zoroark"},
     {"deino", "zweilous", "hydreigon"},
     {"litleo", "pyroar"},
     {"grubbin", "charjabug", "vikavolt"},
+    {"rockruff", "lycanroc_day", "lycanroc_night", "lycanroc_dusk"},
     {"dreepy", "drakloak", "dragapult", "dreepy_dart"},
     {"hisuian_qwilfish", "overqwil"},
     {"nickit", "thievul"},
     {"yamper","boltund"},
     {"tarountula", "spidops"},
     {"fidough", "dachsbun"},
+    {"charcadet", "armarouge", "ceruledge"},
     {"tinkatink", "tinkatuff", "tinkaton"},
     {"wiglett", "wugtrio"},
     {"gimmighoul", "gholdengo", "gimmighoulr"},
@@ -156,8 +169,15 @@ pokermon.family = {
 extended_family = {
   tauros = {"miltank"},
   unown = {"ruins_of_alph", "unown_swarm"},
+  luvdisc = {{item = true, name = "heartscale"}},
   shuckle = {{item = true, name = "berry_juice"}, {item = true, name = "berry_juice_tarot"}, {item = true, name = "berry_juice_planet"}, {item = true, name = "berry_juice_spectral"}, 
-             {item = true, name = "berry_juice_item"}, {item = true, name = "berry_juice_energy"}, {item = true, name = "berry_juice_mystery"}}
+             {item = true, name = "berry_juice_item"}, {item = true, name = "berry_juice_energy"}, {item = true, name = "berry_juice_mystery"}},
+  rotom = {{item = true, name = "oven"}, {item = true, name = "washing_machine"}, {item = true, name = "fridge"}, {item = true, name = "fan"}, {item = true, name = "lawn_mower"}},
+  rotomh = {{item = true, name = "oven"}, {item = true, name = "washing_machine"}, {item = true, name = "fridge"}, {item = true, name = "fan"}, {item = true, name = "lawn_mower"}},
+  rotomw = {{item = true, name = "oven"}, {item = true, name = "washing_machine"}, {item = true, name = "fridge"}, {item = true, name = "fan"}, {item = true, name = "lawn_mower"}},
+  rotomf = {{item = true, name = "oven"}, {item = true, name = "washing_machine"}, {item = true, name = "fridge"}, {item = true, name = "fan"}, {item = true, name = "lawn_mower"}},
+  rotomfan = {{item = true, name = "oven"}, {item = true, name = "washing_machine"}, {item = true, name = "fridge"}, {item = true, name = "fan"}, {item = true, name = "lawn_mower"}},
+  rotomm = {{item = true, name = "oven"}, {item = true, name = "washing_machine"}, {item = true, name = "fridge"}, {item = true, name = "fan"}, {item = true, name = "lawn_mower"}},
 }
 
 type_sticker_applied = function(card)
@@ -262,7 +282,10 @@ remove = function(self, card, context, check_shiny)
   return true
 end
 
-poke_evolve = function(card, to_key, immediate, evolve_message)
+poke_evolve = function(card, to_key, immediate, evolve_message, transformation)
+  if G.GAME.modifiers.apply_randomizer and not transformation then
+    to_key = get_random_poke_key('randomizer')
+  end
   if immediate then
     poke_backend_evolve(card, to_key)
   else
@@ -316,6 +339,12 @@ poke_backend_evolve = function(card, to_key)
   
   local old_key = card.config.center.key
   
+  --turn off multisprite on evolution
+  if card.config.center.poke_multi_sprite and card.ability and card.ability.extra then
+    card.ability.extra.loaded_pos = nil
+    card.ability.extra.loaded_sprite = nil
+  end
+  
   -- if it's not a mega and not a devolution and still has rounds left, reset perish tally
   if card.ability.perishable and card.config.center.rarity ~= "poke_mega" then
     card.ability.perish_tally = G.GAME.perishable_rounds
@@ -338,7 +367,7 @@ poke_backend_evolve = function(card, to_key)
     values_to_keep.hazards_drawn = values_to_keep.hazards_drawn % 2
   end
 
-  if values_to_keep.cards_scored and values_to_keep.cards_scored >= 15 then
+  if values_to_keep.cards_scored and values_to_keep.cards_scored >= 15 and card.config.center.name == "spearow" then
     values_to_keep.upgrade = true
     values_to_keep.cards_scored = values_to_keep.cards_scored - 15
   end
@@ -676,7 +705,7 @@ get_family_keys = function(cardname, custom_prefix, card)
   local extra = nil
   local initial_custom_prefix = custom_prefix
   custom_prefix = custom_prefix and 'j_'..custom_prefix..'_' or 'j_poke_'
-  if card.config.center.poke_multi_item then custom_prefix = initial_custom_prefix and 'c_poke'..initial_custom_prefix..'_' or 'c_poke_' end
+  if card.config.center.poke_multi_item then custom_prefix = initial_custom_prefix and 'c_'..initial_custom_prefix..'_' or 'c_poke_' end
   for k, v in pairs(pokermon.family) do
     for x, y in pairs(v) do
       if y == cardname or (type(y) == "table" and y.key == cardname) then line = v; break end
@@ -746,13 +775,36 @@ get_family_keys = function(cardname, custom_prefix, card)
     
   if card and card.config and card.config.center and card.config.center.item_req then
     local item_key = nil
+    local evo_item_prefix = nil
+    local native_evo_items = {
+      "firestone", "waterstone", "leafstone", "thunderstone", 
+      "dawnstone", "shinystone", "moonstone", "duskstone", 
+      "sunstone", "icestone", "prismscale", "upgrade", "dubious_disc", 
+      "linkcable", "kingsrock", "dragonscale", "hardstone",
+    }
     if type(card.config.center.item_req) == "table" then
       for i = 1, #card.config.center.item_req do
-        item_key = 'c_'..(initial_custom_prefix or 'poke')..'_'..card.config.center.item_req[i]
-        table.insert(keys, item_key)
+        for k, v in pairs(native_evo_items) do
+          if v == card.config.center.item_req[i] then
+            evo_item_prefix = 'poke'
+            break
+          else
+            evo_item_prefix = initial_custom_prefix
+          end 
+        end
+      item_key = 'c_'..(evo_item_prefix)..'_'..card.config.center.item_req[i]
+      table.insert(keys, item_key)
       end
     else
-      item_key = 'c_'..(initial_custom_prefix or 'poke')..'_'..card.config.center.item_req
+      for k, v in pairs(native_evo_items) do
+        if v == card.config.center.item_req then
+          evo_item_prefix = 'poke'
+          break
+        else
+          evo_item_prefix = initial_custom_prefix
+        end
+      end
+      item_key = 'c_'..(evo_item_prefix)..'_'..card.config.center.item_req
       table.insert(keys, item_key)
     end
   end
@@ -769,6 +821,12 @@ pokemon_in_pool = function (self)
     name = self.ability.name
   else
     name = self.name or "bulbasaur"
+  end
+  if (name == "dreepy" or name == "drakloak" or name == "dragapult") and not G.P_CENTERS['j_poke_dreepy_dart'] then
+    return false
+  end
+  if name == "ruins_of_alph" and not G.P_CENTERS['j_poke_unown'] then
+    return false
   end
   local found_other
   local in_family
@@ -1023,10 +1081,11 @@ get_random_poke_key = function(pseed, stage, pokerarity, area, poketype, exclude
     if string.lower(pokerarity) == "uncommon" then pokerarity = 2 end
     if string.lower(pokerarity) == "rare" then pokerarity = 3 end
   end
-  
+    
   for k, v in pairs(G.P_CENTERS) do
     if v.stage and v.stage ~= "Other" and not (stage and v.stage ~= stage) and not (pokerarity and v.rarity ~= pokerarity) and get_gen_allowed(v)
-       and not (poketype and poketype ~= v.ptype) and pokemon_in_pool(v) and not v.aux_poke and not exclude_keys[v.key] then
+       and not (poketype and poketype ~= v.ptype) and pokemon_in_pool(v) and not v.aux_poke and v.rarity ~= "poke_mega" and not exclude_keys[v.key]
+       and not G.GAME.banned_keys[v.key] then
       local no_dup = true
       if G.jokers and G.jokers.cards and not next(find_joker("Showman")) then
         for l, m in pairs(G.jokers.cards) do
@@ -1399,6 +1458,84 @@ end
 poke_load_individual_sprite = function(self, card, card_table, other_card)
   if card and card.ability and card.ability.extra then
     card.ability.extra.loaded_sprite = true
+  end
+end
+
+poke_change_poli_suit = function()
+  if not G.GAME.poke_poli_suit_change_triggered then
+    local suits = {"Spades", "Hearts", "Clubs", "Diamonds"}
+    if G.GAME.poke_poli_suit then
+      for i = 1, #suits do
+        if suits[i] == G.GAME.poke_poli_suit then
+          if i == #suits then
+            G.GAME.poke_poli_suit = suits[1]
+          else
+            G.GAME.poke_poli_suit = suits[i+1]
+          end
+          break
+        end
+      end
+    else
+      G.GAME.poke_poli_suit = "Hearts"
+    end
+  end
+end
+
+reset_bulba_rank = function()
+  G.GAME.current_round.bulb1card = {rank = 'Ace'}
+  local valid_bulb_cards = {}
+  for k, v in ipairs(G.playing_cards) do
+    if v.ability.effect ~= 'Stone Card' and not SMODS.has_no_rank(v) then
+      valid_bulb_cards[#valid_bulb_cards+1] = v
+    end
+  end
+  if valid_bulb_cards[1] then
+    local bulb_card = pseudorandom_element(valid_bulb_cards, pseudoseed('bulb'..G.GAME.round_resets.ante))
+    G.GAME.current_round.bulb1card.rank = bulb_card.base.value
+    G.GAME.current_round.bulb1card.id = bulb_card.base.id
+  end
+end
+
+reset_espeon_card = function()
+  G.GAME.current_round.espeon_rank = 'Ace'
+  G.GAME.current_round.espeon_id = 14
+  G.GAME.current_round.espeon_suit = 'Spades'
+  
+  local valid_espeon_cards = {}
+  for _, playing_card in ipairs(G.playing_cards) do
+    if not SMODS.has_no_suit(playing_card) and not SMODS.has_no_rank(playing_card) then
+      valid_espeon_cards[#valid_espeon_cards + 1] = playing_card
+    end
+  end
+  local espeon_card = pseudorandom_element(valid_espeon_cards, 'espeon' .. G.GAME.round_resets.ante)
+  if espeon_card then
+    G.GAME.current_round.espeon_rank = espeon_card.base.value
+    G.GAME.current_round.espeon_id = espeon_card.base.id
+    G.GAME.current_round.espeon_suit = espeon_card.base.suit
+  end
+end
+
+reset_gligar_suit = function()
+  local gligar_suits = {}
+  for k, v in ipairs({'Spades','Hearts','Clubs','Diamonds'}) do
+      if v ~= G.GAME.current_round.gligar_suit then gligar_suits[#gligar_suits + 1] = v end
+  end
+  local gligar_card = pseudorandom_element(gligar_suits, pseudoseed('gligar'..G.GAME.round_resets.ante))
+  G.GAME.current_round.gligar_suit = gligar_card
+end
+
+reset_sneasel_rank = function()
+  G.GAME.current_round.sneaselcard = {rank = 'Ace'}
+  local valid_sneasel_cards = {}
+  for k, v in ipairs(G.playing_cards) do
+    if v.ability.effect ~= 'Stone Card' then
+      valid_sneasel_cards[#valid_sneasel_cards+1] = v
+    end
+  end
+  if valid_sneasel_cards[1] then
+    local sneasel_card = pseudorandom_element(valid_sneasel_cards, pseudoseed('sneasel'..G.GAME.round_resets.ante))
+    G.GAME.current_round.sneaselcard.rank = sneasel_card.base.value
+    G.GAME.current_round.sneaselcard.id = sneasel_card.base.id
   end
 end
 
