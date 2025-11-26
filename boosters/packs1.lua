@@ -362,6 +362,7 @@ local starter_pack = {
 	name = "Starter Pack",
 	key = "pokepack_starter_pack",
 	kind = "Spectral",
+  artist = "Catzzadilla",
 	atlas = "AtlasBoosterpacksBasic",
 	pos = { x = 4, y = 1 },
 	config = { extra = 4, choose = 1 },

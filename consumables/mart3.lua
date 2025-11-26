@@ -205,6 +205,7 @@ local hardstone = {
   name = "hardstone",
   key = "hardstone",
   set = "Item",
+  artist = "Sonfive",
   config = {max_highlighted = 1, max_chips = 10},
   loc_vars = function(self, info_queue, center)
     info_queue[#info_queue+1] = G.P_CENTERS.m_stone

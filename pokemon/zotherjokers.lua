@@ -15,7 +15,8 @@ local pokedex={
 
 local rotomdex={ 
   name = "rotomdex",
-  pos = {x = 0, y = 0},
+  pos = {x = 0, y = 4},
+  artist = {"InertSteak", "Catzzadilla"},
   config = {extra = {}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
@@ -24,7 +25,7 @@ local rotomdex={
   rarity = 1, 
   cost = 6, 
   stage = "Other",
-  atlas = "placeholder_joker",
+  atlas = "others",
   blueprint_compat = false,
   update = function(self, card, dt)
     if G.STAGE == G.STAGES.RUN then
@@ -171,17 +172,7 @@ local jelly_donut={
       if card.ability.extra.rounds <= 0 then 
         G.E_MANAGER:add_event(Event({
             func = function()
-                play_sound('tarot1')
-                card.T.r = -0.2
-                card:juice_up(0.3, 0.4)
-                card.states.drag.is = true
-                card.children.center.pinch.x = true
-                G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.3, blockable = false,
-                    func = function()
-                            G.jokers:remove_card(card)
-                            card:remove()
-                            card = nil
-                        return true; end})) 
+                remove(self, card, context)
                 return true
             end
         })) 
@@ -197,6 +188,7 @@ local jelly_donut={
 local treasure_eatery={
   name = "treasure_eatery",
   pos = {x = 6, y = 1},
+  artist = "PrincessRoxie",
   config = {extra = {rounds = 4,}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
@@ -224,17 +216,7 @@ local treasure_eatery={
       if card.ability.extra.rounds <= 0 then 
         G.E_MANAGER:add_event(Event({
             func = function()
-                play_sound('tarot1')
-                card.T.r = -0.2
-                card:juice_up(0.3, 0.4)
-                card.states.drag.is = true
-                card.children.center.pinch.x = true
-                G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.3, blockable = false,
-                    func = function()
-                            G.jokers:remove_card(card)
-                            card:remove()
-                            card = nil
-                        return true; end})) 
+                remove(self, card, context)
                 return true
             end
         })) 
@@ -303,6 +285,7 @@ local mystery_egg = {
   atlas = "others",
   blueprint_compat = false,
   eternal_compat = false,
+  perishable_compat = false,
   calculate = function(self, card, context)
     if context.end_of_round and not context.repetition and not context.individual and not context.blueprint then
       local adjacent = 0
@@ -404,10 +387,10 @@ local mystery_egg = {
     --desc_nodes[#desc_nodes+1] = main_start
   end,--]]
 }
-
 local rival = {
   name = "rival",
   pos = {x = 3, y = 1},
+  artist = "MyDude_YT",
   config = {extra = {mult = 10, Xmult = 3, form = 0}},
   loc_vars = function(self, info_queue, card)
     type_tooltip(self, info_queue, card)
@@ -490,9 +473,11 @@ local rival = {
     end
   end,
   set_ability = function(self, card, initial, delay_sprites)
-    G.GAME.rival_losses = G.GAME.rival_losses or 0
-    card.ability.extra.form = G.GAME.rival_losses
-    self:set_sprites(card)
+    if initial then
+      G.GAME.rival_losses = G.GAME.rival_losses or 0
+      card.ability.extra.form = G.GAME.rival_losses
+      self:set_sprites(card)
+    end
   end,
   set_sprites = function(self, card, front)
     if card.ability and card.ability.extra and card.ability.extra.form and card.ability.extra.form > 1 then
@@ -508,6 +493,7 @@ local rival = {
 local ruins_of_alph={
   name = "ruins_of_alph",
   pos = {x = 1, y = 2},
+  artist = "MyDude_YT",
   config = {extra = {mult = 0, mult_mod = 2, merged = 0, forms = {}, quest1 = 5, quest2 = 10, quest3 = 20, quest4 = 28}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)

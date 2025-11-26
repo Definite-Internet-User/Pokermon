@@ -19,6 +19,13 @@ local starmie={
   calculate = function(self, card, context)
     if context.individual and context.cardarea == G.play and context.other_card:is_suit(card.ability.extra.suit) then
       if not context.end_of_round and not context.before and not context.after and not context.other_card.debuff then
+        G.GAME.dollar_buffer = (G.GAME.dollar_buffer or 0) + card.ability.extra.money_mod
+        G.E_MANAGER:add_event(Event({
+            func = function()
+                G.GAME.dollar_buffer = 0
+                return true
+            end
+        }))
         local earned = ease_poke_dollars(card, "starmie", card.ability.extra.money_mod, true)
         return {
           mult = card.ability.extra.mult,
@@ -232,7 +239,8 @@ local magmar={
   ptype = "Fire",
   atlas = "Pokedex1",
   gen = 1,
-  blueprint_compat = false,
+  blueprint_compat = true,
+  perishable_compat = false,
   calculate = function(self, card, context)
     if context.first_hand_drawn and not context.blueprint then
       card.ability.extra.remove_triggered = false
@@ -386,6 +394,7 @@ local taurosh={
   atlas = "Pokedex1",
   gen = 1,
   aux_poke = true,
+  auto_sticker = true,
   blueprint_compat = true, 
   calculate = function(self, card, context)
     if context.cardarea == G.jokers and context.scoring_hand then
@@ -527,6 +536,7 @@ local lapras={
   atlas = "Pokedex1",
   gen = 1,
   blueprint_compat = true,
+  perishable_compat = false,
   calculate = function(self, card, context)
     if context.cardarea == G.jokers and context.scoring_hand then
       if context.joker_main then
@@ -577,7 +587,9 @@ local ditto={
     type_tooltip(self, info_queue, center)
     if pokermon_config.detailed_tooltips then
       info_queue[#info_queue+1] = {set = 'Other', key = 'availability', vars = {"you have a Perishable Joker"}}
-      info_queue[#info_queue+1] = {key = 'perishable', set = 'Other', vars = {G.GAME.perishable_rounds or 1, G.GAME.perishable_rounds}}
+      if not center.ability.perishable then
+        info_queue[#info_queue+1] = {key = 'perishable', set = 'Other', vars = {G.GAME.perishable_rounds or 1, G.GAME.perishable_rounds}}
+      end
       info_queue[#info_queue+1] = {set = 'Other', key = 'poke_volatile_'..center.ability.extra.volatile}
     end
   end,
@@ -620,6 +632,7 @@ local ditto={
         end
       end
     end
+    if next(find_joker("Showman")) then return true end
     return true
   end
 }
@@ -1531,21 +1544,26 @@ local mewtwo={
         local chosen_joker = G.jokers.cards[1]
         
         if (#G.jokers.cards - 1 < G.jokers.config.card_limit and not leftmost.ability.eternal) or (#G.jokers.cards < G.jokers.config.card_limit and leftmost.ability.eternal) then
-          local _card = copy_card(chosen_joker, nil, nil, nil, chosen_joker.edition and chosen_joker.edition.negative)
-          local edition = {polychrome = true}
-          _card:set_edition(edition, true)
-          _card.ability.card_limit = 0
-          if _card.config and _card.config.center.stage and _card.config.center.stage ~= "Other" and not type_sticker_applied(_card) then
-            energy_increase(_card, _card.ability.extra.ptype)
-          elseif type_sticker_applied(_card) then
-            energy_increase(_card, type_sticker_applied(_card))
-          end
-          _card:add_to_deck()
-          G.jokers:emplace(_card)
-          if _card.debuff then 
-            _card.debuff = false 
-            if _card.ability.perishable then _card.ability.perish_tally = G.GAME.perishable_rounds end
-          end
+          G.E_MANAGER:add_event(Event({
+            func = function()
+              local _card = copy_card(chosen_joker, nil, nil, nil, chosen_joker.edition and chosen_joker.edition.negative)
+              local edition = {polychrome = true}
+              _card:set_edition(edition, true)
+              _card.ability.card_limit = 0
+              if _card.config and _card.config.center.stage and _card.config.center.stage ~= "Other" and not type_sticker_applied(_card) then
+                energy_increase(_card, _card.ability.extra.ptype)
+              elseif type_sticker_applied(_card) then
+                energy_increase(_card, type_sticker_applied(_card))
+              end
+              _card:add_to_deck()
+              G.jokers:emplace(_card)
+              if _card.debuff then 
+                _card.debuff = false 
+                if _card.ability.perishable then _card.ability.perish_tally = G.GAME.perishable_rounds end
+              end
+              return true
+            end
+          }))
         end
         
         if not leftmost.ability.eternal then

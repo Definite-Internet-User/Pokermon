@@ -391,7 +391,9 @@ local leftovers = {
   soul_rate = .025,
   can_use = function(self, card)
     if G.STATE == G.STATES.SMODS_BOOSTER_OPENED or G.STATE == G.STATES.TAROT_PACK or G.STATE == G.STATES.SPECTRAL_PACK or G.STATE == G.STATES.PLANET_PACK
-       or G.STATE == G.STATES.STANDARD_PACK then return false end
+       or G.STATE == G.STATES.STANDARD_PACK then 
+      if (#G.consumeables.cards + G.GAME.consumeable_buffer >= G.consumeables.config.card_limit) and card.area == G.pack_cards then return false end
+    end
     if card.area == G.shop_jokers then return false end
     if not (G.jokers and G.jokers.cards) then return false end
     if #G.jokers.cards == 0 then return false end
@@ -456,7 +458,9 @@ local leek = {
   discovered = true,
   can_use = function(self, card)
     if G.STATE == G.STATES.SMODS_BOOSTER_OPENED or G.STATE == G.STATES.TAROT_PACK or G.STATE == G.STATES.SPECTRAL_PACK or G.STATE == G.STATES.PLANET_PACK
-       or G.STATE == G.STATES.STANDARD_PACK then return false end
+       or G.STATE == G.STATES.STANDARD_PACK then 
+      if (#G.consumeables.cards + G.GAME.consumeable_buffer >= G.consumeables.config.card_limit) and card.area == G.pack_cards then return false end
+    end
     if card.area == G.shop_jokers then return false end
     return card.ability.extra.usable
   end,
@@ -1022,7 +1026,27 @@ local twisted_spoon = {
    
    localize{type = 'descriptions', key = _c.key, set = _c.set, nodes = desc_nodes, vars = loc_vars}
    desc_nodes[#desc_nodes+1] = main_end 
-  end
+  end,
+  add_to_deck = function(self, card, from_debuff)
+    if G.GAME.modifiers.spoon_slots then
+      G.E_MANAGER:add_event(Event({
+        func = function()
+          G.consumeables.config.card_limit = G.consumeables.config.card_limit + 1
+          return true
+        end
+      }))
+    end
+  end,
+  remove_from_deck = function(self, card, from_debuff)
+    if G.GAME.modifiers.spoon_slots then
+      G.E_MANAGER:add_event(Event({
+        func = function()
+          G.consumeables.config.card_limit = G.consumeables.config.card_limit - 1
+          return true
+        end
+      }))
+    end
+  end,
 }
 
 return {name = "Items",

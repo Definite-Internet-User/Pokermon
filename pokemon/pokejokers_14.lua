@@ -110,18 +110,7 @@ local kricketot={
   calculate = function(self, card, context)
     if context.cardarea == G.jokers and context.scoring_hand then
       if context.joker_main and #context.full_hand == 4 then
-        local ranks = 0
-        local suits = 0
-        
-        for k, v in pairs(SMODS.Suits) do
-          for x, y in pairs(context.full_hand) do
-            if y:is_suit(v.key) then
-              suits = suits + 1
-              break
-            end
-          end
-        end
-        if suits >= 4 then
+        if poke_suit_check(context.full_hand, 4) then
           local earned = ease_poke_dollars(card, "kriketot", card.ability.extra.money)
           return {
             message = '$'..earned,
@@ -155,39 +144,35 @@ local kricketune={
   calculate = function(self, card, context)
     if context.cardarea == G.jokers and context.scoring_hand then
       if context.joker_main and #context.full_hand == 4 then
-        local ranks = 0
-        local suits = 0
-        
-        for k, v in pairs(SMODS.Suits) do
-          for x, y in pairs(context.full_hand) do
-            if y:is_suit(v.key) then
-              suits = suits + 1
-              break
-            end
-          end
-        end
-        if suits >= 4 then
+        if poke_suit_check(context.full_hand, 4) then
           local earned = ease_poke_dollars(card, "kriketune", card.ability.extra.money)
           if SMODS.pseudorandom_probability(card, 'kriketune', card.ability.extra.num, card.ability.extra.dem, 'kriketune') then
-            G.GAME.consumeable_buffer = G.GAME.consumeable_buffer + 1
-            return {
-              message = '$'..earned,
-              colour = G.C.MONEY,
-              extra = {focus = card, message = localize('k_plus_tarot'), colour = G.C.PURPLE, func = function()
-                G.E_MANAGER:add_event(Event({
-                  trigger = 'before',
-                  delay = 0.0,
-                  func = function()
-                    local card_type = 'Tarot'
-                    local _card = create_card(card_type,G.consumeables, nil, nil, nil, nil, nil, 'sup')
-                    _card:add_to_deck()
-                    G.consumeables:emplace(_card)
-                    G.GAME.consumeable_buffer = 0
-                    return true
-                  end
-                }))
-              end}
-            }
+            if #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit then
+              G.GAME.consumeable_buffer = G.GAME.consumeable_buffer + 1
+              return {
+                message = '$'..earned,
+                colour = G.C.MONEY,
+                extra = {focus = card, message = localize('k_plus_tarot'), colour = G.C.PURPLE, func = function()
+                  G.E_MANAGER:add_event(Event({
+                    trigger = 'before',
+                    delay = 0.0,
+                    func = function()
+                      local card_type = 'Tarot'
+                      local _card = create_card(card_type,G.consumeables, nil, nil, nil, nil, nil, 'sup')
+                      _card:add_to_deck()
+                      G.consumeables:emplace(_card)
+                      G.GAME.consumeable_buffer = 0
+                      return true
+                    end
+                  }))
+                end}
+              }
+            else
+              return {
+                message = '$'..earned,
+                colour = G.C.MONEY
+              }
+            end
           else
             return {
               message = '$'..earned,

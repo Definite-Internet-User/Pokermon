@@ -886,6 +886,7 @@ local mega_slowbro={
   soul_pos = { x = 0, y = 1},
   config = {extra = {Xmult_mod = 0.5, Xmult = 1, hands_played = 0}},
   loc_vars = function(self, info_queue, center)
+    type_tooltip(self, info_queue, center)
     local xmult_total = center.ability.extra.Xmult
     xmult_total = xmult_total + center.ability.extra.hands_played * center.ability.extra.Xmult_mod
     return {vars = {center.ability.extra.Xmult_mod, xmult_total}}
@@ -933,6 +934,7 @@ local shell={
   atlas = "Pokedex1",
   gen = 1,
   aux_poke = true,
+  auto_sticker = true,
   perishable_compat = false,
   blueprint_compat = true,
   eternal_compat = false,
@@ -1254,11 +1256,8 @@ local grimer={
       end
     end
     if context.end_of_round and not context.individual and not context.repetition then
-      local _card = create_playing_card({
-        front = pseudorandom_element(G.P_CARDS, pseudoseed('grimer')), 
-        center = G.P_CENTERS.c_base}, G.hand, nil, nil, {G.C.PURPLE
-      })
-      playing_card_joker_effects({_card})
+      local added_card = SMODS.add_card{set = 'Base', no_edition = true}
+      playing_card_joker_effects({added_card})
       card:juice_up()
     end
     return level_evo(self, card, context, "j_poke_muk")
@@ -1295,10 +1294,7 @@ local muk={
     if context.end_of_round and not context.individual and not context.repetition then
       local cards = {}
       for i = 1, 2 do
-        cards[i] = create_playing_card({
-          front = pseudorandom_element(G.P_CARDS, pseudoseed('muk')), 
-          center = G.P_CENTERS.c_base}, G.hand, nil, nil, {G.C.PURPLE
-        })
+        cards[i] = SMODS.add_card{set = 'Base', no_edition = true}
       end
       playing_card_joker_effects(cards);
       local target = pseudorandom_element(G.playing_cards, pseudoseed('muk'))

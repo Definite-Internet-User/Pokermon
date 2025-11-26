@@ -14,9 +14,10 @@ local ampharos={
   ptype = "Lightning",
   atlas = "Pokedex2",
   gen = 2,
-  perishable_compat = true,
+  perishable_compat = false,
   blueprint_compat = true,
   eternal_compat = true,
+  poke_custom_values_to_keep = {"Xmult"},
   calculate = function(self, card, context)
     if context.cardarea == G.jokers and context.scoring_hand then
       if context.joker_main and card.ability.extra.Xmult > 0 and card.ability.extra.Xmult ~= 1  then
@@ -52,6 +53,7 @@ local mega_ampharos={
   perishable_compat = true,
   blueprint_compat = false,
   eternal_compat = true,
+  poke_custom_values_to_keep = {"Xmult"},
   calculate = function(self, card, context)
     if context.setting_blind and not context.blueprint then
       if G.hand.config.card_limit < math.ceil(#G.deck.cards/2) then
@@ -300,6 +302,7 @@ local weird_tree={
   blueprint_compat = false,
   eternal_compat = true,
   aux_poke = true,
+  auto_sticker = true,
   no_collection = true,
   custom_pool_func = true,
   calculate = function(self, card, context)
@@ -963,7 +966,7 @@ local misdreavus = {
   atlas = "Pokedex2",
   gen = 2,
   item_req = "duskstone",
-  perishable_compat = true,
+  perishable_compat = false,
   blueprint_compat = true,
   eternal_compat = true,
   calculate = function(self, card, context)

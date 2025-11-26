@@ -84,6 +84,113 @@ local cgoose={
   end
 }
 
+local mirror = {
+  key = "mirror",
+  dollars = 5,
+  mult = 2,
+  boss = { min = 3, max = 80 },
+  pos = { x = 0, y = 1 },
+  atlas = "AtlasBossblinds",
+  artist = "InertSteak",
+  boss_colour = HEX("C57BE6"),
+  debuff = {},
+  config = {trans_key = "j_joker", reset_eternal = false},
+  discovered = true,
+  set_blind = function(self)
+    if #G.jokers.cards > 0 then
+      local target = G.jokers.cards[#G.jokers.cards]
+      if target.ability.eternal then
+        self.config.reset_eternal = true
+        target:set_eternal(false)
+      end
+      self.config.trans_key = target.config.center_key
+      poke_evolve(target, 'j_poke_ditto', nil, localize("poke_transform_success"), true)
+    end
+  end,
+  disable = function(self)
+    local target = G.jokers.cards[#G.jokers.cards]
+    poke_evolve(target, self.config.trans_key, nil, localize("poke_transform_success"), true)
+    if self.config.reset_eternal then
+      target.ability.eternal = true
+    end
+  end
+}
+
+local rocket = {
+  key = "rocket",
+  dollars = 5,
+  mult = 2,
+  boss = { min = 2, max = 80 },
+  pos = { x = 0, y = 2 },
+  atlas = "AtlasBossblinds",
+  artist = "Catzzadilla",
+  boss_colour = HEX("C90000"),
+  debuff = {},
+  config = {},
+  discovered = true,
+  calculate = function(self, blind, context)
+    if not blind.disabled then
+      if context.stay_flipped and context.to_area == G.hand then
+        local dollars = G.GAME.dollars
+        if (SMODS.Mods["Talisman"] or {}).can_load then
+          dollars = to_number(dollars)
+        end
+        if dollars >= 25 then
+          return {
+            stay_flipped = true
+          }
+        end
+      end
+    end
+  end,
+}
+
+local magma = {
+  key = "magma",
+  dollars = 5,
+  mult = 2,
+  boss = { min = 2, max = 80 },
+  pos = { x = 0, y = 5 },
+  atlas = "AtlasBossblinds",
+  artist = "Catzzadilla",
+  boss_colour = HEX("EB2D31"),
+  debuff = {},
+  config = {},
+  discovered = true,
+  calculate = function(self, blind, context)
+    if not blind.disabled then
+        if context.modify_hand then
+          blind.triggered = true
+          hand_chips = mod_chips(math.max(math.floor(hand_chips * 0.25 + 0.75), 0))
+          update_hand_text({ sound = 'chips2', modded = true }, { chips = hand_chips, mult = mult })
+        end
+    end
+  end
+}
+
+local aqua = {
+  key = "aqua",
+  dollars = 5,
+  mult = 2,
+  boss = { min = 2, max = 80 },
+  pos = { x = 0, y = 7 },
+  atlas = "AtlasBossblinds",
+  artist = "Catzzadilla",
+  boss_colour = HEX("38B8F8"),
+  debuff = {},
+  config = {},
+  discovered = true,
+  calculate = function(self, blind, context)
+    if not blind.disabled then
+        if context.modify_hand then
+          blind.triggered = true
+          mult = mod_mult(math.max(math.floor(mult * 0.25 + 0.75), 1))
+          update_hand_text({ sound = 'chips2', modded = true }, { chips = hand_chips, mult = mult })
+        end
+    end
+  end
+}
+
 return {name = "Blinds",
-        list = {cgoose}
+        list = {mirror, rocket, cgoose}
 }

@@ -64,6 +64,9 @@ local lopunny={
   config = {extra = {mult = 5, Xmult = 2,scry = 2}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
+    if pokermon_config.detailed_tooltips then
+      info_queue[#info_queue + 1] = {set = 'Other', key = 'mega_poke'}
+    end
     return {vars = {center.ability.extra.mult, center.ability.extra.Xmult, center.ability.extra.scry}}
   end,
   designer = "King_Alloy",
@@ -187,7 +190,7 @@ local mismagius = {
   ptype = "Psychic",
   atlas = "Pokedex4",
   gen = 4,
-  perishable_compat = true,
+  perishable_compat = false,
   blueprint_compat = true,
   eternal_compat = true,
   calculate = function(self, card, context)

@@ -20,6 +20,7 @@ local qwilfish = {
   gen = 2,
   hazard_poke = true,
   blueprint_compat = true,
+  perishable_compat = false,
   calculate = function(self, card, context)
     if context.setting_blind then
       poke_set_hazards(card.ability.extra.hazards)
@@ -368,7 +369,7 @@ local teddiursa={
   ptype = "Colorless",
   atlas = "Pokedex2",
   gen = 2,
-  perishable_compat = true,
+  perishable_compat = false,
   blueprint_compat = true,
   eternal_compat = true,
   calculate = function(self, card, context)
@@ -408,7 +409,7 @@ local ursaring={
   ptype = "Colorless",
   atlas = "Pokedex2",
   gen = 2,
-  perishable_compat = true,
+  perishable_compat = false,
   blueprint_compat = true,
   eternal_compat = true,
   calculate = function(self, card, context)
@@ -451,7 +452,7 @@ local slugma={
   ptype = "Fire",
   atlas = "Pokedex2",
   gen = 2,
-  perishable_compat = true,
+  perishable_compat = false,
   blueprint_compat = true,
   eternal_compat = true,
   calculate = function(self, card, context)
@@ -504,7 +505,7 @@ local magcargo={
   ptype = "Fire",
   atlas = "Pokedex2",
   gen = 2,
-  perishable_compat = true,
+  perishable_compat = false,
   blueprint_compat = true,
   eternal_compat = true,
   calculate = function(self, card, context)
@@ -855,7 +856,7 @@ local mantine={
   ptype = "Water",
   atlas = "Pokedex2",
   gen = 2,
-  perishable_compat = true,
+  perishable_compat = false,
   blueprint_compat = true,
   eternal_compat = true,
   calculate = function(self, card, context)
@@ -1215,7 +1216,7 @@ local phanpy={
   ptype = "Earth",
   atlas = "Pokedex2",
   gen = 2,
-  perishable_compat = true,
+  perishable_compat = false,
   blueprint_compat = true,
   eternal_compat = true,
   calculate = function(self, card, context)
@@ -1262,7 +1263,7 @@ local donphan={
   ptype = "Earth",
   atlas = "Pokedex2",
   gen = 2,
-  perishable_compat = true,
+  perishable_compat = false,
   blueprint_compat = true,
   eternal_compat = true,
   calculate = function(self, card, context)
@@ -1317,7 +1318,10 @@ local porygon2={
   eternal_compat = true,
   calculate = function(self, card, context)
     if context.open_booster and #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit then
-      local forced_key = matching_energy(G.jokers.cards[1]);
+      local forced_key = matching_energy(G.jokers.cards[1], true);
+      if forced_key == "c_poke_bird_energy" then
+        poke_evolve(card, 'j_poke_porygonz')
+      end
       G.GAME.consumeable_buffer = G.GAME.consumeable_buffer + 1
       G.E_MANAGER:add_event(Event({
           trigger = 'before',
@@ -1535,6 +1539,7 @@ local tyrogue={
   atlas = "Pokedex2",
   gen = 2,
   blueprint_compat = true,
+  perishable_compat = false,
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     if pokermon_config.detailed_tooltips then
@@ -1622,6 +1627,7 @@ local hitmontop={
   atlas = "Pokedex2",
   gen = 2,
   blueprint_compat = true,
+  perishable_compat = false,
   calculate = function(self, card, context)
     if context.cardarea == G.jokers and context.scoring_hand then
       if context.joker_main then
@@ -1750,7 +1756,7 @@ local magby={
   ptype = "Fire",
   atlas = "Pokedex2",
   gen = 2,
-  perishable_compat = true,
+  perishable_compat = false,
   blueprint_compat = true,
   eternal_compat = true,
   calculate = function(self, card, context)

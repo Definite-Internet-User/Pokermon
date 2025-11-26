@@ -491,10 +491,97 @@ local earth_energy = {
   end
 }
 
+local bird_energy = {
+  name = "bird_energy",
+  key = "bird_energy",
+  set = "Energy",
+  animated = true,
+  artist = "Catzzadilla",
+  pos = { x = 0, y = 0 },
+  atlas = "AtlasConsumablesBirdEnergy",
+  cost = 4,
+  etype = "Bird",
+  unlocked = true,
+  discovered = true,
+  no_collection = true,
+  loc_vars = function(self, info_queue, card)
+        local r_mults = {}
+        for i = 1, 23 do
+            r_mults[#r_mults + 1] = tostring(i)
+        end
+        local gives_strings = {{ string = localize('poke_water_gun_ex'), colour = G.ARGS.LOC_COLOURS.water }, { string = localize('poke_sky_attack_ex'), colour = G.ARGS.LOC_COLOURS.colorless },
+                               { string = 'HEX("FF7ABF")', colour = G.C.JOKER_GREY}, { string = '?????', colour = G.C.JOKER_GREY}
+                             }
+        local energy_strings = {{ string = '?????', colour = G.C.JOKER_GREY}, { string = self.name, colour = G.C.JOKER_GREY}, { string = localize('k_poke_pp'), colour = G.C.JOKER_GREY},
+                                { string = localize('k_mult'), colour = G.C.MULT}, { string = 'ERROR', colour = G.C.CHIPS}
+                               }
+        local energy_strings2 = {{ string = '?????', colour = G.C.JOKER_GREY}, { string = self.name, colour = G.C.JOKER_GREY}, { string = localize('k_poke_pp'), colour = G.C.JOKER_GREY},
+                        { string = localize('k_mult'), colour = G.C.MULT}, { string = 'ERROR', colour = G.C.CHIPS}
+                       }
+        main_start = {
+          {n = G.UIT.R,
+          config = {
+            align = "cm",
+            padding = 0.05,
+            colour = G.C.CLEAR,
+          },
+          nodes = {
+              { n = G.UIT.O, config = { object = DynaText(poke_random_text(gives_strings, {poke_rep_string = localize('k_poke_gives'), poke_rep_num = 5})) } },
+              { n = G.UIT.T, config = { text = ' +'..(energy_max + (G.GAME.energy_plus or 0))..' ', colour = HEX("FF7ABF"), scale = 0.32 } },
+              { n = G.UIT.O, config = { object = DynaText(poke_random_text(energy_strings, {poke_rep_string = localize('k_energy'), poke_rep_num = 5})) } },
+            }
+          },
+          {n = G.UIT.R,
+          config = {
+            align = "cm",
+            padding = 0.05,
+            colour = G.C.CLEAR,
+          },
+          nodes = {
+              { n = G.UIT.T, config = { text = '('..localize('k_poke_ignores')..' ', colour = G.C.JOKER_GREY, scale = 0.32 } },
+              { n = G.UIT.O, config = { object = DynaText(poke_random_text(energy_strings2, {poke_rep_string = localize('k_energy'), poke_rep_num = 5})) } },
+              { n = G.UIT.T, config = { text = ' '..localize('k_poke_limit')..')', colour = G.C.JOKER_GREY, scale = 0.32 } },
+            }
+          },
+        }
+        return { main_start = main_start }
+    end,
+  can_use = function(self, card)
+    if not G.jokers.highlighted or #G.jokers.highlighted ~= 1 then
+      return energy_can_use(self, card)
+    else
+      return highlighted_energy_can_use(self, card)
+    end
+  end,
+  use = function(self, card, area, copier)
+    local choice = nil
+    if not G.jokers.highlighted or #G.jokers.highlighted ~= 1 then
+      choice = energy_can_use(self, card)
+    else
+      choice = highlighted_energy_can_use(self, card)
+    end
+    if choice then
+      local max = energy_max + (G.GAME.energy_plus or 0)
+      for i = 1, max do
+        increment_energy(choice, self.etype)
+      end
+    end
+    if G.GAME.energies_used then
+      G.GAME.energies_used = G.GAME.energies_used  + 1
+    else
+      G.GAME.energies_used = 1
+    end
+  end,
+  in_pool = function(self)
+    return false
+  end
+}
+
 local double_rainbow_energy = {
   name = "double_rainbow_energy",
   key = "double_rainbow_energy",
   set = "Spectral",
+  artist = "MyDude_YT",
   config = {},
   loc_vars = function(self, info_queue, center)
     info_queue[#info_queue+1] = {set = 'Other', key = 'energize'}
@@ -507,33 +594,18 @@ local double_rainbow_energy = {
   unlocked = true,
   discovered = true,
   can_use = function(self, card)
-    local choice = nil
-    if G.jokers.highlighted and #G.jokers.highlighted == 1 then
-      choice = G.jokers.highlighted[1]
-    elseif G.jokers.cards and #G.jokers.cards > 0 then
-      choice = G.jokers.cards[1]
+    if not G.jokers.highlighted or #G.jokers.highlighted ~= 1 then
+      return energy_can_use(self, card)
     else
-      return false
-    end
-    if choice.ability and choice.ability.extra and type(choice.ability.extra) == "table" and choice.ability.extra.ptype then
-      return true
-    else
-      return false
+      return highlighted_energy_can_use(self, card)
     end
   end,
   use = function(self, card, area, copier)
-    local choice = nil
-    if G.jokers.highlighted and #G.jokers.highlighted == 1 then
-      choice = G.jokers.highlighted[1]
-    else
-      choice = G.jokers.cards[1]
-    end
-    play_sound('poke_energy_use', 1, 0.5)
     for i = 1, 2 do
-      if choice.config and choice.config.center.stage and not type_sticker_applied(choice) then
-        energy_increase(choice, choice.ability.extra.ptype)
-      elseif type_sticker_applied(choice) then
-        energy_increase(choice, type_sticker_applied(choice))
+      if not G.jokers.highlighted or #G.jokers.highlighted ~= 1 then
+        energy_use(self, card, area, copier, true)
+      else
+        highlighted_energy_use(self, card, area, copier, true)
       end
     end
     if not G.GAME.modifiers.no_interest then
@@ -569,7 +641,7 @@ local transformation = {
     else
       return false
     end
-    if choice.ability and choice.ability.extra and type(choice.ability.extra) == "table" and choice.ability.extra.ptype and not choice.config.center.aux_poke then
+    if choice.ability and choice.ability.extra and type(choice.ability.extra) == "table" and choice.ability.extra.ptype then
       return true
     else
       return false
@@ -587,12 +659,14 @@ local transformation = {
     elseif type_sticker_applied(choice) then
       energy_increase(choice, type_sticker_applied(choice))
     end
-    local highest = get_highest_evo(choice)
-    if highest and type(highest) == "string" then
-      local prefix = choice.config.center.poke_custom_prefix or "poke"
-      local forced_key = "j_"..prefix.."_"..highest
-      local context = {}
-      poke_evolve(choice, forced_key)
+    if not choice.config.center.aux_poke then
+      local highest = get_highest_evo(choice)
+      if highest and type(highest) == "string" then
+        local prefix = choice.config.center.poke_custom_prefix or "poke"
+        local forced_key = "j_"..prefix.."_"..highest
+        local context = {}
+        poke_evolve(choice, forced_key)
+      end
     end
   end
 }
@@ -600,11 +674,14 @@ local megastone = {
   name = "megastone",
   key = "megastone",
   set = "Spectral",
+  artist = "MyDude_YT",
   helditem = true,
   config = {extra = {usable = true, used_on = nil}},
   loc_vars = function(self, info_queue, center)
     info_queue[#info_queue + 1] = { set = 'Other', key = 'endless' }
-    info_queue[#info_queue+1] = {set = 'Other', key = 'mega_rule'}
+    if not G.GAME.modifiers.infinite_megastone then
+      info_queue[#info_queue+1] = {set = 'Other', key = 'mega_rule'}
+    end
     if center and center.ability.extra.used_on then
       info_queue[#info_queue+1] = {set = 'Other', key = 'mega_used_on', vars = {localize({ type = "name_text", set = "Joker", key = center.ability.extra.used_on})}}
     end
@@ -619,7 +696,9 @@ local megastone = {
   discovered = true,
   can_use = function(self, card)
     if G.STATE == G.STATES.SMODS_BOOSTER_OPENED or G.STATE == G.STATES.TAROT_PACK or G.STATE == G.STATES.SPECTRAL_PACK or G.STATE == G.STATES.PLANET_PACK
-       or G.STATE == G.STATES.STANDARD_PACK then return false end
+       or G.STATE == G.STATES.STANDARD_PACK then 
+      if (#G.consumeables.cards + G.GAME.consumeable_buffer >= G.consumeables.config.card_limit) and card.area == G.pack_cards then return false end
+    end
     if card.area == G.shop_jokers then return false end
     if not (G.jokers and G.jokers.cards) then return false end
     if #G.jokers.cards == 0 then return false end
@@ -666,7 +745,9 @@ local megastone = {
         end
       end
       forced_key = forced_mega_key.. mega
-      card.ability.extra.used_on = forced_key
+      if not G.GAME.modifiers.infinite_megastone then
+        card.ability.extra.used_on = forced_key
+      end
     else
       forced_key = get_previous_evo(target, true)
       card.ability.extra.used_on = nil
@@ -782,20 +863,34 @@ local nightmare = {
   unlocked = true,
   discovered = true,
   use = function(self, card)
-    local selected = G.jokers.highlighted[1]
-    local energy = matching_energy(selected)
-    local context = {}
-    remove(self, selected, context)
-    for i= 1, 2 do
-      local _card = create_card("Energy", G.pack_cards, nil, nil, true, true, energy, nil)
-      local edition = {negative = true}
-      _card:set_edition(edition, true)
-      _card:add_to_deck()
-      G.consumeables:emplace(_card)
+    local choice = nil
+    if G.jokers.highlighted and #G.jokers.highlighted == 1 then
+      choice = G.jokers.highlighted[1]
+    else
+      choice = G.jokers.cards[1]
     end
+    local energy = matching_energy(choice, true) or "c_poke_colorless_energy"
+    if energy then
+      local max = (energy == "c_poke_bird_energy") and 1 or 2
+      local context = {}
+      for i= 1, max do
+        local _card = create_card("Energy", G.pack_cards, nil, nil, true, true, energy, nil)
+        local edition = {negative = true}
+        _card:set_edition(edition, true)
+        _card:add_to_deck()
+        G.consumeables:emplace(_card)
+      end
+    end
+    remove(self, choice)
   end,
   can_use = function(self, card)
-    return G.jokers.highlighted and #G.jokers.highlighted == 1 and has_type(G.jokers.highlighted[1]) and not G.jokers.highlighted[1].ability.eternal
+    local choice = nil
+    if G.jokers.highlighted and #G.jokers.highlighted == 1 then
+      choice = G.jokers.highlighted[1]
+    else
+      choice = G.jokers.cards[1]
+    end
+    return not choice.ability.eternal
   end,
 }
 
@@ -852,8 +947,7 @@ local emergy = {
 	end,
 }
 
-local list = {pokeball, greatball, ultraball, masterball, grass_energy, fire_energy, water_energy, lightning_energy, psychic_energy, fighting_energy, colorless_energy, darkness_energy, metal_energy,
-        fairy_energy, dragon_energy, earth_energy, double_rainbow_energy, transformation, obituary, nightmare, revenant, megastone}
+local list = {pokeball, greatball, ultraball, masterball, grass_energy, fire_energy, water_energy, lightning_energy, psychic_energy, fighting_energy, colorless_energy, darkness_energy,              metal_energy, fairy_energy, dragon_energy, earth_energy, bird_energy, double_rainbow_energy, transformation, obituary, nightmare, revenant, megastone}
 
 if (SMODS.Mods["Cryptid"] or {}).can_load then
   table.insert(list, emergy)

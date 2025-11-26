@@ -133,6 +133,11 @@ poke_add_card = function(add_card, card, area)
 end
 
 poke_add_shop_card = function(add_card, card)
+    if G.GAME.shop.joker_max == 1 then
+      G.shop_jokers.config.card_limit = G.GAME.shop.joker_max + 1
+      G.shop_jokers.T.w = math.min((G.GAME.shop.joker_max + 1)*1.02*G.CARD_W,4.08*G.CARD_W)
+      G.shop:recalculate()
+    end
     add_card.states.visible = false
     G.shop_jokers:emplace(add_card)
     add_card:start_materialize()
@@ -432,6 +437,7 @@ end
 
 poke_is_in_collection = function(card)
   if G.your_collection then
+    if not card.area then return true end
     for k, v in pairs(G.your_collection) do
       if card.area == v then
         return true
@@ -564,4 +570,72 @@ function poke_is_odd(card)
   else
     return false
   end
+end
+
+function poke_suit_check(hand, num)
+  local suits = {}
+  local suit_count = 0
+  
+  for k, v in pairs(hand) do
+    for x, y in pairs(SMODS.Suits) do
+      if not SMODS.has_any_suit(v) and v:is_suit(y.key) and not suits[y.key] then
+        suits[y.key] = true
+        suit_count = suit_count + 1
+        break
+      end
+    end
+  end
+  
+  for k, v in pairs(hand) do
+    for x, y in pairs(SMODS.Suits) do
+      if SMODS.has_any_suit(v) and v:is_suit(y.key) and not suits[y.key] then
+        suits[y.key] = true
+        suit_count = suit_count + 1
+        break
+      end
+    end
+  end
+  
+  return suit_count >= num
+end
+
+
+
+set_joker_family_win = function(card)
+  if pokermon_config.previous_evo_stickers then
+    if get_family_keys(card.config.center.name, card.config.center.poke_custom_prefix, card) then
+      local keys = get_family_keys(card.config.center.name, card.config.center.poke_custom_prefix, card)
+      if #keys > 1 then
+        local index
+        for k, v in ipairs(keys) do
+          if type(v) == "table" then v = v.key end
+          if v == card.config.center.key then index = k end
+          --Excludes higher evolutions
+          if index and k > index and (G.P_CENTERS[v]['stage'] ~= card.config.center.stage or G.P_CENTERS[v]['stage'] == "Legendary") and G.P_CENTERS[v]['auto_sticker'] ~= true then break end 
+          -- This if statement makes me go cross-eyed so I'm sorry about that
+          if G.P_CENTERS[v] and G.P_CENTERS[v]['set'] == 'Joker' and not (G.P_CENTERS[v]['stage'] == card.config.center.stage) and not -- Excludes the same stage mons in an evo line
+              ((card.config.center.stage == "One" or card.config.center.stage == "Two" or card.config.center.stage == "Mega") and
+                  (G.P_CENTERS[v]['stage'] == G.P_CENTERS[get_previous_evo(card, true)]['stage']) and v ~= get_previous_evo(card, true)) or -- Checks for branching evos in previous stages
+              (card.config.center.stage == "Legendary" and get_previous_evo(card, true) and (G.P_CENTERS[v]['stage'] == G.P_CENTERS[get_previous_evo(card, true)]['stage'])) or -- (i.e Meltan or Cosmog or Terapagos)
+              (G.P_CENTERS[v] and G.P_CENTERS[v]['set'] == 'Joker' and G.P_CENTERS[v]['aux_poke'] == true and G.P_CENTERS[v]['stage'] == card.config.center.stage) or -- Checks for forms (which have the same stage i.e. Jirachi, Rotom)
+              (G.P_CENTERS[v] and G.P_CENTERS[v]['set'] == 'Joker' and G.P_CENTERS[v]['auto_sticker'] == true) then 
+
+            -- This is the bit that tracks joker wins
+            G.PROFILES[G.SETTINGS.profile].joker_usage[v] = G.PROFILES[G.SETTINGS.profile].joker_usage[v] or {count = 1, order = G.P_CENTERS[v]['order'], wins = {}, losses = {}, wins_by_key = {}, losses_by_key = {}}
+            if G.PROFILES[G.SETTINGS.profile].joker_usage[v] then
+              G.PROFILES[G.SETTINGS.profile].joker_usage[v].wins = G.PROFILES[G.SETTINGS.profile].joker_usage[v].wins or {}
+              G.PROFILES[G.SETTINGS.profile].joker_usage[v].wins[G.GAME.stake] = (G.PROFILES[G.SETTINGS.profile].joker_usage[v].wins[G.GAME.stake] or 0) + 1
+              G.PROFILES[G.SETTINGS.profile].joker_usage[v].wins_by_key[SMODS.stake_from_index(G.GAME.stake)] =
+                  (G.PROFILES[G.SETTINGS.profile].joker_usage[v].wins_by_key[SMODS.stake_from_index(G.GAME.stake)] or 0) + 1
+            end
+          end
+        end
+      end
+    end
+  end
+end
+
+poke_can_set_sprite = function(card)
+  if poke_is_in_collection(card) and not card.discovered then return false end
+  return true
 end

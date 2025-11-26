@@ -272,17 +272,7 @@ local vanillite={
         if card.ability.extra.chips - card.ability.extra.chips_minus <= 0 then 
             G.E_MANAGER:add_event(Event({
                 func = function()
-                    play_sound('tarot1')
-                    card.T.r = -0.2
-                    card:juice_up(0.3, 0.4)
-                    card.states.drag.is = true
-                    card.children.center.pinch.x = true
-                    G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.3, blockable = false,
-                        func = function()
-                                G.jokers:remove_card(self)
-                                card:remove()
-                                card = nil
-                            return true; end})) 
+                    remove(self, card, context)
                     return true
                 end
             })) 
@@ -341,17 +331,7 @@ local vanillish={
         if card.ability.extra.chips - card.ability.extra.chips_minus <= 0 then 
             G.E_MANAGER:add_event(Event({
                 func = function()
-                    play_sound('tarot1')
-                    card.T.r = -0.2
-                    card:juice_up(0.3, 0.4)
-                    card.states.drag.is = true
-                    card.children.center.pinch.x = true
-                    G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.3, blockable = false,
-                        func = function()
-                                G.jokers:remove_card(self)
-                                card:remove()
-                                card = nil
-                            return true; end})) 
+                    remove(self, card, context)
                     return true
                 end
             })) 
@@ -401,17 +381,7 @@ local vanilluxe={
         if card.ability.extra.chips - card.ability.extra.chips_minus <= 0 then 
             G.E_MANAGER:add_event(Event({
                 func = function()
-                    play_sound('tarot1')
-                    card.T.r = -0.2
-                    card:juice_up(0.3, 0.4)
-                    card.states.drag.is = true
-                    card.children.center.pinch.x = true
-                    G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.3, blockable = false,
-                        func = function()
-                                G.jokers:remove_card(self)
-                                card:remove()
-                                card = nil
-                            return true; end})) 
+                    remove(self, card, context)
                     return true
                 end
             }))
@@ -571,7 +541,7 @@ local ferroseed={
   eternal_compat = true,
   calculate = function(self, card, context)
     if context.check_enhancement then
-      if context.other_card.config.center.key == "m_wild" or context.other_card.config.center.key == "m_poke_hazard" then
+      if SMODS.has_enhancement(context.other_card, 'm_wild') or SMODS.has_enhancement(context.other_card, 'm_poke_hazard') then
           return {m_steel = true}
       end
     end
@@ -603,7 +573,7 @@ local ferrothorn={
   eternal_compat = true,
   calculate = function(self, card, context)
     if context.check_enhancement then
-      if context.other_card.config.center.key == "m_wild" or context.other_card.config.center.key == "m_poke_hazard" then
+      if SMODS.has_enhancement(context.other_card, 'm_wild') or SMODS.has_enhancement(context.other_card, 'm_poke_hazard') then
           return {m_steel = true}
       end
     end
