@@ -65,7 +65,7 @@ local gastly={
       if #G.jokers.cards > 0 then
         local eligible_editionless_jokers = {}
         for k, v in pairs(G.jokers.cards) do
-          if v.ability.set == 'Joker' and v ~= card and not v.gone then
+          if v.ability.set == 'Joker' and (not v.edition) and v ~= card and not v.gone then
               table.insert(eligible_editionless_jokers, v)
           end
         end
@@ -123,7 +123,7 @@ local haunter={
       if #G.jokers.cards > 0 then
         local eligible_editionless_jokers = {}
         for k, v in pairs(G.jokers.cards) do
-          if v.ability.set == 'Joker' and v ~= card and not v.gone then
+          if v.ability.set == 'Joker' and (not v.edition) and v ~= card and not v.gone then
               table.insert(eligible_editionless_jokers, v)
           end
         end
@@ -179,9 +179,9 @@ local gengar={
         card.ability.extra.trigger = true
         
         local gengar_chance = pseudorandom('gengar')
-        if gengar_chance < .05 then card.ability.extra.gengar_rounds = 2
-        elseif gengar_chance < .15 then card.ability.extra.gengar_rounds = 3
-        elseif gengar_chance < .35 then card.ability.extra.gengar_rounds = 4
+        if gengar_chance < .10 then card.ability.extra.gengar_rounds = 2
+        elseif gengar_chance < .20 then card.ability.extra.gengar_rounds = 3
+        elseif gengar_chance < .40 then card.ability.extra.gengar_rounds = 4
         elseif gengar_chance < .65 then card.ability.extra.gengar_rounds = 5
         elseif gengar_chance < .85 then card.ability.extra.gengar_rounds = 6
         elseif gengar_chance < .95 then card.ability.extra.gengar_rounds = 7
@@ -193,9 +193,9 @@ local gengar={
   set_ability = function(self, card, initial, delay_sprites)
     if initial then
       local gengar_chance = pseudorandom('gengar')
-      if gengar_chance < .05 then card.ability.extra.gengar_rounds = 2
-      elseif gengar_chance < .15 then card.ability.extra.gengar_rounds = 3
-      elseif gengar_chance < .35 then card.ability.extra.gengar_rounds = 4
+      if gengar_chance < .10 then card.ability.extra.gengar_rounds = 2
+      elseif gengar_chance < .20 then card.ability.extra.gengar_rounds = 3
+      elseif gengar_chance < .40 then card.ability.extra.gengar_rounds = 4
       elseif gengar_chance < .65 then card.ability.extra.gengar_rounds = 5
       elseif gengar_chance < .85 then card.ability.extra.gengar_rounds = 6
       elseif gengar_chance < .95 then card.ability.extra.gengar_rounds = 7
@@ -210,7 +210,7 @@ local gengar={
       if #G.jokers.cards > 0 then
         local eligible_jokers = {}
         for k, v in pairs(G.jokers.cards) do
-          if v.ability.set == 'Joker' and v.ability.name ~= "gengar" and not v.gone then
+          if v.ability.set == 'Joker' and (not v.edition) and v.ability.name ~= "gengar" and not v.gone then
               table.insert(eligible_jokers, v)
           end
         end
