@@ -1555,8 +1555,7 @@ return {
             j_poke_gastly = {
                 name = 'Gastly',      
                 text = {
-                    "{C:green}#1# in #2#{} chance to {C:attention}replace{} the",
-                    "edition of a random {C:attention}Joker{} with",
+                    "{C:green}#1# in #2#{} chance to give a random {C:attention}Joker{}",
                     "{C:dark_edition}Negative{} at end of round",
                     "{S:1.1,C:red,E:2}self destructs{}",
                     "{C:inactive,s:0.8}(Evolves after {C:attention,s:0.8}#3#{C:inactive,s:0.8} rounds)",
@@ -1565,8 +1564,7 @@ return {
             j_poke_haunter = {
                 name = 'Haunter',      
                 text = {
-                    "{C:green}#1# in #2#{} chance to {C:attention}replace{} the",
-                    "edition of a random {C:attention}Joker{} with",
+                    "{C:green}#1# in #2#{} chance to give a random {C:attention}Joker{}",
                     "{C:dark_edition}Negative{} at end of round",
                     "{S:1.1,C:red,E:2}self destructs{}",
                     "{C:inactive,s:0.8}(Evolves with a {C:attention,s:0.8}Linking Cord{C:inactive,s:0.8})"
@@ -1575,8 +1573,7 @@ return {
             j_poke_gengar = {
                 name = 'Gengar',      
                 text = {
-                    "{C:attention}Replace{} the edition of a",
-                    "random {C:attention}Joker{} with",
+                    "Give a random {C:attention}Joker{}",
                     "{C:dark_edition}Negative{} in {C:dark_edition}#1#{} rounds",
                     "{C:inactive,s:0.8}(Gengar picks a new number!){}",
                     "{C:inactive,s:0.8}(Excludes Gengars){}",
@@ -2325,7 +2322,8 @@ return {
                     "{X:mult,C:white}X#6#{} for scoring {C:attention}Steel{} / {C:attention}Glass{} cards",
                     "{C:money}$#8#{} for scoring {C:attention}Gold{} / {C:attention}Lucky{} cards",
                     "Then {C:attention}Randomize{} scoring card {C:dark_edition}Enhancements",
-                    "{C:inactive}(Currently {C:chips}+#3#{}, {C:mult}+#1#{}, {X:mult,C:white}X#5#{}, {C:money}$#7#{C:inactive} end of round)"
+                    "{C:inactive,s:0.8}Will not give stone enhancement{}",
+                    "{C:inactive}(Currently {C:chips}+#3#{}, {C:mult}+#1#{}, {X:red,C:white}X#5#{}, {C:money}$#7#{C:inactive} end of round)"
                 } 
             },
             j_poke_chinchou = {
@@ -3831,11 +3829,12 @@ return {
             j_poke_togekiss = {
                 name = 'Togekiss',
                 text = {
-                    "Adds {C:attention}#6#{} to all {C:attention}listed{} {C:green,E:1,S:1.1}probabilities",
-                    "{br:4}ERROR - CONTACT STEAK",
                     "{C:attention}Lucky{} cards have",
                     "a {C:green}#1# in #2#{} chance to give {C:chips}+#4#{} Chips",
                     "and a {C:green}#1# in #3#{} chance to give {X:mult,C:white}X#5#{} Mult",
+                    "{br:4}ERROR - CONTACT STEAK",
+                    "{C:attention}Lucky Card{} odds are {C:attention}Tripled{}",
+                    "{C:inactive}(ex: {C:green}2 in 5{C:inactive} -> {C:green}6 in 5{C:inactive})",
                 }
             },
             j_poke_yanmega = {
@@ -3896,7 +3895,8 @@ return {
                     "{X:mult,C:white} X#2# {} Mult per {C:pink}Energy{}",
                     "card used this run",
                     "{br:2}text needs to be here to work",
-                    "Creates an {C:pink}Energy",
+                    "Creates an {C:pink}Energy of",
+                    "the same {C:pink}Type{} of leftmost Joker",
                     "when you use an {C:pink}Energy",
                     "{C:inactive}(Must have room)",
                     "{C:inactive}(Currently {X:mult,C:white} X#1# {C:inactive} Mult)"
