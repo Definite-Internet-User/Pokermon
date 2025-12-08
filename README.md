@@ -8,6 +8,7 @@ This is a fork containing my own personal tweaks to the Balatro mod [Pokermon](h
 - Porygon-Z energy gen effect gives matching energy to leftmost joker.
 - Lower Deino line's evo reqs; Deino 6 triggers, Zwei 8 triggers.
 - Revert Togekiss nerf
+- Hazard break chance from 1/6 to 1/8
 
 ## Things I may do later.
 - Change Articuno to give a random edtion(excluding shiny & negative)
