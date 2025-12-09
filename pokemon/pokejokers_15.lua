@@ -510,7 +510,7 @@ local riolu={
 local lucario={
   name = "lucario",
   pos = {x = 5, y = 4},
-  config = {extra = {Xmult_multi = 1.3,}},
+  config = {extra = {Xmult_multi = 1.4,}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     return {vars = {center.ability.extra.Xmult_multi, }}
