@@ -10,6 +10,7 @@ This is a fork containing my own personal tweaks to the Balatro mod [Pokermon](h
 - Revert Togekiss nerf
 - Hazard break chance from 1/6 to 1/8
 - Lucario xmult from 1.3x to 1.4x
+- Adjusted edition weights for when Scizor gains an edition
 
 ## Things I may do later.
 - Change Articuno to give a random edtion(excluding shiny & negative)
