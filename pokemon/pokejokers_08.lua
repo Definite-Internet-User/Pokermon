@@ -109,7 +109,7 @@ local scizor={
             if sliced_card.edition and (sliced_card.edition.foil or sliced_card.edition.holo or sliced_card.edition.polychrome) then
               edition = sliced_card.edition
             else
-              edition = poll_edition('wheel_of_fortune', nil, true, true)
+              edition = poll_edition('wheel_of_fortune', nil, true, true,  { {name = 'e_foil', weight = 50,}, {name = 'e_holo', weight = 35,}, {name = 'e_polychrome', weight = 15,} })
             end
             card:set_edition(edition, true)
           end
