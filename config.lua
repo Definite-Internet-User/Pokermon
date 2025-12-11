@@ -32,7 +32,7 @@ return {
 =======
   ["pokemon_legacy"]=false,
   ["pokemon_spritesheet_id"]=2,
-  ["pokemon_spritesheet_atlas"]="Series A",
+  ["pokemon_spritesheet_atlas"]="SeriesA",
   ["pokemon_spritesheet_overrides"] = {}
 }
 >>>>>>> main
