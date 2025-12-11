@@ -4,10 +4,11 @@ This is a fork containing my own personal tweaks to the Balatro mod [Pokermon](h
 ## List of changes
 - Mew percent chance increased to 80%
 - Gastly evo line will only target jokers without an edition
+- Adjusted Gengar's round timer probabilities
 - Crobat can't give stone cards
 - Porygon-Z energy gen effect gives matching energy to leftmost joker.
 - Lower Deino line's evo reqs; Deino 6 triggers, Zwei 8 triggers.
-- Revert Togekiss nerf
+- Togekiss + odds from 1 to 2
 - Hazard break chance from 1/6 to 1/8
 - Lucario xmult from 1.3x to 1.4x
 - Adjusted edition weights for when Scizor gains an edition
