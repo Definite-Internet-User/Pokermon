@@ -374,7 +374,7 @@ local magmortar={
 local togekiss={
   name = "togekiss",
   pos = {x = 11, y = 5},
-  config = {extra = {num = 1, chip_dem = 5, Xmult_dem = 10, chips = 100, Xmult_multi = 1.5, plus_odds = 1}},
+  config = {extra = {num = 1, chip_dem = 5, Xmult_dem = 10, chips = 100, Xmult_multi = 1.5, plus_odds = 2}},
   loc_vars = function(self, info_queue, card)
     type_tooltip(self, info_queue, card)
     local num, chip_dem = SMODS.get_probability_vars(card, card.ability.extra.num, card.ability.extra.chip_dem, 'togekiss')
@@ -393,14 +393,14 @@ local togekiss={
   calculate = function(self, card, context)
     if context.individual and context.cardarea == G.play and context.other_card and context.other_card.ability.effect == "Lucky Card" then
       local ret = nil
-      if pseudorandom('togekiss') < math.pow(3, #find_joker('togekiss')) * (G.GAME and G.GAME.probabilities.normal or 1) / card.ability.extra.chip_odds then
+      if SMODS.pseudorandom_probability(card, 'togekiss', card.ability.extra.num, card.ability.extra.chip_dem, 'togekiss') then
         ret = {
           message = localize{type = 'variable', key = 'a_chips', vars = {card.ability.extra.chips}},
           colour = G.C.CHIPS,
           chip_mod = card.ability.extra.chips
         }
       end
-      if pseudorandom('togekiss') < math.pow(3, #find_joker('togekiss')) * (G.GAME and G.GAME.probabilities.normal or 1) / card.ability.extra.Xmult_odds then
+      if SMODS.pseudorandom_probability(card, 'togekiss', card.ability.extra.num, card.ability.extra.Xmult_dem, 'togekiss') then
         local temp = {
           message = localize{type = 'variable', key = 'a_xmult', vars = {card.ability.extra.Xmult_multi}},
           colour = G.C.XMULT,
