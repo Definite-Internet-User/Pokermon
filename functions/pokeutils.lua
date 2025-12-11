@@ -132,6 +132,14 @@ poke_add_card = function(add_card, card, area)
       }
 end
 
+poke_add_playing_card = function(t, no_joker_effect)
+  local playing_card = SMODS.add_card(t)
+  if not no_joker_effect then
+    playing_card_joker_effects({playing_card})
+  end
+  return playing_card
+end
+
 poke_add_shop_card = function(add_card, card)
     if G.GAME.shop.joker_max == 1 then
       G.shop_jokers.config.card_limit = G.GAME.shop.joker_max + 1
@@ -460,8 +468,8 @@ function Game:init_game_object()
 end
 
 poke_is_in_collection = function(card)
+  if not card.area then return true end
   if G.your_collection then
-    if not card.area then return true end
     for k, v in pairs(G.your_collection) do
       if card.area == v then
         return true
