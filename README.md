@@ -13,6 +13,7 @@ This is a fork containing my own personal tweaks to the Balatro mod [Pokermon](h
 - Lucario xmult from 1.3x to 1.4x
 - Adjusted edition weights for when Scizor gains an edition
 - Buff Espeon's xmult to 1.3x
+- Raised a pocket tag's chance to spawn a Megastone to 75%
 
 ## Things I may do later.
 - Change Articuno to give a random edtion(excluding shiny & negative)

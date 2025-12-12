@@ -13,7 +13,7 @@ local pocket_tag = {
     info_queue[#info_queue + 1] = G.P_CENTERS.c_poke_megastone
 		-- No idea how 25% is being set here so i'm just passing 25 manually
 		-- -gold_me
-		return { vars = {25} }
+		return { vars = {75} }
 	end,
 	apply = function(self, tag, context)
 		if context and context.type == "new_blind_choice" then
