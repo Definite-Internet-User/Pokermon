@@ -423,6 +423,7 @@ local magikarp={
   ptype = "Water",
   atlas = "Pokedex1",
   gen = 1,
+  perishable_compat = false,
   blueprint_compat = true,
   calculate = function(self, card, context)
     if context.cardarea == G.jokers and context.scoring_hand then
