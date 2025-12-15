@@ -4059,8 +4059,8 @@ return {
                 name = "Simisage",
                 text = {
                     "Applies {C:attention}Shortcut",
-                    "All played unenhanced cards have a",
-                    "{C:green}#1# in #2#{} chance to become {C:attention}Lucky{}"
+                    "Each played unenhanced card has",
+                    "a {C:green}#1# in #2#{} chance to become {C:attention}Lucky{}",
                 }
             },
             j_poke_pansear = {
@@ -5633,11 +5633,10 @@ return {
             merge = {
                 name = "Merge",
                 text = {
-                  "Removes card and adds it",
-                  "to this Joker",
-                  "Right click to view",
-                  "merged cards",
-                  "{C:inactive}(Merged Jokers can't be copied){}"
+                  "Removes card and adds it to",
+                  "this Joker, right click to",
+                  "view merged cards",
+                  "{C:inactive}(Merged Jokers aren't copiable){}"
                 }
             },
             rewards_ruins_of_alph = {
@@ -5645,6 +5644,7 @@ return {
                 text = {
                   "{C:attention}#1#{} - {C:attention}Safari{} Joker",
                   "{C:attention}#2#{} - {C:attention}Duplicate{} a random Joker",
+                  "{C:inactive}(removes Negative)",
                   "{C:attention}#3#{} - {C:attention}Brainstorm{}",
                   "{C:attention}#4#{} - {C:attention}Unown Swarm and The Soul",
                   "{C:inactive}(Rewards are not cumulative){}"
