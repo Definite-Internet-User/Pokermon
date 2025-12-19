@@ -276,6 +276,7 @@ local site_colours = {
   ['steamcommunity'] = G.C.BLACK,
   ['x'] = HEX("283234"),
   ['twitter'] = G.C.BLUE,
+  ['bsky'] = HEX("006AFF"),
   ['reddit'] = HEX("FF4500"),
   ['carrd'] = HEX("4071B7"),
   ['discord'] = HEX("5865F2")
@@ -412,13 +413,4 @@ pokermon.find_next_dex_number = function(name)
       return i
     elseif pokemon == "missingno" then return i end
   end
-end
-
-function table.contains(table, element)
-  for _, value in pairs(table) do
-    if value == element then
-      return true
-    end
-  end
-  return false
 end

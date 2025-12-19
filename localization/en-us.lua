@@ -133,6 +133,13 @@ return {
                     "if you have $25 or more"
                 }, 
             },
+            bl_poke_star = {
+                name = "The Star",
+                text = {
+                    "A random type is debuffed",
+                    "every hand",
+                },
+            },
             bl_poke_gray_godfather = {
                 name = "Gray Godfather",
                 text = {
@@ -162,6 +169,13 @@ return {
                 text = {
                     "Base Mult is quartered",
                 }, 
+            },
+            bl_poke_iridescent_hacker = {
+                name = "Iridescent Hacker",
+                text = {
+                    "Random types are debuffed",
+                    "every hand",
+                },
             },
         },
         Item = {
@@ -3301,6 +3315,47 @@ return {
                 "{C:inactive}(Must have room)"
               }
             },
+            j_poke_wurmple = {
+                name = "Wurmple",
+                text = {
+                  "{C:mult}+#1#{} Mult or {C:chips}+#2#{} Chips, {C:attention}Nature: {C:inactive}({V:1}#4#{C:inactive}){}",
+                  "{C:inactive,s:0.8}(Evolves after scoring {C:attention,s:0.8}#3# Nature{C:inactive,s:0.8} cards)",
+                }
+            },
+            j_poke_silcoon = {
+                name = "Silcoon",
+                text = {
+                  "{C:mult}+#1#{} Mult, {C:attention}Nature: {C:inactive}({V:1}#2#{C:inactive}){}",
+                  "{C:inactive,s:0.8}(Evolves after scoring {C:attention,s:0.8}#3# Nature{C:inactive,s:0.8} cards)",
+                }
+            },
+            j_poke_beautifly = {
+                name = "Beautifly",
+                text = {
+                  "{C:mult}+#1#{} Mult, {C:attention}Nature: {C:inactive}({V:1}#2#{C:inactive}){}",
+                  "{br:2}ERROR - CONTACT STEAK",
+                  "{C:green}#3# in #4#{} chance to level up",
+                  "{C:attention}Flush{} if {C:attention}poker hand{} contains",
+                  "a scoring {C:attention}Nature{} card"
+                }
+            },
+            j_poke_cascoon = {
+                name = "Cascoon",
+                text = {
+                  "{C:chips}+#1#{} Chips, {C:attention}Nature: {C:inactive}({V:1}#2#{C:inactive}){}",
+                  "{C:inactive,s:0.8}(Evolves after scoring {C:attention,s:0.8}#3# Nature{C:inactive,s:0.8} cards)",
+                }
+            },
+            j_poke_dustox = {
+                name = "Dustox",
+                text = {
+                  "{C:chips}+#1#{} Chips, {C:attention}Nature: {C:inactive}({V:1}#2#{C:inactive}){}",
+                  "{br:2}ERROR - CONTACT STEAK",
+                  "{X:mult,C:white} X#3# {} Mult if all",
+                  "cards {C:attention}held in hand",
+                  "are {C:attention}Nature{} cards"
+                }
+            },
             j_poke_shroomish = {
                 name = "Shroomish",
                 text = {
@@ -6400,6 +6455,7 @@ return {
             poke_unlimited_energy = "Infinity",
             poke_reroll_plural = "Rerolls",
             poke_reroll_singular = "Reroll",
+            poke_suit = "suit",
 
             --Some infoqueue/variable stuff
             farfetchd_infoqueue = "Farfetch\'d",
@@ -6484,6 +6540,7 @@ return {
             poke_highjumpkick_ex = "High Jump Kick!",
             poke_water_gun_ex = "Water Gun!",
             poke_sky_attack_ex = "Sky Attack!",
+            poke_bug_buzz_ex = "Bug Buzz!",
             
             poke_grass_badge = "Grass",
             poke_fire_badge = "Fire",
