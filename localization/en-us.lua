@@ -5087,7 +5087,8 @@ return {
             j_poke_daycare = {
               name = "Daycare",
               text = {
-                "Sell this card to {C:attention}breed{}",
+                "Sell this card to create",
+                "a {C:attention}Mystery Egg{} based on",
                 "adjacent Pokemon Jokers",
                 "{C:inactive,s:0.8}(Excludes Baby and Legendary Jokers){}"
               }
@@ -6361,7 +6362,8 @@ return {
             c_poke_littlecup = "Little Cup",
             c_poke_hammertime = "Hammertime",
             c_poke_lonesome = "Lonesome",
-            c_poke_randomizer = "Randomizer"
+            c_poke_randomizer = "Randomizer",
+            c_poke_delibird_delimma = "Delibird Dilemma",
         },
         dictionary = {
             k_energy = "Energy",
@@ -6474,6 +6476,7 @@ return {
             poke_reroll_plural = "Rerolls",
             poke_reroll_singular = "Reroll",
             poke_suit = "suit",
+            poke_saved_by = "Saved by",
 
             --Some infoqueue/variable stuff
             farfetchd_infoqueue = "Farfetch\'d",

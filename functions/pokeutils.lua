@@ -542,7 +542,7 @@ poke_set_hazards = function(amount)
     end
     if #valid > 0 then
       local card = pseudorandom_element(valid, pseudoseed('hazard'))
-      card:set_ability(G.P_CENTERS.m_poke_hazard, nil, true)
+      card:set_ability(G.P_CENTERS.m_poke_hazard)
     end
   end
 end
@@ -572,12 +572,6 @@ function poke_get_rank(card)
   elseif id == 11 then rank = "Jack"
   else rank = ""..id end
   return rank
-end
-
-function applies_splash()
-  return next(SMODS.find_card('j_poke_magikarp')) or
-  next(SMODS.find_card('j_poke_feebas')) or
-  next(SMODS.find_card('j_poke_luvdisc'))
 end
 
 function poke_is_even(card)
