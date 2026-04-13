@@ -3,7 +3,7 @@ local mew ={
   name = "mew", 
   pos = {x = 12, y = 11},
   soul_pos = { x = 0, y = 12},
-  config = {extra = {percent = 15}},
+  config = {extra = {percent = 80}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     if pokermon_config.detailed_tooltips then
