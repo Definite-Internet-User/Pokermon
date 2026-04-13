@@ -81,9 +81,254 @@ local glalie={
 -- Sealeo 364
 -- Walrein 365
 -- Clamperl 366
+local clamperl={
+  name = "clamperl",
+  pos = {x = 0, y = 0},
+  config = {extra = {h_size = 4, link_sold = 0}},
+  loc_vars = function(self, info_queue, center)
+    type_tooltip(self, info_queue, center)
+    info_queue[#info_queue+1] = {set = 'Other', key = 'holding_other', vars = {"Ethereal Tag"}}
+    info_queue[#info_queue+1] = {key = 'tag_ethereal', set = 'Tag'}
+    return {vars = {center.ability.extra.h_size, }}
+  end,
+  rarity = 3,
+  cost = 6,
+  gen = 3,
+  item_req = "linkcable",
+  stage = "Basic",
+  ptype = "Water",
+  atlas = "Pokedex3",
+  perishable_compat = true,
+  blueprint_compat = false,
+  eternal_compat = true,
+  calculate = function(self, card, context)
+    if context.open_booster and not context.blueprint then
+      card.ability.extra.increased_handsize = true
+      G.hand:change_size(card.ability.extra.h_size)
+    end
+    if context.ending_booster and card.ability.extra.increased_handsize and not context.blueprint then
+      card.ability.extra.increased_handsize = nil
+      G.hand:change_size(-card.ability.extra.h_size)
+    end
+    if context.selling_card and context.card.label == "linkcable" then
+      card.ability.extra.link_sold = card.ability.extra.link_sold + 1
+    end
+    local evolve = item_evo(self, card, context, "j_poke_gorebyss")
+    if evolve then 
+      return evolve
+    else
+      return scaling_evo(self, card, context, "j_poke_huntail", card.ability.extra.link_sold, 1)
+    end
+  end,
+  add_to_deck = function(self, card, from_debuff)
+    if not from_debuff then
+      card.ability.extra.increased_handsize = nil
+      G.E_MANAGER:add_event(Event({
+        func = (function()
+            add_tag(Tag('tag_ethereal'))
+            play_sound('generic1', 0.9 + math.random()*0.1, 0.8)
+            play_sound('holo1', 1.2 + math.random()*0.1, 0.4)
+            return true
+        end)
+      }))
+    end
+  end,
+  remove_from_deck = function(self, card, from_debuff)
+    if not from_debuff and card.ability.extra.increased_handsize then
+      if G.STATE == G.STATES.SMODS_BOOSTER_OPENED or G.STATE == G.STATES.TAROT_PACK or G.STATE == G.STATES.SPECTRAL_PACK or G.STATE == G.STATES.PLANET_PACK
+       or G.STATE == G.STATES.STANDARD_PACK then 
+         G.hand:change_size(-card.ability.extra.h_size)
+      end
+    end
+  end
+}
 -- Huntail 367
+local huntail ={
+  name = "huntail",
+  pos = {x = 0, y = 0},
+  config = {extra = {h_size = 4, Xmult_mod = 0.1, Xmult = 1}},
+  loc_vars = function(self, info_queue, center)
+    type_tooltip(self, info_queue, center)
+    return {vars = {center.ability.extra.h_size, center.ability.extra.Xmult_mod, center.ability.extra.Xmult}}
+  end,
+  rarity = "poke_safari",
+  cost = 8,
+  gen = 3,
+  stage = "One",
+  ptype = "Water",
+  atlas = "Pokedex3",
+  perishable_compat = true,
+  blueprint_compat = true,
+  eternal_compat = true,
+  calculate = function(self, card, context)
+    if context.open_booster and not context.blueprint then
+      G.hand:change_size(card.ability.extra.h_size)
+      card.ability.extra.increased_handsize = true
+    end
+    if context.ending_booster and card.ability.extra.increased_handsize and not context.blueprint then
+      card.ability.extra.increased_handsize = nil
+      G.hand:change_size(-card.ability.extra.h_size)
+    end
+    if context.selling_card and (context.card.config.center.set == 'Tarot' or context.card.config.center.set == 'Item') and not context.blueprint then
+      if G.STATE == G.STATES.SMODS_BOOSTER_OPENED or G.STATE == G.STATES.TAROT_PACK or G.STATE == G.STATES.SPECTRAL_PACK or G.STATE == G.STATES.PLANET_PACK
+          or G.STATE == G.STATES.STANDARD_PACK then
+        SMODS.scale_card(card, {
+          ref_value = 'Xmult',
+          scalar_value = 'Xmult_mod',
+          message_colour = G.C.XMULT,
+        })
+
+        if #G.hand.cards > 0 then
+          local target = pseudorandom_element(G.hand.cards, pseudoseed('huntail'))
+          poke_remove_card(target, card)
+        end
+      end
+    end
+    if context.joker_main then
+      return {
+        Xmult = card.ability.extra.Xmult
+      }
+    end
+  end,
+  add_to_deck = function(self, card, from_debuff)
+    if not from_debuff then
+      card.ability.extra.increased_handsize = nil
+    end
+  end,
+  remove_from_deck = function(self, card, from_debuff)
+    if not from_debuff and card.ability.extra.increased_handsize then
+      if G.STATE == G.STATES.SMODS_BOOSTER_OPENED or G.STATE == G.STATES.TAROT_PACK or G.STATE == G.STATES.SPECTRAL_PACK or G.STATE == G.STATES.PLANET_PACK
+       or G.STATE == G.STATES.STANDARD_PACK then 
+         G.hand:change_size(-card.ability.extra.h_size)
+      end
+    end
+  end
+}
 -- Gorebyss 368
+local gorebyss ={
+  name = "gorebyss",
+  pos = {x = 0, y = 0},
+  config = {extra = {h_size = 4, Xmult_mod = 0.15, Xmult = 1}},
+  loc_vars = function(self, info_queue, center)
+    type_tooltip(self, info_queue, center)
+    return {vars = {center.ability.extra.h_size, center.ability.extra.Xmult_mod, center.ability.extra.Xmult}}
+  end,
+  rarity = "poke_safari",
+  cost = 8,
+  gen = 3,
+  stage = "One",
+  ptype = "Water",
+  atlas = "Pokedex3",
+  perishable_compat = true,
+  blueprint_compat = true,
+  eternal_compat = true,
+  calculate = function(self, card, context)
+    if context.open_booster and not context.blueprint then
+      G.hand:change_size(card.ability.extra.h_size)
+      card.ability.extra.increased_handsize = true
+    end
+    if context.ending_booster and card.ability.extra.increased_handsize and not context.blueprint then
+      card.ability.extra.increased_handsize = nil
+      G.hand:change_size(-card.ability.extra.h_size)
+    end
+
+    if context.using_consumeable and (context.consumeable.ability.set == 'Tarot' or context.consumeable.ability.set == 'Item') and not context.blueprint then
+      if G.STATE == G.STATES.SMODS_BOOSTER_OPENED or G.STATE == G.STATES.TAROT_PACK or G.STATE == G.STATES.SPECTRAL_PACK or G.STATE == G.STATES.PLANET_PACK
+          or G.STATE == G.STATES.STANDARD_PACK then
+        SMODS.scale_card(card, {
+          ref_value = 'Xmult',
+          scalar_value = 'Xmult_mod',
+          message_colour = G.C.XMULT,
+        })
+      end
+    end
+
+    if context.joker_main then
+      return {
+        Xmult = card.ability.extra.Xmult
+      }
+    end
+  end,
+  add_to_deck = function(self, card, from_debuff)
+    if not from_debuff then
+      card.ability.extra.increased_handsize = nil
+    end
+  end,
+  remove_from_deck = function(self, card, from_debuff)
+    if not from_debuff and card.ability.extra.increased_handsize then
+      if G.STATE == G.STATES.SMODS_BOOSTER_OPENED or G.STATE == G.STATES.TAROT_PACK or G.STATE == G.STATES.SPECTRAL_PACK or G.STATE == G.STATES.PLANET_PACK
+       or G.STATE == G.STATES.STANDARD_PACK then 
+         G.hand:change_size(-card.ability.extra.h_size)
+      end
+    end
+  end
+}
 -- Relicanth 369
+local relicanth={
+  name = "relicanth",
+  pos = {x = 0, y = 0},
+  config = {extra = {rank = "4", chips = 40, money = 4, Xmult_multi = 4,}},
+  loc_vars = function(self, info_queue, center)
+    type_tooltip(self, info_queue, center)
+    if pokermon_config.detailed_tooltips then
+      info_queue[#info_queue+1] = G.P_CENTERS.m_stone
+    end
+    return {vars = {localize(center.ability.extra.rank, 'ranks'), center.ability.extra.chips, center.ability.extra.money, center.ability.extra.Xmult_multi, }}
+  end,
+  rarity = 3,
+  cost = 6,
+  gen = 3,
+  stage = "Basic",
+  ptype = "Earth",
+  atlas = "Pokedex3",
+  perishable_compat = false,
+  blueprint_compat = true,
+  eternal_compat = true,
+  calculate = function(self, card, context)
+    if context.cardarea == G.jokers and context.scoring_hand then
+      if context.before then
+        get_ancient_amount(context.scoring_hand, 4, card)
+      end
+      if context.joker_main and card.ability.extra.ancient_count > 1 and #G.deck.cards > 0 then
+        local bottom_card = G.deck.cards[1]
+        
+        bottom_card:set_ability(G.P_CENTERS.m_stone, nil, true)
+        G.E_MANAGER:add_event(Event({
+            func = function()
+                card:juice_up()
+                return true
+            end
+        })) 
+    
+        if card.ability.extra.ancient_count > 2 then
+          draw_card(G.deck, G.hand, nil, nil, nil, bottom_card)
+          ease_poke_dollars(card, "relicanth", card.ability.extra.money)
+        end
+      end
+      if context.after then
+        card.ability.extra.ancient_count = 0
+      end
+    end
+    if context.individual and not context.end_of_round and context.cardarea == G.play and card.ability.extra.ancient_count > 0 then
+      local rightmost = context.scoring_hand[#context.scoring_hand]
+      if context.other_card == rightmost then
+        local scoring_parms = {}
+        scoring_parms.chips = card.ability.extra.chips
+        if card.ability.extra.ancient_count > 3 then
+          scoring_parms.x_mult = card.ability.extra.Xmult_multi
+          scoring_parms.message = localize('poke_head_smash_ex')
+          scoring_parms.colour = G.C.XMULT
+        end
+        return scoring_parms
+      end
+    end
+    if context.destroying_card and card.ability.extra.ancient_count > 3 and not context.blueprint then
+      local rightmost = context.scoring_hand[#context.scoring_hand]
+      return context.destroying_card == rightmost and not SMODS.has_enhancement(context.destroying_card, 'm_stone')
+    end
+  end,
+  generate_ui = fossil_generate_ui,
+}
 -- Luvdisc 370
 local luvdisc={
   name = "luvdisc",
@@ -125,8 +370,121 @@ local luvdisc={
   end,
 }
 -- Bagon 371
+local bagon={
+  name = "bagon",
+  pos = {x = 0, y = 0},
+  config = {extra = {mult_mod = 3, h_size = 1, triggers = 0}, evo_rqmt = 5},
+  loc_vars = function(self, info_queue, center)
+    type_tooltip(self, info_queue, center)
+    local total = G.GAME.hands["Straight"].played * center.ability.extra.mult_mod
+    return {vars = {center.ability.extra.mult_mod, center.ability.extra.h_size, math.max(0, self.config.evo_rqmt - center.ability.extra.triggers), total}}
+  end,
+  rarity = 2,
+  cost = 6,
+  gen = 3,
+  stage = "Basic",
+  ptype = "Dragon",
+  atlas = "Pokedex3",
+  perishable_compat = true,
+  blueprint_compat = true,
+  eternal_compat = true,
+  calculate = function(self, card, context)
+    if context.joker_main then
+      if context.scoring_hand and context.scoring_name == "Straight" and not context.blueprint then
+        card.ability.extra.triggers = card.ability.extra.triggers + 1
+      end
+      local total = G.GAME.hands["Straight"].played * card.ability.extra.mult_mod
+      return
+      {
+        mult = total
+      }
+    end
+    return scaling_evo(self, card, context, "j_poke_shelgon", card.ability.extra.triggers, self.config.evo_rqmt)
+  end,
+  add_to_deck = function(self, card, from_debuff)
+    G.hand:change_size(-card.ability.extra.h_size)
+  end,
+  remove_from_deck = function(self, card, from_debuff)
+    G.hand:change_size(card.ability.extra.h_size)
+  end
+}
 -- Shelgon 372
+local shelgon={
+  name = "shelgon",
+  pos = {x = 0, y = 0},
+  config = {extra = {mult_mod = 3, h_size = 2, rounds = 8}},
+  loc_vars = function(self, info_queue, center)
+    type_tooltip(self, info_queue, center)
+    local total = G.GAME.hands["Straight"].played * center.ability.extra.mult_mod
+    return {vars = {center.ability.extra.mult_mod, center.ability.extra.h_size, center.ability.extra.rounds, total}}
+  end,
+  rarity = "poke_safari",
+  cost = 8,
+  gen = 3,
+  stage = "One",
+  ptype = "Dragon",
+  atlas = "Pokedex3",
+  perishable_compat = true,
+  blueprint_compat = true,
+  eternal_compat = true,
+  calculate = function(self, card, context)
+    if context.joker_main then
+      if context.scoring_hand and context.scoring_name == "Straight" and not context.blueprint and card.ability.extra.rounds > 0 then
+        card.ability.extra.rounds = card.ability.extra.rounds - 1
+        card_eval_status_text(card, 'extra', nil, nil, nil, {message = localize("poke_evolve_level")})
+      end
+      local total = G.GAME.hands["Straight"].played * card.ability.extra.mult_mod
+      return
+      {
+        mult = total
+      }
+    end
+    return level_evo(self, card, context, "j_poke_salamence")
+  end,
+  add_to_deck = function(self, card, from_debuff)
+    G.hand:change_size(-card.ability.extra.h_size)
+  end,
+  remove_from_deck = function(self, card, from_debuff)
+    G.hand:change_size(card.ability.extra.h_size)
+  end
+}
 -- Salamence 373
+local salamence={
+  name = "salamence",
+  pos = {x = 0, y = 0},
+  config = {extra = {mult_mod = 5, h_size = 2, h_size_temp = 1, divisor = 5}},
+  loc_vars = function(self, info_queue, center)
+    type_tooltip(self, info_queue, center)
+    local total = G.GAME.hands["Straight"].played * center.ability.extra.mult_mod
+    return {vars = {center.ability.extra.mult_mod, center.ability.extra.h_size, center.ability.extra.h_size_temp, center.ability.extra.divisor, total}}
+  end,
+  rarity = "poke_safari",
+  cost = 10,
+  gen = 3,
+  stage = "Two",
+  ptype = "Dragon",
+  atlas = "Pokedex3",
+  perishable_compat = true,
+  blueprint_compat = true,
+  eternal_compat = true,
+  calculate = function(self, card, context)
+    if context.setting_blind then
+        local hand_size = math.floor(G.GAME.hands["Straight"].played/card.ability.extra.divisor)
+        if hand_size > 0 then
+          card_eval_status_text(context.blueprint_card or card, 'extra', nil, nil, nil, {message = localize{type='variable',key='a_handsize',vars={hand_size}}})
+          G.hand:change_size(hand_size)
+          G.GAME.round_resets.temp_handsize = (G.GAME.round_resets.temp_handsize or 0) + hand_size
+        end
+    end
+    if context.joker_main then
+      local total = G.GAME.hands["Straight"].played * card.ability.extra.mult_mod
+      return
+      {
+        mult = total
+      }
+    end
+  end,
+}
 -- Beldum 374
 local beldum={
   name = "beldum", 
@@ -146,28 +504,32 @@ local beldum={
   perishable_compat = false,
   blueprint_compat = true,
   calculate = function(self, card, context)
-    if context.cardarea == G.jokers and context.scoring_hand then
-      if context.before and not context.blueprint then
-        local has_ace = false
-        for i = 1, #context.scoring_hand do
-            if context.scoring_hand[i]:get_id() == 14 then has_ace = true; break end
-        end
-        if has_ace or context.scoring_name == "Four of a Kind" then
-          if has_ace and context.scoring_name == "Four of a Kind" then
-            card.ability.extra.chips = card.ability.extra.chips + 2 * card.ability.extra.chip_mod
-          else
-            card.ability.extra.chips = card.ability.extra.chips + card.ability.extra.chip_mod
-          end
-        end
+    if context.before and not context.blueprint then
+      local has_ace = false
+      for i = 1, #context.scoring_hand do
+        if context.scoring_hand[i]:get_id() == 14 then has_ace = true; break end
       end
-      if context.joker_main then
-        
-        return {
-          message = localize{type = 'variable', key = 'a_chips', vars = {card.ability.extra.chips}}, 
-          colour = G.C.CHIPS,
-          chip_mod = card.ability.extra.chips,
-        }
+
+      if has_ace then
+        SMODS.scale_card(card, {
+          ref_value = 'chips',
+          scalar_value = 'chip_mod',
+          no_message = true,
+        })
       end
+      if context.scoring_name == "Four of a Kind" then
+        SMODS.scale_card(card, {
+          ref_value = 'chips',
+          scalar_value = 'chip_mod',
+          no_message = true,
+        })
+      end
+    end
+
+    if context.joker_main then
+      return {
+        chips = card.ability.extra.chips,
+      }
     end
     return scaling_evo(self, card, context, "j_poke_metang", card.ability.extra.chips, self.config.evo_rqmt)
   end,
@@ -190,28 +552,31 @@ local metang={
   perishable_compat = false,
   blueprint_compat = true,
   calculate = function(self, card, context)
-    if context.cardarea == G.jokers and context.scoring_hand then
-      if context.before and not context.blueprint then
-        local ace_count = 0
-        for i = 1, #context.scoring_hand do
-            if context.scoring_hand[i]:get_id() == 14 then ace_count = ace_count + 1 end
-        end
-        if ace_count > 1 or context.scoring_name == "Four of a Kind" then
-          if ace_count > 1 and context.scoring_name == "Four of a Kind" then
-            card.ability.extra.chips = card.ability.extra.chips + 2 * card.ability.extra.chip_mod
-          else
-            card.ability.extra.chips = card.ability.extra.chips + card.ability.extra.chip_mod
-          end
-        end
+    if context.before and not context.blueprint then
+      local ace_count = 0
+      for i = 1, #context.scoring_hand do
+        if context.scoring_hand[i]:get_id() == 14 then ace_count = ace_count + 1 end
       end
-      if context.joker_main then
-        return {
-          message = localize{type = 'variable', key = 'a_chips', vars = {card.ability.extra.chips}}, 
-          colour = G.C.CHIPS,
-          chip_mod = card.ability.extra.chips,
-          card = card
-        }
+
+      if ace_count > 1 then
+        SMODS.scale_card(card, {
+          ref_value = 'chips',
+          scalar_value = 'chip_mod',
+          no_message = true,
+        })
       end
+      if context.scoring_name == "Four of a Kind" then
+        SMODS.scale_card(card, {
+          ref_value = 'chips',
+          scalar_value = 'chip_mod',
+          no_message = true,
+        })
+      end
+    end
+    if context.joker_main then
+      return {
+        chips = card.ability.extra.chips,
+      }
     end
     return scaling_evo(self, card, context, "j_poke_metagross", card.ability.extra.chips, self.config.evo_rqmt)
   end,
@@ -234,23 +599,17 @@ local metagross={
   perishable_compat = false,
   blueprint_compat = true,
   calculate = function(self, card, context)
-    if context.cardarea == G.jokers and context.scoring_hand then
-      if context.joker_main then
-        return {
-          message = localize{type = 'variable', key = 'a_chips', vars = {card.ability.extra.chips}}, 
-          colour = G.C.CHIPS,
-          chip_mod = card.ability.extra.chips,
-          card = card
-        }
-      end
+    if context.joker_main then
+      return {
+        chips = card.ability.extra.chips,
+      }
     end
-    if context.individual and context.cardarea == G.play and not context.end_of_round and context.scoring_name and context.scoring_name == "Four of a Kind" then
+    if context.individual and context.cardarea == G.play and context.scoring_name == "Four of a Kind" then
       local total_chips = poke_total_chips(context.other_card)
-      local Xmult = (total_chips)^(1/4)
+      local Xmult = (total_chips)^(1 / 4)
       if Xmult > 0 then
         return {
-          x_mult = Xmult,
-          card = card
+          x_mult = Xmult
         }
       end
     end
@@ -379,8 +738,8 @@ local jirachi_invis = {
         copy:add_to_deck()
         G.jokers:emplace(copy)
         copy:start_materialize()
-        
-        remove(self, card, context)
+
+        SMODS.destroy_cards(card, true, nil, true)
       end
     end
   end,
@@ -626,10 +985,66 @@ local jirachi_fixer = {
 }
 
 -- Deoxys 386
+local deoxys={
+  name = "deoxys",
+  pos = {x = 0, y = 0},
+  config = {extra = {form = 4, Xmult_multi = 0.25, money_mod = 2, chip_mod = 40}},
+  loc_vars = function(self, info_queue, center)
+    type_tooltip(self, info_queue, center)
+    
+    info_queue[#info_queue+1] = G.P_CENTERS.c_poke_meteorite
+    info_queue[#info_queue+1] = {key = 'poke_dna_seal_seal', set = 'Other'}
+    local alt_key = nil
+    if center.ability.extra.form == 1 then
+      alt_key = 'j_poke_deoxys_attack'
+    elseif center.ability.extra.form == 2 then
+      alt_key = 'j_poke_deoxys_defense'
+    elseif center.ability.extra.form == 3 then
+      alt_key = 'j_poke_deoxys_speed'
+    end
+    return {vars = {center.ability.extra.Xmult_multi, center.ability.extra.money_mod, center.ability.extra.chip_mod}, key = alt_key}
+  end,
+  rarity = 4,
+  cost = 20,
+  gen = 3,
+  stage = "Legendary",
+  ptype = "Psychic",
+  atlas = "Pokedex3",
+  perishable_compat = true,
+  blueprint_compat = false,
+  eternal_compat = true,
+  calculate = function(self, card, context)
+    if context.first_hand_drawn and not context.blueprint and card.ability.extra.form == 4 then
+      local eval = function() return G.GAME.current_round.discards_used == 0 and card.ability.extra.form == 4 and not G.RESET_JIGGLES end
+      juice_card_until(card, eval, true)
+    end
+    if context.discard and not context.blueprint and card.ability.extra.form == 4 then
+      if G.GAME.current_round.discards_used == 0 and context.full_hand and #context.full_hand == 1 then
+        local target = {context.full_hand[1]}
+        poke_convert_cards_to(target, {seal = "poke_dna_seal"})
+      end
+    end
+  end,
+  set_sprites = function(self, card, front)
+    if card.ability and card.ability.extra and card.ability.extra.form == 1 then
+      card.children.floating_sprite:set_sprite_pos({x = 5, y = 3})
+    elseif card.ability and card.ability.extra and card.ability.extra.form == 2 then
+      card.children.floating_sprite:set_sprite_pos({x = 7, y = 3})
+    elseif card.ability and card.ability.extra and card.ability.extra.form == 3 then
+      card.children.floating_sprite:set_sprite_pos({x = 9, y = 3})
+    else
+      card.children.floating_sprite:set_sprite_pos({x = 3, y = 3})
+    end
+  end,
+  add_to_deck = function(self, card, from_debuff)
+    self:set_sprites(card)
+  end,
+}
 -- Turtwig 387
 -- Grotle 388
 -- Torterra 389
 -- Chimchar 390
 return {name = "Pokemon Jokers 361-390", 
-        list = {snorunt, glalie, luvdisc, beldum, metang, metagross, jirachi, jirachi_banker, jirachi_booster, jirachi_power, jirachi_invis, jirachi_fixer},
+        list = {snorunt, glalie, clamperl, huntail, gorebyss, relicanth, luvdisc, bagon, shelgon, salamence, beldum, metang, metagross, 
+                jirachi, jirachi_banker, jirachi_booster, jirachi_power, jirachi_invis, jirachi_fixer, deoxys},
 }

@@ -25,32 +25,11 @@ local poliwhirl={
   gen = 1,
   blueprint_compat = true,
   calculate = function(self, card, context)
-    if context.cardarea == G.jokers and context.scoring_hand then
-      if context.joker_main then
-        if not context.blueprint then
-          poke_change_poli_suit()
-          G.GAME.poke_poli_suit_change_triggered = true
-        end
-      end
-      if context.after and G.GAME.poke_poli_suit_change_triggered then
-        G.GAME.poke_poli_suit_change_triggered = false
-      end
-    end
-    if context.individual and not context.end_of_round and context.cardarea == G.play then
-      local scoring_suit = G.GAME.poke_poli_suit or "Spades"
-      if context.other_card:is_suit(scoring_suit) then
-        if context.other_card.debuff then
-          return {
-            message = localize("k_debuffed"),
-            colour = G.C.RED,
-            card = card,
-          }
-        else
-          return {
-            mult = card.ability.extra.mult
-          }
-        end
-      end
+    if context.individual and context.cardarea == G.play
+        and context.other_card:is_suit(G.GAME.poke_poli_suit or "Spades") then
+      return {
+        mult = card.ability.extra.mult,
+      }
     end
     return item_evo(self, card, context)
   end,
@@ -74,34 +53,12 @@ local poliwrath={
   gen = 1,
   blueprint_compat = true,
   calculate = function(self, card, context)
-    if context.cardarea == G.jokers and context.scoring_hand then
-      if context.joker_main then
-        if not context.blueprint then
-          poke_change_poli_suit()
-          G.GAME.poke_poli_suit_change_triggered = true
-        end
-      end
-      if context.after and G.GAME.poke_poli_suit_change_triggered then
-        G.GAME.poke_poli_suit_change_triggered = false
-      end
-    end
-    if context.individual and not context.end_of_round and context.cardarea == G.play then
-      local scoring_suit = G.GAME.poke_poli_suit or "Spades"
-      if context.other_card:is_suit(scoring_suit) then
-        if context.other_card.debuff then
-          return {
-            message = localize("k_debuffed"),
-            colour = G.C.RED,
-            card = card,
-          }
-        else
-          return {
-            x_mult = card.ability.extra.Xmult_multi,
-            mult = card.ability.extra.mult,
-            card = card
-          }
-        end
-      end
+    if context.individual and context.cardarea == G.play
+        and context.other_card:is_suit(G.GAME.poke_poli_suit or "Spades") then
+      return {
+        x_mult = card.ability.extra.Xmult_multi,
+        mult = card.ability.extra.mult,
+      }
     end
   end,
 }
@@ -253,7 +210,13 @@ local alakazam={
     end
   end,
   add_to_deck = function(self, card, from_debuff)
-    G.consumeables.config.card_limit = G.consumeables.config.card_limit + card.ability.extra.card_limit
+    local limit = card.ability.extra.card_limit
+    G.E_MANAGER:add_event(Event({
+        func = function()
+            G.consumeables.config.card_limit = G.consumeables.config.card_limit + limit
+            return true
+        end
+    }))
   end,
   remove_from_deck = function(self, card, from_debuff)
     G.consumeables.config.card_limit = G.consumeables.config.card_limit - card.ability.extra.card_limit
@@ -296,10 +259,22 @@ local mega_alakazam={
     end
   end,
   add_to_deck = function(self, card, from_debuff)
-    G.consumeables.config.card_limit = G.consumeables.config.card_limit + card.ability.extra.card_limit
+    local limit = card.ability.extra.card_limit
+    G.E_MANAGER:add_event(Event({
+        func = function()
+            G.consumeables.config.card_limit = G.consumeables.config.card_limit + limit
+            return true
+        end
+    }))
   end,
   remove_from_deck = function(self, card, from_debuff)
-    G.consumeables.config.card_limit = G.consumeables.config.card_limit - card.ability.extra.card_limit
+    local limit = card.ability.extra.card_limit
+    G.E_MANAGER:add_event(Event({
+        func = function()
+            G.consumeables.config.card_limit = G.consumeables.config.card_limit - limit
+            return true
+        end
+    }))
   end, 
 }
 -- Machop 066
@@ -534,7 +509,9 @@ local victreebel={
          context.other_card:get_id() == 6 or 
          context.other_card:get_id() == 8 or 
          context.other_card:get_id() == 10 then
+          if not context.blueprint then
            card.ability.extra.round_retriggers = card.ability.extra.round_retriggers + 1
+          end
           return {
             message = localize('k_again_ex'),
             repetitions = card.ability.extra.retriggers,
@@ -726,22 +703,17 @@ local ponyta={
   perishable_compat = false,
   blueprint_compat = true,
   calculate = function(self, card, context)
-    if context.cardarea == G.jokers and context.scoring_hand then
-      if context.before and not context.blueprint and context.cardarea == G.jokers and next(context.poker_hands['Straight']) then
-        card.ability.extra.chips = card.ability.extra.chips + card.ability.extra.chip_mod
-        return {
-            message = localize('k_upgrade_ex'),
-            colour = G.C.CHIPS,
-            card = card
-        }
-      end
-      if context.joker_main and card.ability.extra.chips > 0 then
-        return {
-          message = localize{type = 'variable', key = 'a_chips', vars = {card.ability.extra.chips}}, 
-          colour = G.C.CHIPS,
-          chip_mod = card.ability.extra.chips
-        }
-      end
+    if context.before and not context.blueprint and next(context.poker_hands['Straight']) then
+      SMODS.scale_card(card, {
+        ref_value = 'chips',
+        scalar_value = 'chip_mod',
+        message_colour = G.C.CHIPS,
+      })
+    end
+    if context.joker_main then
+      return {
+        chips = card.ability.extra.chips
+      }
     end
     return scaling_evo(self, card, context, "j_poke_rapidash", card.ability.extra.chips, self.config.evo_rqmt)
   end,
@@ -764,23 +736,18 @@ local rapidash={
   perishable_compat = false,
   blueprint_compat = true,
   calculate = function(self, card, context)
-    if context.cardarea == G.jokers and context.scoring_hand then
-      if context.before and not context.blueprint and context.cardarea == G.jokers and next(context.poker_hands['Straight']) then
-        card.ability.extra.chips = card.ability.extra.chips + card.ability.extra.chip_mod
-        card.ability.extra.chip_mod = card.ability.extra.chip_mod + 1
-        return {
-            message = localize('k_upgrade_ex'),
-            colour = G.C.CHIPS,
-            card = card
-        }
-      end
-      if context.joker_main and card.ability.extra.chips > 0 then
-        return {
-          message = localize{type = 'variable', key = 'a_chips', vars = {card.ability.extra.chips}}, 
-          colour = G.C.CHIPS,
-          chip_mod = card.ability.extra.chips
-        }
-      end
+    if context.before and not context.blueprint and next(context.poker_hands['Straight']) then
+      SMODS.scale_card(card, {
+        ref_value = 'chips',
+        scalar_value = 'chip_mod',
+        message_colour = G.C.CHIPS,
+      })
+      card.ability.extra.chip_mod = card.ability.extra.chip_mod + 1
+    end
+    if context.joker_main then
+      return {
+        chips = card.ability.extra.chips
+      }
     end
   end,
 }
@@ -893,17 +860,15 @@ local mega_slowbro={
   gen = 1,
   blueprint_compat = true,
   calculate = function(self, card, context)
-    if context.cardarea == G.jokers and context.scoring_hand then
-      if context.joker_main then
-        card.ability.extra.hands_played = card.ability.extra.hands_played + 1
-        local xmult_total = card.ability.extra.Xmult + (card.ability.extra.hands_played * card.ability.extra.Xmult_mod)
-        return {
-          message = localize{type = 'variable', key = 'a_xmult', vars = {xmult_total}}, 
-          colour = G.C.XMULT,
-          Xmult_mod = xmult_total
-        }
-      end
-    elseif (context.end_of_round and G.GAME.blind.boss) and not context.repetition and not context.individual and not context.blueprint then
+    if context.before then
+      card.ability.extra.hands_played = card.ability.extra.hands_played + 1
+    end
+    if context.joker_main then
+      return {
+        Xmult = card.ability.extra.Xmult + card.ability.extra.hands_played * card.ability.extra.Xmult_mod
+      }
+    end
+    if context.end_of_round and context.game_over == false and context.main_eval and context.beat_boss and not context.blueprint then
       card.ability.extra.hands_played = 0
       return {
         message = localize('k_reset'),
@@ -947,6 +912,9 @@ local shell={
       local edition = {negative = true}
       card:set_edition(edition, true, true)
     end
+  end,
+  in_pool = function(self)
+    return false
   end
 }
 -- Magnemite 081
@@ -1261,13 +1229,13 @@ local grimer={
 local muk={
   name = "muk", 
   pos = {x = 10, y = 6}, 
-  config = {extra = {mult = 3}},
+  config = {extra = {mult_mod = 2}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
-    return {vars = {center.ability.extra.mult, G.GAME.starting_deck_size, 
-                    math.max(0, ((G.playing_cards and (#G.playing_cards - G.GAME.starting_deck_size) or 0) * center.ability.extra.mult))}}
+    return {vars = {center.ability.extra.mult_mod, G.GAME.starting_deck_size, 
+                    math.max(0, ((G.playing_cards and (#G.playing_cards - G.GAME.starting_deck_size) or 0) * center.ability.extra.mult_mod))}}
   end,
-  rarity = 2, 
+  rarity = "poke_safari", 
   cost = 6, 
   stage = "One", 
   ptype = "Dark",
@@ -1278,9 +1246,9 @@ local muk={
     if context.cardarea == G.jokers and context.scoring_hand then
       if context.joker_main and #G.playing_cards > G.GAME.starting_deck_size then
         return {
-          message = localize{type = 'variable', key = 'a_mult', vars = {card.ability.extra.mult * (#G.playing_cards - G.GAME.starting_deck_size)}}, 
+          message = localize{type = 'variable', key = 'a_mult', vars = {card.ability.extra.mult_mod * (#G.playing_cards - G.GAME.starting_deck_size)}}, 
           colour = G.C.MULT,
-          mult_mod = card.ability.extra.mult * (#G.playing_cards - G.GAME.starting_deck_size),
+          mult_mod = card.ability.extra.mult_mod * (#G.playing_cards - G.GAME.starting_deck_size),
           card = card
         }
       end
@@ -1304,7 +1272,7 @@ local muk={
           return true end }))
       delay(0.3)
       for i = 1, #G.jokers.cards do
-          G.jokers.cards[i]:calculate_joker({remove_playing_cards = true, removed = {target}})
+          G.jokers.cards[i]:calculate_joker({remove_playing_cards = true, removed = {target}, poke_removed_at_end = true})
       end
       card:juice_up()
     end

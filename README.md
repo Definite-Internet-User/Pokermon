@@ -1,3 +1,6 @@
+# Important
+If you're having trouble loading the mod, try turning off Pixel Smoothing. This can *significantly* reduce the amount of loading needed.
+
 # Pokermon
 This is a fork containing my own personal tweaks to the Balatro mod [Pokermon](https://github.com/InertSteak/Pokermon)
 

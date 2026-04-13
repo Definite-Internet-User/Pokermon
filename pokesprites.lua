@@ -16,14 +16,14 @@ for i = 1, #joker_basic_atlases do
     path = 'Basic Series/'..atlas_base..".png",
     px = 71,
     py = 95
-  }):register()
+  })
 
   SMODS.Atlas({
     key = atlas_shiny,
     path = 'Basic Series/'..atlas_shiny..".png",
     px = 71,
     py = 95
-  }):register()
+  })
   if joker_basic_atlases[i] ~= "Others" then
     local atlas_seriesa = series_a_prefix..joker_basic_atlases[i]
     local atlas_seriesa_shiny = atlas_seriesa.."Shiny"
@@ -33,14 +33,14 @@ for i = 1, #joker_basic_atlases do
       path = 'Series A/'..atlas_seriesa..".png",
       px = 71,
       py = 95
-    }):register()
+    })
 
     SMODS.Atlas({
       key = atlas_seriesa_shiny,
       path = 'Series A/'..atlas_seriesa_shiny..".png",
       px = 71,
       py = 95
-    }):register()
+    })
   end
 end
 
@@ -49,28 +49,28 @@ SMODS.Atlas({
     path = "Series B/AtlasJokersSeriesBNatdex.png",
     px = 71,
     py = 95
-}):register()
+})
 
 SMODS.Atlas({
     key = "AtlasJokersSeriesBNatdexShiny",
     path = "Series B/AtlasJokersSeriesBNatdexShiny.png",
     px = 71,
     py = 95
-}):register()
+})
 
 SMODS.Atlas({
     key = "AtlasBoosterpacksBasic",
     path = "Basic Series/AtlasBoosterpacksBasic.png",
     px = 71,
     py = 95
-}):register()
+})
 
 SMODS.Atlas({
     key = "AtlasBoosterpacksSeriesA",
     path = "Series A/AtlasBoosterpacksSeriesA.png",
     px = 71,
     py = 95
-}):register()
+})
 
 SMODS.Atlas({
     key = "AtlasBossblinds",
@@ -79,7 +79,7 @@ SMODS.Atlas({
     px = 34,
     py = 34,
     frames = 21,
-}):register()
+})
 
 SMODS.Atlas({
     key = "placeholder_blind",
@@ -88,140 +88,140 @@ SMODS.Atlas({
     px = 34,
     py = 34,
     frames = 21,
-}):register()
+})
 
 SMODS.Atlas({
     key = "AtlasConsumablesBasic",
     path = "Basic Series/AtlasConsumablesBasic.png",
     px = 71,
     py = 95
-}):register()
+})
 
 SMODS.Atlas({
     key = "AtlasConsumablesBirdEnergy",
     path = "Basic Series/AtlasConsumablesBirdEnergy.png",
     px = 71,
     py = 95
-}):register()
+})
 
 SMODS.Atlas({
     key = "AtlasConsumablesSeriesA",
     path = "Series A/AtlasConsumablesSeriesA.png",
     px = 71,
     py = 95
-}):register()
+})
 
 SMODS.Atlas({
     key = "AtlasDecksBasic",
     path = "Basic Series/AtlasDecksBasic.png",
     px = 71,
     py = 95,
-}):register()
+})
 
 SMODS.Atlas({
     key = "AtlasDecksSeriesA",
     path = "Series A/AtlasDecksSeriesA.png",
     px = 71, 
     py = 95,
-}):register()
+})
 
 SMODS.Atlas({
     key = "AtlasEnhancementsBasic",
     path = "Basic Series/AtlasEnhancementsBasic.png",
     px = 71,
     py = 95,
-}):register()
+})
 
 SMODS.Atlas({
     key = "AtlasEnhancementsSeriesA",
     path = "Series A/AtlasEnhancementsSeriesA.png",
     px = 71,
     py = 95,
-}):register()
+})
 
 SMODS.Atlas({
     key = "AtlasJokersVanillaShiny",
     path = "AtlasJokersVanillaShiny.png",
     px = 71,
     py = 95,
-}):register()
+})
 
 SMODS.Atlas({
     key = "AtlasStickersBasic",
     path = "Basic Series/AtlasStickersBasic.png",
     px = 71,
     py = 95
-}):register()
+})
 
 SMODS.Atlas({
     key = "AtlasStickersSeriesA",
     path = "Series A/AtlasStickersSeriesA.png",
     px = 71,
     py = 95
-}):register()
+})
 
 SMODS.Atlas({
     key = "AtlasJokersBasicTitleCard",
     path = "Basic Series/TitleCard.png",
     px = 71,
     py = 95
-}):register()
+})
 
 SMODS.Atlas({
     key = "AtlasJokersSeriesATitleCard",
     path = "Series A/TitleCard.png",
     px = 71,
     py = 95
-}):register()
+})
 
 SMODS.Atlas({
     key = "AtlasTags",
     path = "AtlasTags.png",
     px = 34,
     py = 34,
-}):register()
+})
 
 SMODS.Atlas({
     key = "AtlasVouchersBasic",
     path = "Basic Series/AtlasVouchersBasic.png",
     px = 71,
     py = 95
-}):register()
+})
 
 SMODS.Atlas({
     key = "AtlasVouchersSeriesA",
     path = "Series A/AtlasVouchersSeriesA.png",
     px = 71,
     py = 95
-}):register()
+})
 
 SMODS.Atlas({
     key = "AtlasJokersSeriesAVoltorb",
     path = "Series A/AtlasJokersSeriesAVoltorb.png",
     px = 71,
     py = 95
-}):register()
+})
 
 SMODS.Atlas({
     key = "AtlasJokersSeriesAVoltorbShiny",
     path = "Series A/AtlasJokersSeriesAVoltorbShiny.png",
     px = 71,
     py = 95
-}):register()
+})
 
 SMODS.Atlas({
     key = "AtlasJokersSeriesAElectrode",
     path = "Series A/AtlasJokersSeriesAElectrode.png",
     px = 71,
     py = 95
-}):register()
+})
 
 SMODS.Atlas({
     key = "AtlasJokersSeriesAElectrodeShiny",
     path = "Series A/AtlasJokersSeriesAElectrodeShiny.png",
     px = 71,
     py = 95
-}):register()
+})
 
 
 SMODS.Atlas({
@@ -236,69 +236,76 @@ SMODS.Atlas({
     path = "placeholder_item.png",
     px = 71,
     py = 95
-}):register()
+})
 
 SMODS.Atlas({
     key = "placeholder_deck",
     path = "placeholder_deck.png",
     px = 71,
     py = 95
-}):register()
+})
 
 SMODS.Atlas({
     key = "placeholder_sleeve",
     path = "placeholder_sleeve.png",
     px = 71,
     py = 95
-}):register()
+})
 
 SMODS.Atlas({
     key = "placeholder_joker",
     path = "placeholder_joker.png",
     px = 71,
     py = 95
-}):register()
+})
 
 SMODS.Atlas({
     key = "placeholder_jokerShiny",
     path = "placeholder_jokerShiny.png",
     px = 71,
     py = 95
-}):register()
+})
 
 SMODS.Atlas({
     key = "unergy",
     path = "unergy.png",
     px = 71,
     py = 95
-}):register()
+})
 
 SMODS.Atlas({
     key = "unitem",
     path = "unitem.png",
     px = 71,
     py = 95
-}):register()
+})
 
 SMODS.Atlas({
     key = "smeargle_logo",
     path = "smeargle_logo.png",
-    px = 300,
-    py = 194
-}):register()
+    px = 389,
+    py = 216
+})
 
 SMODS.Atlas({
     key = "poke_logo",
     path = "poke_logo.png",
     px = 389,
     py = 216
-}):register()
+})
+
+SMODS.Atlas({
+    key = "poke_logo_alt",
+    path = "poke_logo_alt.png",
+    px = 389,
+    py = 216
+})
 
 --Custom sounds
 SMODS.Sound({
     key = "e_shiny",
     path = "e_shiny.ogg"
-}):register()
+})
 
 SMODS.Sound({
 	key = "pocket_music_high",
@@ -316,6 +323,17 @@ SMODS.Sound({
     key = "shellchomp",
     path = "chomp.ogg",
 })
+
+for i = 1, 5 do
+  local seed_key = 'seed_'..i
+  local seed_path = 'seed_'..i..'.ogg'
+  
+  SMODS.Sound({
+    key = seed_key,
+    path = seed_path,
+  })
+end
+
 --Custom colors for Types (humplydinkle wuz here)
 local pokecolors = loc_colour
 function loc_colour(_c, _default)
@@ -339,8 +357,16 @@ function loc_colour(_c, _default)
   G.ARGS.LOC_COLOURS["item"] = HEX("9AA4B7")
   G.ARGS.LOC_COLOURS["safari"] = HEX("F2C74E")
   G.ARGS.LOC_COLOURS["pocket"] = HEX("E8C069")
+  G.ARGS.LOC_COLOURS["hazard"] = HEX("BA7333")
+  G.ARGS.LOC_COLOURS["sun"] = HEX("F48E62")
+  G.ARGS.LOC_COLOURS["rain"] = HEX("6169FF")
+  G.ARGS.LOC_COLOURS["sand"] = HEX("E1C019")
+  G.ARGS.LOC_COLOURS["snow"] = HEX("82C8E8")
   return pokecolors(_c, _default)
 end
+
+--called to ensure crashes don't happen
+loc_colour()
 
 --Stake textures for Malverk
 if (SMODS.Mods["malverk"] or {}).can_load then
@@ -360,6 +386,20 @@ if (SMODS.Mods["malverk"] or {}).can_load then
       }
     })
 end
+
+SMODS.Atlas({
+  key = "pokestakes",
+  path = 'pokestakes.png',
+  px = 29,
+  py = 29
+})
+
+SMODS.Atlas({
+  key = "pokestakes_stickers",
+  path = 'pokestakes_stickers.png',
+  px = 71,
+  py = 95
+})
 
 --Deck Skins
 --RBY sprites skins by GAME FREAK, arranged by Catzzadilla
@@ -735,3 +775,78 @@ SMODS.DeckSkin {
 		},
 	},
 }
+
+-- APRILS FOOLS
+SMODS.Sound({
+    key = "ludicolo_cry",
+    path = "ludicolo.ogg"
+})
+
+SMODS.Atlas({
+  key = "miror_budicolo",
+  path = "miror_budicolo.png",
+  px = 71,
+  py = 95,
+  atlas_table = "ANIMATION_ATLAS",
+  frames = 4,
+  fps = 8,
+})
+
+SMODS.Atlas({
+  key = "shiny_miror_budicolo",
+  path = "shiny_miror_budicolo.png",
+  px = 71,
+  py = 95,
+  atlas_table = "ANIMATION_ATLAS",
+  frames = 4,
+  fps = 8,
+})
+
+SMODS.Atlas({
+  key = "capture_disc",
+  path = "capture_disc.png",
+  px = 71,
+  py = 95,
+})
+
+SMODS.Atlas({
+  key = "shiny_capture_disc",
+  path = "shiny_capture_disc.png",
+  px = 71,
+  py = 95,
+})
+
+SMODS.Sound({
+  key = "voltorb_flip_music",
+  path = "voltorb_flip_music.ogg",
+  select_music_track = function()
+    -- add a condition that it's series A
+    if pokermon_config.pokemon_aprilfools and next(SMODS.find_card("j_poke_voltorb",true)) then
+      return 999999999
+    end
+  end,
+  sync = false,
+  pitch = 1,
+  volume = 1,
+})
+
+SMODS.Sound({
+  key = "miror_b_music",
+  path = "miror_b_music.ogg",
+	select_music_track = function()
+    if G.hand then
+      for _, v in ipairs(G.hand.cards) do
+        if v.config.center.key == "m_poke_ludicolo" then return 9999999999 end
+      end
+    end
+
+    if G.play then
+      for _, v in ipairs(G.play.cards) do
+        if v.config.center.key == "m_poke_ludicolo" then return 9999999999 end
+      end
+    end
+	end,
+  sync = false,
+  pitch = 1,
+  volume = 1,
+})

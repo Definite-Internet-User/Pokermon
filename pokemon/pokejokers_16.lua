@@ -41,11 +41,12 @@ local mantyke={
       end
     end
     if context.end_of_round and not context.individual and not context.repetition and not card.debuff then
-      local _card = create_card('Tarot', G.consumeables, nil, nil, nil, nil, 'c_devil')
-      local edition = {negative = true}
-      _card:set_edition(edition, true)
-      _card:add_to_deck()
-      G.consumeables:emplace(_card)
+      G.E_MANAGER:add_event(Event({
+        func = function()
+          SMODS.add_card{set = 'Tarot', key = 'c_devil', edition = 'e_negative'}
+          return true
+        end
+      }))
     end
     return level_evo(self, card, context, "j_poke_mantine")
   end
@@ -72,8 +73,10 @@ local weavile = {
   calculate = function(self, card, context)
     if context.final_scoring_step and #context.full_hand == 1 and context.full_hand[1]:get_id() == G.GAME.current_round.sneaselcard.id and not context.blueprint then
       context.full_hand[1].to_be_removed_by = card
-      card.ability.extra.Xmult = card.ability.extra.Xmult + card.ability.extra.Xmult_mod
-      card_eval_status_text(card, 'extra', nil, nil, nil, {message = localize("k_upgrade_ex")})
+      SMODS.scale_card(card, {
+        ref_value = 'Xmult',
+        scalar_value = 'Xmult_mod',
+      })
       ease_poke_dollars(card, "weavile", card.ability.extra.money)
       card:juice_up()
     end
@@ -83,23 +86,18 @@ local weavile = {
         remove = true
       }
     end
-    if context.cardarea == G.jokers and context.scoring_hand then
-      if context.joker_main and card.ability.extra.Xmult ~= 1 then
-        return {
-          message = localize{type = 'variable', key = 'a_xmult', vars = {card.ability.extra.Xmult}},
-          colour = G.C.XMULT,
-          Xmult_mod = card.ability.extra.Xmult
-        }
-      end
+    if context.joker_main then
+      return {
+        Xmult = card.ability.extra.Xmult
+      }
     end
-    if context.end_of_round and not context.individual and not context.repetition and not context.blueprint then
-      if G.GAME.blind.boss and card.ability.extra.Xmult > 1 then
-        card.ability.extra.Xmult = card.ability.extra.Xmult2
-        return {
-          message = localize('k_reset'),
-          colour = G.C.RED
-        }
-      end
+    if context.end_of_round and not context.individual and not context.repetition and not context.blueprint
+        and G.GAME.blind.boss and card.ability.extra.Xmult > 1 then
+      card.ability.extra.Xmult = card.ability.extra.Xmult2
+      return {
+        message = localize('k_reset'),
+        colour = G.C.RED
+      }
     end
   end
 }
@@ -304,20 +302,21 @@ local electivire={
   blueprint_compat = true,
   calculate = function(self, card, context)
     if ((context.selling_card) or (not context.repetition and not context.individual and context.end_of_round)) and not context.blueprint then
-      card.ability.extra_value = card.ability.extra_value + card.ability.extra.money_mod
-      card:set_cost()
-      G.E_MANAGER:add_event(Event({
-        func = function() card_eval_status_text(card, 'extra', nil, nil, nil, {message = localize('k_val_up')}); return true
-        end}))
-    end
-    if context.cardarea == G.jokers and context.scoring_hand then
-      if context.joker_main then
-        return {
-          message = localize{type = 'variable', key = 'a_xmult', vars = {1 + card.ability.extra.Xmult_mod * card.sell_cost}}, 
-          colour = G.C.MULT,
-          Xmult_mod = 1 + card.ability.extra.Xmult_mod * card.sell_cost
+      SMODS.scale_card(card, {
+        ref_table = card.ability,
+        ref_value = 'extra_value',
+        scalar_table = card.ability.extra,
+        scalar_value = 'money_mod',
+        scaling_message = {
+          message = localize('k_val_up'),
         }
-      end
+      })
+      card:set_cost()
+    end
+    if context.joker_main then
+      return {
+        Xmult = 1 + card.ability.extra.Xmult_mod * card.sell_cost
+      }
     end
   end
 }
@@ -340,33 +339,33 @@ local magmortar={
   perishable_compat = false,
   calculate = function(self, card, context)
     if context.first_hand_drawn and not context.blueprint then
-      card.ability.extra.remove_triggered = false
-      local eval = function() return G.GAME.current_round.discards_used == 0 and not G.RESET_JIGGLES and not card.ability.extra.remove_triggered end
+      local eval = function() return G.GAME.current_round.discards_used == 0 and not G.RESET_JIGGLES end
       juice_card_until(card, eval, true)
     end
     if context.pre_discard and not context.blueprint then
-      card.ability.extra.Xmult = card.ability.extra.Xmult + card.ability.extra.Xmult_mod
-      card_eval_status_text(context.blueprint_card or card, 'extra', nil, nil, nil, {message = localize("k_upgrade_ex")})
+      SMODS.scale_card(card, {
+        ref_value = 'Xmult',
+        scalar_value = 'Xmult_mod'
+      })
     end
-    if context.discard and not context.blueprint then
-      if G.GAME.current_round.discards_used == 0 and context.full_hand and #context.full_hand == 1 and not card.ability.extra.remove_triggered then
-        card.ability.extra.mult = card.ability.extra.mult + card.ability.extra.mult_mod
-        card_eval_status_text(context.blueprint_card or card, 'extra', nil, nil, nil, {message = localize("k_upgrade_ex")})
-        card.ability.extra.remove_triggered = true
+    if context.discard and not context.blueprint
+      and G.GAME.current_round.discards_used == 0 and #context.full_hand == 1 then
+        SMODS.scale_card(card, {
+          ref_value = 'mult',
+          scalar_value = 'mult_mod',
+        })
+
         return {
           remove = true
         }
-      end
     end
-    if context.cardarea == G.jokers and context.scoring_hand then
-      if context.joker_main then
-        return {
-          message = localize("poke_fire_blast_ex"),
-          colour = G.C.XMULT,
-          mult_mod = card.ability.extra.mult,
-          Xmult_mod = card.ability.extra.Xmult
-        }
-      end
+    if context.joker_main and (card.ability.extra.mult > 0 or card.ability.extra.Xmult > 1) then
+      return {
+        message = localize("poke_fire_blast_ex"),
+        colour = G.C.XMULT,
+        mult_mod = card.ability.extra.mult,
+        Xmult_mod = card.ability.extra.Xmult
+      }
     end
   end
 }
@@ -427,11 +426,11 @@ local togekiss={
 local yanmega={
   name = "yanmega",
   pos = {x = 12, y = 5},
-  config = {extra = {mult = 6,chips = 12, num = 1, dem = 3, retriggers = 1}},
+  config = {extra = {mult_mod = 6,chip_mod = 12, num = 1, dem = 3, retriggers = 1}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     local num, dem = SMODS.get_probability_vars(center, center.ability.extra.num, center.ability.extra.dem, 'yanmega')
-    return {vars = {center.ability.extra.mult, center.ability.extra.chips, num, dem}}
+    return {vars = {center.ability.extra.mult_mod, center.ability.extra.chip_mod, num, dem}}
   end,
   rarity = "poke_safari",
   cost = 8,
@@ -446,8 +445,8 @@ local yanmega={
     if context.individual and not context.end_of_round and context.cardarea == G.play then
       if context.other_card:get_id() == 3 or context.other_card:get_id() == 6 then
         return {
-          mult = card.ability.extra.mult,
-          chips = card.ability.extra.chips,
+          mult = card.ability.extra.mult_mod,
+          chips = card.ability.extra.chip_mod,
           card = card
         }
       end
@@ -722,6 +721,78 @@ local porygonz={
   end
 }
 -- Gallade 475
+local gallade={
+  name = "gallade",
+  pos = {x = 0, y = 0},
+  config = {extra = {Xmult_mod = 0.5, e_limit = 1, num = 1, dem = 3, e_level = 3}},
+  loc_vars = function(self, info_queue, center)
+    type_tooltip(self, info_queue, center)
+    local energized = 0
+    if G.jokers then
+      for k, v in ipairs(G.jokers.cards) do
+        if get_total_energy(v) >= center.ability.extra.e_level then
+          energized = energized + 1
+        end
+      end
+    end
+    local total = 1 + (center.ability.extra.Xmult_mod * energized)
+    local num, dem = SMODS.get_probability_vars(center, center.ability.extra.num, center.ability.extra.dem, 'gallade')
+    return {vars = {center.ability.extra.Xmult_mod, center.ability.extra.e_limit, total, num, dem, center.ability.extra.e_level}}
+  end,
+  rarity = "poke_safari",
+  cost = 10,
+  gen = 4,
+  stage = "Two",
+  ptype = "Fighting",
+  atlas = "Pokedex3",
+  perishable_compat = true,
+  blueprint_compat = true,
+  eternal_compat = true,
+  calculate = function(self, card, context)
+    if context.joker_main and next(context.poker_hands['Pair']) then
+      local energized = 0
+      for k, v in ipairs(G.jokers.cards) do
+        if get_total_energy(v) >= card.ability.extra.e_level then
+          energized = energized + 1
+        end
+      end
+      local total = 1 + (card.ability.extra.Xmult_mod * energized)
+      return 
+      {
+        Xmult = total
+      }
+    end
+    
+    if context.using_consumeable and context.consumeable.ability.set == 'Item' then
+      if SMODS.pseudorandom_probability(card, 'gallade', card.ability.extra.num, card.ability.extra.dem, 'gallade') then
+        local e_jokers = {}
+        for k, v in ipairs(G.jokers.cards) do
+          if can_apply_energy(v, 'Trans') then
+            e_jokers[#e_jokers + 1] = v
+          end
+        end
+        if #e_jokers > 0 then
+          local energize_joker = pseudorandom_element(e_jokers, "gallade_energy")
+          energy_increase(energize_joker, "Trans")
+        end
+      end
+    end
+  end,
+  add_to_deck = function(self, card, from_debuff)
+    if not G.GAME.energy_plus then
+      G.GAME.energy_plus = card.ability.extra.e_limit
+    else
+      G.GAME.energy_plus = G.GAME.energy_plus + card.ability.extra.e_limit
+    end
+  end,
+  remove_from_deck = function(self, card, from_debuff)
+    if not G.GAME.energy_plus then
+      G.GAME.energy_plus = 0
+    else
+      G.GAME.energy_plus = G.GAME.energy_plus - card.ability.extra.e_limit
+    end
+  end
+}
 -- Probopass 476
 local probopass={
   name = "probopass",
@@ -922,6 +993,9 @@ local rotomh={
       end
     end
   end,
+  in_pool = function(self)
+    return false
+  end
 }
 
 local rotomw={
@@ -982,6 +1056,9 @@ local rotomw={
       end
     end
   end,
+  in_pool = function(self)
+    return false
+  end
 }
 
 local rotomf={
@@ -1042,6 +1119,9 @@ local rotomf={
       end
     end
   end,
+  in_pool = function(self)
+    return false
+  end
 }
 
 local rotomfan={
@@ -1126,6 +1206,9 @@ local rotomfan={
       end
     end
   end,
+  in_pool = function(self)
+    return false
+  end
 }
 
 local rotomm={
@@ -1176,11 +1259,14 @@ local rotomm={
       end
     end
   end,
+  in_pool = function(self)
+    return false
+  end
 }
 
 -- Uxie 480
 return {name = "Pokemon Jokers 451-480", 
-        list = {mantyke, weavile, magnezone, lickilicky, rhyperior, tangrowth, electivire, magmortar, togekiss, yanmega, leafeon, glaceon, gliscor, mamoswine, porygonz, probopass, dusknoir,
-          froslass, rotom, rotomh, rotomw, rotomf, rotomfan, rotomm
+        list = {mantyke, weavile, magnezone, lickilicky, rhyperior, tangrowth, electivire, magmortar, togekiss, yanmega, leafeon, glaceon, gliscor, mamoswine, porygonz, gallade,
+                probopass, dusknoir, froslass, rotom, rotomh, rotomw, rotomf, rotomfan, rotomm
         },
 }

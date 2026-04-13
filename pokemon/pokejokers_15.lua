@@ -64,6 +64,7 @@ local lopunny={
   config = {extra = {mult = 5, Xmult = 2,scry = 2}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
+    info_queue[#info_queue + 1] = {set = 'Other', key = 'scry_cards'}
     return {vars = {center.ability.extra.mult, center.ability.extra.Xmult, center.ability.extra.scry}}
   end,
   designer = "King_Alloy",
@@ -128,6 +129,7 @@ local mega_lopunny={
   config = {extra = {scry = 5}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
+    info_queue[#info_queue + 1] = {set = 'Other', key = 'scry_cards'}
     local hand = localize('poke_none')
     if G.scry_view and G.scry_view.cards and #G.scry_view.cards > 0 then
       local text,disp_text = G.FUNCS.get_poker_hand_info(G.scry_view.cards)
@@ -272,6 +274,50 @@ local honchkrow={
 -- Glameow 431
 -- Purugly 432
 -- Chingling 433
+local chingling={
+  name = "chingling",
+  pos = {x = 2, y = 2},
+  config = {extra = {Xmult_minus = 0.75, rounds = 2,}},
+  loc_vars = function(self, info_queue, center)
+    type_tooltip(self, info_queue, center)
+    info_queue[#info_queue+1] = {set = 'Other', key = 'baby'}
+    if pokermon_config.detailed_tooltips then
+      info_queue[#info_queue+1] = {key = 'e_negative_consumable', set = 'Edition', config = {extra = 1}}
+      info_queue[#info_queue+1] = G.P_CENTERS.c_justice
+    end
+    return {vars = {center.ability.extra.Xmult_minus, center.ability.extra.rounds, }}
+  end,
+  rarity = 3,
+  cost = 3,
+  stage = "Baby",
+  ptype = "Psychic",
+  atlas = "Pokedex4",
+  gen = 4,
+  perishable_compat = true,
+  blueprint_compat = true,
+  eternal_compat = true,
+  calculate = function(self, card, context)
+    if context.cardarea == G.jokers and context.scoring_hand then
+      if context.joker_main then
+        faint_baby_poke(self, card, context) 
+        return {
+          message = localize{type = 'variable', key = 'a_xmult', vars = {card.ability.extra.Xmult_minus}}, 
+          colour = G.C.XMULT,
+          Xmult_mod = card.ability.extra.Xmult_minus
+        }
+      end
+    end
+    if context.end_of_round and not context.individual and not context.repetition and not card.debuff then
+      G.E_MANAGER:add_event(Event({
+        func = function()
+          SMODS.add_card{set = 'Tarot', key = 'c_justice', edition = 'e_negative'}
+          return true
+        end
+      }))
+    end
+    return level_evo(self, card, context, "j_poke_chimecho")
+  end,
+}
 -- Stunky 434
 -- Skuntank 435
 -- Bronzor 436
@@ -404,11 +450,12 @@ local happiny={
         max = max + 1
       end
       for i = 1, max do
-        local _card = create_card('Tarot', G.consumeables, nil, nil, nil, nil, 'c_magician')
-        local edition = {negative = true}
-        _card:set_edition(edition, true)
-        _card:add_to_deck()
-        G.consumeables:emplace(_card)
+          G.E_MANAGER:add_event(Event({
+            func = function()
+              SMODS.add_card{set = 'Tarot', key = 'c_magician', edition = 'e_negative'}
+              return true
+            end
+          }))
       end
     end
     return level_evo(self, card, context, "j_poke_chansey")
@@ -454,11 +501,12 @@ local munchlax={
       end
     end
     if context.end_of_round and not context.individual and not context.repetition and not card.debuff then
-      local _card = create_card('Item', G.consumeables, nil, nil, nil, nil, nil)
-      local edition = {negative = true}
-      _card:set_edition(edition, true)
-      _card:add_to_deck()
-      G.consumeables:emplace(_card)
+      G.E_MANAGER:add_event(Event({
+        func = function()
+          SMODS.add_card{set = 'Item', edition = 'e_negative'}
+          return true
+        end
+      }))
     end
     return level_evo(self, card, context, "j_poke_snorlax")
   end,
@@ -498,9 +546,14 @@ local riolu={
     end
     if context.end_of_round and not context.individual and not context.repetition and not card.debuff then
       if #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit then
-        local _card = create_card('Spectral', G.consumeables, nil, nil, nil, nil, 'c_aura')
-        _card:add_to_deck()
-        G.consumeables:emplace(_card)
+        G.GAME.consumeable_buffer = G.GAME.consumeable_buffer + 1
+        G.E_MANAGER:add_event(Event({
+          func = function()
+            SMODS.add_card{set = 'Spectral', key = 'c_aura'}
+            G.GAME.consumeable_buffer = 0
+            return true
+          end
+        }))
       end
     end
     return level_evo(self, card, context, "j_poke_lucario")
@@ -544,5 +597,5 @@ local lucario={
 -- Hippopotas 449
 -- Hippowdon 450
 return {name = "Pokemon Jokers 421-450", 
-        list = {ambipom, buneary, lopunny, mega_lopunny, mismagius, honchkrow, bonsly, mimejr, happiny, munchlax, riolu, lucario},
+        list = {ambipom, buneary, lopunny, mega_lopunny, mismagius, honchkrow, chingling, bonsly, mimejr, happiny, munchlax, riolu, lucario},
 }

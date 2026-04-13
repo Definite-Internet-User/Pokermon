@@ -213,7 +213,113 @@ local simipour = {
   end,
 }
 -- Munna 517
+local munna={
+  name = "munna",
+  pos = {x = 0, y = 0},
+  config = {extra = {Xmult_multi = 1, Xmult_mod = 0.05, scry = 2}},
+  loc_vars = function(self, info_queue, center)
+    type_tooltip(self, info_queue, center)
+    return {vars = {center.ability.extra.Xmult_multi, center.ability.extra.Xmult_mod, center.ability.extra.scry}}
+  end,
+  rarity = 3,
+  cost = 7,
+  gen = 5,
+  item_req = "moonstone",
+  stage = "Basic",
+  ptype = "Psychic",
+  atlas = "Pokedex5",
+  perishable_compat = true,
+  blueprint_compat = true,
+  eternal_compat = true,
+  copy_scaled = true,
+  calculate = function(self, card, context)
+    if context.before then
+      local eaten = 0
+      for k, v in ipairs(G.scry_view.cards) do
+        if v.config.center ~= G.P_CENTERS.c_base and not v.debuff and not v.vampired then
+            local true_card = G.deck.cards[#G.deck.cards - k + 1]
+            v.vampired = true
+            eaten = eaten + 1
+
+            v:set_ability(G.P_CENTERS.c_base, nil, true)
+            true_card:set_ability(G.P_CENTERS.c_base, nil, true)
+            G.E_MANAGER:add_event(Event({
+                func = function()
+                    v:juice_up()
+                    v.vampired = nil
+                    return true
+                end
+            }))
+        end
+      end
+      if eaten > 0 then
+        SMODS.scale_card(card, {
+          ref_value = 'Xmult_multi',
+          scalar_value = 'Xmult_mod',
+          operation = function(ref_table, ref_value, initial, change)
+            ref_table[ref_value] = initial + (change * eaten)
+          end,
+          no_message = true,
+        })
+      end
+    end
+    if context.joker_main then
+      return {
+        Xmult = card.ability.extra.Xmult_multi
+      }
+    end
+    return item_evo(self, card, context, "j_poke_musharna")
+  end,
+  add_to_deck = function(self, card, from_debuff)
+    G.GAME.scry_amount = (G.GAME.scry_amount or 0) + card.ability.extra.scry
+  end,
+  remove_from_deck = function(self, card, from_debuff)
+    G.GAME.scry_amount = math.max(0,(G.GAME.scry_amount or 0) - card.ability.extra.scry)
+  end,
+}
 -- Musharna 518
+local musharna={
+  name = "musharna",
+  pos = {x = 0, y = 0},
+  config = {extra = {Xmult_multi = 1, scry = 2, scry_added = 0}},
+  loc_vars = function(self, info_queue, center)
+    type_tooltip(self, info_queue, center)
+    return {vars = {center.ability.extra.Xmult_multi, center.ability.extra.scry,}}
+  end,
+  rarity = "poke_safari",
+  cost = 8,
+  gen = 5,
+  stage = "One",
+  ptype = "Psychic",
+  atlas = "Pokedex5",
+  perishable_compat = true,
+  blueprint_compat = true,
+  eternal_compat = true,
+  calculate = function(self, card, context)
+    if context.setting_blind then
+      local psy_count = #find_pokemon_type("Psychic")
+      if psy_count > 0 then
+        G.GAME.scry_amount = (G.GAME.scry_amount or 0) + (psy_count * card.ability.extra.scry)
+        card.ability.extra.scry_added = card.ability.extra.scry_added + (psy_count * card.ability.extra.scry)
+        card:juice_up()
+      end
+    end
+    if context.end_of_round and not context.individual and not context.repetition then
+      G.GAME.scry_amount = math.max(0, (G.GAME.scry_amount or 0) - card.ability.extra.scry_added)
+      card.ability.extra.scry_added = 0
+    end
+    if context.individual and context.cardarea == G.scry_view and context.other_card.config.center ~= G.P_CENTERS.c_base and not context.end_of_round and not context.other_card.debuff then
+        return {
+          x_mult = card.ability.extra.Xmult_multi
+        }
+    end
+  end,
+  remove_from_deck = function(self, card, from_debuff)
+    if not from_debuff and card.ability.extra.scry_added > 0 then
+      G.GAME.scry_amount = math.max(0,(G.GAME.scry_amount or 0) - card.ability.extra.scry_added)
+    end
+  end,
+}
 -- Pidove 519
 -- Tranquill 520
 -- Unfezant 521
@@ -223,15 +329,15 @@ local simipour = {
 local roggenrola = {
   name = "roggenrola", 
   pos = {x = 2, y = 2},
-  config = {extra = {hazards = 4, mult_mod = 4, hazard_triggered = 0}, evo_rqmt = 25},
+  config = {extra = {hazard_level = 1, mult_mod = 5, hazard_triggered = 0}, evo_rqmt = 10},
   loc_vars = function(self, info_queue, card)
     type_tooltip(self, info_queue, card)
     -- just to shorten function
     local abbr = card.ability.extra
-    info_queue[#info_queue+1] = {set = 'Other', key = 'poke_hazards', vars = {abbr.hazards}}
+    info_queue[#info_queue+1] = {set = 'Other', key = 'hazard_level', vars = poke_get_hazard_level_vars()}
     info_queue[#info_queue+1] = G.P_CENTERS.m_poke_hazard
 
-    return {vars = {abbr.hazards, abbr.mult_mod, math.max(0, self.config.evo_rqmt - abbr.hazard_triggered)}}
+    return {vars = {abbr.hazard_level, abbr.mult_mod, math.max(0, self.config.evo_rqmt - abbr.hazard_triggered)}}
   end,
   rarity = 1,
   cost = 4,
@@ -242,9 +348,6 @@ local roggenrola = {
   hazard_poke = true,
   blueprint_compat = true,
   calculate = function(self, card, context)
-    if context.setting_blind then
-      poke_set_hazards(card.ability.extra.hazards)
-    end
     if context.individual and not context.end_of_round and context.cardarea == G.hand and SMODS.has_no_rank(context.other_card) then
       if context.other_card.debuff then
           return {
@@ -264,25 +367,31 @@ local roggenrola = {
     end
     return scaling_evo(self, card, context, "j_poke_boldore", card.ability.extra.hazard_triggered, self.config.evo_rqmt)
   end,
+  add_to_deck = function(self, card, from_debuff)
+    poke_change_hazard_level(card.ability.extra.hazard_level)
+  end,
+  remove_from_deck = function(self, card, from_debuff)
+    poke_change_hazard_level(-card.ability.extra.hazard_level)
+  end
 }
 -- Boldore 525
 local boldore = {
   name = "boldore", 
   pos = {x = 3, y = 2},
-  config = {extra = {hazards = 4, mult_mod = 8}},
+  config = {extra = {hazard_level = 1, mult_mod = 10}},
   loc_vars = function(self, info_queue, card)
     type_tooltip(self, info_queue, card)
     -- just to shorten function
     local abbr = card.ability.extra
-    info_queue[#info_queue+1] = {set = 'Other', key = 'poke_hazards', vars = {abbr.hazards}}
+    info_queue[#info_queue+1] = {set = 'Other', key = 'hazard_level', vars = poke_get_hazard_level_vars()}
     info_queue[#info_queue+1] = G.P_CENTERS.m_poke_hazard
     if pokermon_config.detailed_tooltips then
       info_queue[#info_queue+1] = G.P_CENTERS.c_poke_linkcable
     end
     
-    return {vars = {abbr.hazards, abbr.mult_mod}}
+    return {vars = {abbr.hazard_level, abbr.mult_mod}}
   end,
-  rarity = 2,
+  rarity = "poke_safari",
   cost = 6,
   stage = "One",
   ptype = "Earth",
@@ -292,9 +401,6 @@ local boldore = {
   hazard_poke = true,
   blueprint_compat = true,
   calculate = function(self, card, context)
-    if context.setting_blind then
-      poke_set_hazards(card.ability.extra.hazards)
-    end
     if context.individual and not context.end_of_round and context.cardarea == G.hand and SMODS.has_no_rank(context.other_card) then
       if context.other_card.debuff then
           return {
@@ -311,20 +417,26 @@ local boldore = {
     end
     return item_evo(self, card, context, "j_poke_gigalith")
   end,
+  add_to_deck = function(self, card, from_debuff)
+    poke_change_hazard_level(card.ability.extra.hazard_level)
+  end,
+  remove_from_deck = function(self, card, from_debuff)
+    poke_change_hazard_level(-card.ability.extra.hazard_level)
+  end
 }
 -- Gigalith 526
 local gigalith = {
   name = "gigalith", 
   pos = {x = 4, y = 2},
-  config = {extra = {hazards = 4, mult_mod = 6, retriggers = 1}},
+  config = {extra = {hazard_level = 1, mult_mod = 7, retriggers = 1}},
   loc_vars = function(self, info_queue, card)
     type_tooltip(self, info_queue, card)
     -- just to shorten function
     local abbr = card.ability.extra
-    info_queue[#info_queue+1] = {set = 'Other', key = 'poke_hazards', vars = {abbr.hazards}}
+    info_queue[#info_queue+1] = {set = 'Other', key = 'hazard_level', vars = poke_get_hazard_level_vars()}
     info_queue[#info_queue+1] = G.P_CENTERS.m_poke_hazard
 
-    return {vars = {abbr.hazards, abbr.mult_mod}}
+    return {vars = {abbr.hazard_level, abbr.mult_mod}}
   end,
   rarity = 'poke_safari',
   cost = 10,
@@ -335,9 +447,6 @@ local gigalith = {
   blueprint_compat = true,
   hazard_poke = true,
   calculate = function(self, card, context)
-    if context.setting_blind then
-      poke_set_hazards(card.ability.extra.hazards)
-    end
     if context.individual and not context.end_of_round and context.cardarea == G.hand and SMODS.has_no_rank(context.other_card) then
       if context.other_card.debuff then
           return {
@@ -360,6 +469,12 @@ local gigalith = {
       }
     end
   end,
+  add_to_deck = function(self, card, from_debuff)
+    poke_change_hazard_level(card.ability.extra.hazard_level)
+  end,
+  remove_from_deck = function(self, card, from_debuff)
+    poke_change_hazard_level(-card.ability.extra.hazard_level)
+  end
 }
 -- Woobat 527
 -- Swoobat 528
@@ -457,5 +572,5 @@ local excadrill={
 -- Sewaddle 540
 return {
   name = "Pokemon Jokers 511-540",
-  list = {pansage, simisage, pansear, simisear, panpour, simipour, roggenrola, boldore, gigalith, drilbur, excadrill },
+  list = {pansage, simisage, pansear, simisear, panpour, simipour, munna, musharna, roggenrola, boldore, gigalith, drilbur, excadrill },
 }

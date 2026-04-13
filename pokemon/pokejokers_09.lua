@@ -169,15 +169,10 @@ local entei={
       local eval = function() return G.GAME.current_round.discards_used == 0 and not G.RESET_JIGGLES end
       juice_card_until(card, eval, true)
     end
-    if context.cardarea == G.jokers and context.scoring_hand then
-
-      if context.joker_main and card.ability.extra.Xmult > 1 then
-        return {
-          message = localize{type = 'variable', key = 'a_xmult', vars = {card.ability.extra.Xmult}}, 
-          colour = G.C.XMULT,
-          Xmult_mod = card.ability.extra.Xmult
-        }
-      end
+    if context.joker_main then
+      return {
+        Xmult = card.ability.extra.Xmult
+      }
     end
     if context.pre_discard and #context.full_hand == 4 and G.GAME.current_round.discards_used == 0 and not context.blueprint then
       local target = pseudorandom_element(context.full_hand, pseudoseed('entei'))
@@ -186,10 +181,14 @@ local entei={
       delay(0.6)
     end
     if context.discard and context.other_card and context.other_card.entei_destroy and not context.blueprint then
-      card.ability.extra.Xmult = card.ability.extra.Xmult + card.ability.extra.Xmult_mod
-      card_eval_status_text(card, 'extra', nil, nil, nil, {message = localize("k_upgrade_ex"), colour = G.C.XMULT})
+      SMODS.scale_card(card, {
+        ref_value = 'Xmult',
+        scalar_value = 'Xmult_mod',
+        message_colour = G.C.XMULT
+      })
+
       return {
-          remove = true
+        remove = true
       }
     end
   end,
@@ -234,7 +233,7 @@ local suicune={
 local larvitar={
   name = "larvitar",
   pos = {x = 7, y = 9},
-  config = {extra = {chip_mod = 8, full_houses = 0}, evo_rqmt = 6},
+  config = {extra = {chip_mod = 10, full_houses = 0}, evo_rqmt = 6},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     return {vars = {center.ability.extra.chip_mod, math.max(0, self.config.evo_rqmt - center.ability.extra.full_houses)}}
@@ -271,7 +270,7 @@ local larvitar={
 local pupitar={
   name = "pupitar",
   pos = {x = 8, y = 9},
-  config = {extra = {chip_mod = 12, full_houses = 0}, evo_rqmt = 8},
+  config = {extra = {chip_mod = 15, full_houses = 0}, evo_rqmt = 8},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     return {vars = {center.ability.extra.chip_mod, math.max(0, self.config.evo_rqmt - center.ability.extra.full_houses)}}
@@ -410,24 +409,21 @@ local lugia={
     if context.hand_drawn and SMODS.drawn_cards and not context.blueprint then
       card.ability.extra.drawn = card.ability.extra.drawn + #SMODS.drawn_cards
       if card.ability.extra.drawn >= card.ability.extra.to_draw then
-        card.ability.extra.Xmult = card.ability.extra.Xmult + (card.ability.extra.Xmult_mod * math.floor(card.ability.extra.drawn/card.ability.extra.to_draw))
+        SMODS.scale_card(card, {
+          ref_value = 'Xmult',
+          scalar_value = 'Xmult_mod',
+          operation = function(ref_table, ref_value, initial, change)
+            ref_table[ref_value] = initial + change * math.floor(card.ability.extra.drawn / card.ability.extra.to_draw)
+          end,
+          message_colour = G.C.XMULT
+        })
         card.ability.extra.drawn = card.ability.extra.drawn % card.ability.extra.to_draw
-        return {
-          message = localize('k_upgrade_ex'),
-          colour = G.C.XMULT
-        }
       end
     end
-    if context.cardarea == G.jokers and context.scoring_hand then
-      if context.joker_main then
-        if card.ability.extra.Xmult > 1 then
-          return {
-            message = localize{type = 'variable', key = 'a_xmult', vars = {card.ability.extra.Xmult}}, 
-            colour = G.C.XMULT,
-            Xmult_mod = card.ability.extra.Xmult
-          }
-        end
-      end
+    if context.joker_main then
+      return {
+        Xmult = card.ability.extra.Xmult
+      }
     end
   end,
 }
@@ -462,6 +458,7 @@ local ho_oh={
         card.ability.extra.used = card.ability.extra.used + 1
       end
       if #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit then
+        G.GAME.consumeable_buffer = G.GAME.consumeable_buffer + 1
         G.E_MANAGER:add_event(Event({
           func = function() 
             local copy = nil
@@ -474,6 +471,7 @@ local ho_oh={
             copy:set_edition(edition)
             copy:add_to_deck()
             G.consumeables:emplace(copy) 
+            G.GAME.consumeable_buffer = 0
             return true
         end}))
         card_eval_status_text(card, 'extra', nil, nil, nil, {message = localize('k_duplicated_ex')})
@@ -493,10 +491,10 @@ local celebi = {
   name = "celebi", 
   pos = {x = 4, y = 10},
   soul_pos = { x = 5, y = 10},
-  config = {extra = {reward = 1, skip_count = 0, skip_target = 1, Xmult_mod = .05}},
+  config = {extra = {reward = 1, skip_count = 0, Xmult_mod = .05}},
   loc_vars = function(self, info_queue, card)
     type_tooltip(self, info_queue, card)
-    return {vars = {card.ability.extra.skip_target, card.ability.extra.reward, card.ability.extra.skip_target - card.ability.extra.skip_count, 
+    return {vars = {(G.GAME.celebi_skips or 1), card.ability.extra.reward, (G.GAME.celebi_skips or 1) - card.ability.extra.skip_count, 
                     card.ability.extra.Xmult_mod, 1 + (G.GAME.round * card.ability.extra.Xmult_mod)}}
   end,
   rarity = 4,
@@ -510,11 +508,11 @@ local celebi = {
     if context.skip_blind and not context.blueprint then
       card:juice_up(0.1)
       card.ability.extra.skip_count = card.ability.extra.skip_count + 1
-      if card.ability.extra.skip_count >= card.ability.extra.skip_target then
+      if card.ability.extra.skip_count >= (G.GAME.celebi_skips or 1) then
         ease_ante(-card.ability.extra.reward)
         G.GAME.round_resets.blind_ante = G.GAME.round_resets.blind_ante or G.GAME.round_resets.ante
         G.GAME.round_resets.blind_ante = G.GAME.round_resets.blind_ante - card.ability.extra.reward
-        card.ability.extra.skip_target = card.ability.extra.skip_target + 1
+        G.GAME.celebi_skips = (G.GAME.celebi_skips or 1) + 1
         card.ability.extra.skip_count = 0
       end
     end
@@ -587,9 +585,12 @@ local treecko={
   end,
   set_ability = function(self, card, initial, delay_sprites)
     if initial then
-      card.ability.extra.targets = get_poke_target_card_ranks("treecko", 3, card.ability.extra.targets)
+      self:set_nature(card)
     end
-  end
+  end,
+  set_nature = function(self,card)
+    card.ability.extra.targets = get_poke_target_card_ranks("treecko", 3, card.ability.extra.targets)
+  end,
 }
 -- Grovyle 253
 local grovyle={
@@ -653,9 +654,12 @@ local grovyle={
   end,
   set_ability = function(self, card, initial, delay_sprites)
     if initial then
-      card.ability.extra.targets = get_poke_target_card_ranks("grovyle", 3, card.ability.extra.targets)
+      self:set_nature(card)
     end
-  end
+  end,
+  set_nature = function(self,card)
+    card.ability.extra.targets = get_poke_target_card_ranks("grovyle", 3, card.ability.extra.targets)
+  end,
 }
 -- Sceptile 254
 local sceptile={
@@ -710,9 +714,12 @@ local sceptile={
   end,
   set_ability = function(self, card, initial, delay_sprites)
     if initial then
-      card.ability.extra.targets = get_poke_target_card_ranks("sceptile", 3, card.ability.extra.targets)
+      self:set_nature(card)
     end
-  end
+  end,
+  set_nature = function(self,card)
+    card.ability.extra.targets = get_poke_target_card_ranks("sceptile", 3, card.ability.extra.targets)
+  end,
 }
 -- Torchic 255
 local torchic={
@@ -765,9 +772,12 @@ local torchic={
   end,
   set_ability = function(self, card, initial, delay_sprites)
     if initial then
-      card.ability.extra.targets = get_poke_target_card_ranks("torchic", 3, card.ability.extra.targets)
+      self:set_nature(card)
     end
-  end
+  end,
+  set_nature = function(self,card)
+    card.ability.extra.targets = get_poke_target_card_ranks("torchic", 3, card.ability.extra.targets)
+  end,
 }
 -- Combusken 256
 local combusken={
@@ -819,9 +829,12 @@ local combusken={
   end,
   set_ability = function(self, card, initial, delay_sprites)
     if initial then
-      card.ability.extra.targets = get_poke_target_card_ranks("combusken", 3, card.ability.extra.targets)
+      self:set_nature(card)
     end
-  end
+  end,
+  set_nature = function(self,card)
+    card.ability.extra.targets = get_poke_target_card_ranks("combusken", 3, card.ability.extra.targets)
+  end,
 }
 -- Blaziken 257
 local blaziken={
@@ -905,9 +918,12 @@ local blaziken={
   end,
   set_ability = function(self, card, initial, delay_sprites)
     if initial then
-      card.ability.extra.targets = get_poke_target_card_ranks("blaziken", 3, card.ability.extra.targets)
+      self:set_nature(card)
     end
-  end
+  end,
+  set_nature = function(self,card)
+    card.ability.extra.targets = get_poke_target_card_ranks("blaziken", 3, card.ability.extra.targets)
+  end,
 }
 -- Mudkip 258
 local mudkip={
@@ -965,9 +981,12 @@ local mudkip={
   end,
   set_ability = function(self, card, initial, delay_sprites)
     if initial then
-      card.ability.extra.targets = get_poke_target_card_ranks("mudkip", 3, card.ability.extra.targets)
+      self:set_nature(card)
     end
-  end
+  end,
+  set_nature = function(self,card)
+    card.ability.extra.targets = get_poke_target_card_ranks("mudkip", 3, card.ability.extra.targets)
+  end,
 }
 -- Marshtomp 259
 local marshtomp={
@@ -1025,9 +1044,12 @@ local marshtomp={
   end,
   set_ability = function(self, card, initial, delay_sprites)
     if initial then
-      card.ability.extra.targets = get_poke_target_card_ranks("marshtomp", 3, card.ability.extra.targets)
+      self:set_nature(card)
     end
-  end
+  end,
+  set_nature = function(self,card)
+    card.ability.extra.targets = get_poke_target_card_ranks("marshtomp", 3, card.ability.extra.targets)
+  end,
 }
 -- Swampert 260
 local swampert={
@@ -1113,9 +1135,12 @@ local swampert={
   end,
   set_ability = function(self, card, initial, delay_sprites)
     if initial then
-      card.ability.extra.targets = get_poke_target_card_ranks("swampert", 3, card.ability.extra.targets)
+      self:set_nature(card)
     end
-  end
+  end,
+  set_nature = function(self,card)
+    card.ability.extra.targets = get_poke_target_card_ranks("swampert", 3, card.ability.extra.targets)
+  end,
 }
 -- Poochyena 261
 local poochyena={
@@ -1137,19 +1162,18 @@ local poochyena={
   blueprint_compat = true,
   eternal_compat = true,
   calculate = function(self, card, context)
-    if context.cardarea == G.jokers and context.scoring_hand then
-      if context.joker_main and card.ability.extra.mult > 0 then
-        return {
-          message = localize{type = 'variable', key = 'a_mult', vars = {card.ability.extra.mult}}, 
-          colour = G.C.MULT,
-          mult_mod = card.ability.extra.mult
-        }
-      end
+    if context.joker_main then
+      return {
+        mult = card.ability.extra.mult
+      }
     end
     if context.remove_playing_cards and not context.blueprint then
       for _, removed_card in ipairs(context.removed) do
-        card.ability.extra.mult = card.ability.extra.mult + card.ability.extra.mult_mod
-        card_eval_status_text(card, 'extra', nil, nil, nil, {message = localize("k_upgrade_ex"), colour = G.C.MULT})
+        SMODS.scale_card(card, {
+          ref_value = 'mult',
+          scalar_value = 'mult_mod',
+          message_colour = G.C.MULT
+        })
       end
     end
     return level_evo(self, card, context, "j_poke_mightyena")
@@ -1175,19 +1199,21 @@ local mightyena={
   blueprint_compat = true,
   eternal_compat = true,
   calculate = function(self, card, context)
-    if context.cardarea == G.jokers and context.scoring_hand then
-      if context.joker_main and card.ability.extra.mult > 0 then
-        return {
-          message = localize{type = 'variable', key = 'a_mult', vars = {card.ability.extra.mult}}, 
-          colour = G.C.MULT,
-          mult_mod = card.ability.extra.mult
-        }
-      end
+    if context.joker_main then
+      return {
+        mult = card.ability.extra.mult
+      }
     end
     if context.remove_playing_cards and not context.blueprint then
       for _, removed_card in ipairs(context.removed) do
-        card.ability.extra.mult = card.ability.extra.mult + (card.ability.extra.mult_mod + (card.ability.extra.mult_scaling_mod * #find_pokemon_type("Dark")))
-        card_eval_status_text(card, 'extra', nil, nil, nil, {message = localize("k_upgrade_ex"), colour = G.C.MULT})
+        SMODS.scale_card(card, {
+          ref_value = 'mult',
+          scalar_value = 'mult_mod',
+          operation = function(ref_table, ref_value, initial, modifier)
+            ref_table[ref_value] = initial + modifier + #find_pokemon_type("Dark") * card.ability.extra.mult_scaling_mod
+          end,
+          message_colour = G.C.MULT
+        })
       end
     end
   end,
@@ -1337,9 +1363,12 @@ local wurmple={
   end,
   set_ability = function(self, card, initial, delay_sprites)
     if initial then
-      card.ability.extra.targets = get_poke_target_card_suit('wurmple', true, 'Spades', {'Spades', 'Hearts', 'Diamonds', 'Clubs'})
+      self:set_nature(card)
     end
-  end
+  end,
+  set_nature = function(self,card)
+    card.ability.extra.targets = get_poke_target_card_suit('wurmple', true, 'Spades', {'Spades', 'Hearts', 'Diamonds', 'Clubs'})
+  end,
 }
 -- Silcoon 266
 local silcoon={
@@ -1380,9 +1409,12 @@ local silcoon={
   end,
   set_ability = function(self, card, initial, delay_sprites)
     if initial then
-      card.ability.extra.targets = get_poke_target_card_suit('silcoon', true, 'Hearts', {'Hearts', 'Diamonds'})
+      self:set_nature(card)
     end
-  end
+  end,
+  set_nature = function(self,card)
+    card.ability.extra.targets = get_poke_target_card_suit('silcoon', true, 'Hearts', {'Hearts', 'Diamonds'})
+  end,
 }
 -- Beautifly 267
 local beautifly={
@@ -1431,9 +1463,12 @@ local beautifly={
   end,
   set_ability = function(self, card, initial, delay_sprites)
     if initial then
-      card.ability.extra.targets = get_poke_target_card_suit('beautifly', true, 'Hearts', {'Hearts', 'Diamonds'})
+      self:set_nature(card)
     end
-  end
+  end,
+  set_nature = function(self,card)
+    card.ability.extra.targets = get_poke_target_card_suit('beautifly', true, 'Hearts', {'Hearts', 'Diamonds'})
+  end,
 }
 -- Cascoon 268
 local cascoon={
@@ -1474,9 +1509,12 @@ local cascoon={
   end,
   set_ability = function(self, card, initial, delay_sprites)
     if initial then
-      card.ability.extra.targets = get_poke_target_card_suit('cascoon', true, 'Spades', {'Spades', 'Clubs'})
+      self:set_nature(card)
     end
-  end
+  end,
+  set_nature = function(self,card)
+    card.ability.extra.targets = get_poke_target_card_suit('cascoon', true, 'Spades', {'Spades', 'Clubs'})
+  end,
 }
 -- Dustox 269
 local dustox={
@@ -1528,9 +1566,12 @@ local dustox={
   end,
   set_ability = function(self, card, initial, delay_sprites)
     if initial then
-      card.ability.extra.targets = get_poke_target_card_suit('cascoon', true, 'Spades', {'Spades', 'Clubs'})
+      self:set_nature(card)
     end
-  end
+  end,
+  set_nature = function(self,card)
+    card.ability.extra.targets = get_poke_target_card_suit('dustox', true, 'Spades', {'Spades', 'Clubs'})
+  end,
 }
 -- Lotad 270
 return {name = "Pokemon Jokers 240-270", 

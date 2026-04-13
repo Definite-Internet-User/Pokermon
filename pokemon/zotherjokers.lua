@@ -10,7 +10,7 @@ local pokedex={
   cost = 5, 
   stage = "Other",
   atlas = "others",
-  blueprint_compat = true,
+  blueprint_compat = false,
 }
 
 local rotomdex={ 
@@ -68,12 +68,12 @@ local rotomdex={
 local everstone={ 
   name = "everstone",
   pos = {x = 1, y = 0},
-  config = {extra = {Xmult_multi = 1.75}},
+  config = {extra = {Xmult_multi = 1.75, Xmult_multi2 = 1.5}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     info_queue[#info_queue+1] = {set = 'Other', key = 'basic'}
     info_queue[#info_queue+1] = {set = 'Other', key = 'baby'}
-		return {vars = {center.ability.extra.Xmult_multi}}
+		return {vars = {center.ability.extra.Xmult_multi, center.ability.extra.Xmult_multi2}}
   end,
   rarity = 3, 
   cost = 8, 
@@ -82,17 +82,25 @@ local everstone={
   blueprint_compat = true,
   calculate = function(self, card, context)
     if context.other_joker and context.other_joker.config and (context.other_joker.config.center.stage == "Basic" or context.other_joker.config.center.stage == "Baby") then
-        G.E_MANAGER:add_event(Event({
-          func = function()
-              context.other_joker:juice_up(0.5, 0.5)
-              return true
-          end
-        })) 
-        return {
-          message = localize{type = 'variable', key = 'a_xmult', vars = {card.ability.extra.Xmult_multi}}, 
-          colour = G.C.XMULT,
-          Xmult_mod = card.ability.extra.Xmult_multi
-        }
+        local Xmult = 1
+        if context.other_joker.config.center.stage == "Basic" then
+          Xmult = card.ability.extra.Xmult_multi2
+        elseif context.other_joker.config.center.stage == "Baby" then
+          Xmult = card.ability.extra.Xmult_multi
+        end
+        if Xmult > 1 then
+          G.E_MANAGER:add_event(Event({
+            func = function()
+                context.other_joker:juice_up(0.5, 0.5)
+                return true
+            end
+          })) 
+          return {
+            message = localize{type = 'variable', key = 'a_xmult', vars = {Xmult}}, 
+            colour = G.C.XMULT,
+            Xmult_mod = Xmult
+          }
+        end
     end
   end,
 }
@@ -158,24 +166,26 @@ local jelly_donut={
   eternal_compat = false,
   calculate = function(self, card, context)
     if context.setting_blind then
-      card.ability.extra.rounds = card.ability.extra.rounds - 1
+      if not context.blueprint then
+        card.ability.extra.rounds = card.ability.extra.rounds - 1
+      end
+      
       if #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit then
-        local _card = create_card("Energy", G.pack_cards, nil, nil, true, true, "c_poke_colorless_energy", nil)
-        _card:add_to_deck()
-        G.consumeables:emplace(_card)
-        G.GAME.consumeable_buffer = 0
+        G.GAME.consumeable_buffer = G.GAME.consumeable_buffer + 1
+        G.E_MANAGER:add_event(Event({
+            func = function()
+              SMODS.add_card{set = "Energy", key = "c_poke_colorless_energy"}
+              G.GAME.consumeable_buffer = 0
+              return true
+            end
+        })) 
         card_eval_status_text(context.blueprint_card or card, 'extra', nil, nil, nil, {message = "Energy!", colour = G.ARGS.LOC_COLOURS.pink})
       else
         card_eval_status_text(context.blueprint_card or card, 'extra', nil, nil, nil, {message = "No Room!", colour = G.C.MULT})
       end
 
-      if card.ability.extra.rounds <= 0 then 
-        G.E_MANAGER:add_event(Event({
-            func = function()
-                remove(self, card, context)
-                return true
-            end
-        })) 
+      if card.ability.extra.rounds <= 0 then
+        SMODS.destroy_cards(card, nil, nil, true)
         return {
             message = localize('k_eaten_ex'),
             colour = G.C.RED
@@ -200,10 +210,10 @@ local treasure_eatery={
   stage = "Other",
   atlas = "others",
   perishable_compat = true,
-  blueprint_compat = true,
+  blueprint_compat = false,
   eternal_compat = false,
   calculate = function(self, card, context)
-    if context.setting_blind then
+    if context.setting_blind and not context.blueprint then
       card.ability.extra.rounds = card.ability.extra.rounds - 1
       if G.jokers and G.jokers.cards and #G.jokers.cards > 1 then
         if get_type(G.jokers.cards[#G.jokers.cards]) then
@@ -213,13 +223,8 @@ local treasure_eatery={
         end
       end
 
-      if card.ability.extra.rounds <= 0 then 
-        G.E_MANAGER:add_event(Event({
-            func = function()
-                remove(self, card, context)
-                return true
-            end
-        })) 
+      if card.ability.extra.rounds <= 0 then
+        SMODS.destroy_cards(card, nil, nil, true)
         return {
             message = localize('poke_closed_ex'),
             colour = G.C.RED
@@ -294,10 +299,12 @@ local mystery_egg = {
         if is_egg_helper(adjacent_jokers[i]) then adjacent = adjacent + 1 end
       end
       card.ability.extra.rounds = card.ability.extra.rounds - 1
-      if (adjacent + #SMODS.find_card('c_poke_fire_energy')) > 0 and pseudorandom('egg') < (adjacent + #SMODS.find_card('c_poke_fire_energy'))/4 then
-        card.ability.extra.rounds = card.ability.extra.rounds - 1
+      if next(SMODS.find_card('j_poke_oologist')) then
+        if (adjacent + #SMODS.find_card('c_poke_fire_energy')) > 0 and pseudorandom('egg') < (adjacent + #SMODS.find_card('c_poke_fire_energy'))/4 then
+          card.ability.extra.rounds = card.ability.extra.rounds - 1
+        end
+        card.ability.extra.rounds = card.ability.extra.rounds - adjacent/4
       end
-      card.ability.extra.rounds = card.ability.extra.rounds - adjacent/4
       if card.ability.extra.rounds <= 1 then
         local eval = function(card) return card.ability.extra.rounds and card.ability.extra.rounds <= 1 end
         juice_card_until(card, eval, true)
@@ -313,20 +320,12 @@ local mystery_egg = {
   end,
   set_ability = function(self, card, initial, delay_sprites)
     if initial then
-      local prefix_config = "j_"..(card.config.center.poke_custom_prefix and card.config.center.poke_custom_prefix or "poke").."_"
-      local poke_keys = {}
-      for k, v in pairs(G.P_CENTERS) do
-        if string.sub(v.key,1,string.len(prefix_config)) == prefix_config and get_gen_allowed(v) and not v.aux_poke and pokemon_in_pool(v) and v.stage and type(v.rarity) == "number" then
-          if ((v.stage == "Baby" or v.stage == "Basic") and v.rarity ~= 4) then
-            table.insert(poke_keys, {key = v.key, rarity = v.rarity})
-          end
-        end
-      end
-
-      local poke_key = {key = "j_poke_rhyhorn", rarity = 2}
-      if #poke_keys > 0 then
-        poke_key = pseudorandom_element(poke_keys, pseudoseed('egg'))
-      end
+      local poke_key = get_random_poke_key_options {
+        stage = { "Baby", "Basic" },
+        rarity = { "Common", "Uncommon", "Rare" },
+        key_append = 'egg'
+      }
+      local center = G.P_CENTERS[poke_key]
       -- common hatches in 2 turns
       -- uncommon hatches in 2 or 3 turns
       -- rare hatches in 3 turns
@@ -334,17 +333,17 @@ local mystery_egg = {
       -- w/o fire = 2/3/3
       -- w/1 fire = 2/2/3
       -- w/2 fire = 2/2/2
-      if poke_key.rarity == 1 then
+      if center.rarity == 1 then
         card.ability.extra.rounds = 2
-      elseif poke_key.rarity == 2 then
+      elseif center.rarity == 2 then
         card.ability.extra.rounds = 2
         if pseudorandom('regg') > .50 then
           card.ability.extra.rounds = card.ability.extra.rounds + 1 
         end
-      elseif poke_key.rarity == 3 then
+      elseif center.rarity == 3 then
          card.ability.extra.rounds = 3
       end
-      card.ability.extra.key = poke_key.key
+      card.ability.extra.key = center.key
     end
   end
 }
@@ -544,7 +543,7 @@ local ruins_of_alph={
           card_eval_status_text(card, 'extra', nil, nil, nil, {message = localize('k_no_other_jokers')})
         end
       elseif card.ability.extra.merged >= 5 then
-        reward_card = create_random_poke_joker("alph", nil, "poke_safari", G.jokers)
+        reward_card = SMODS.create_card({ set = "Joker", rarity = "poke_safari", key_append = "alph" })
       end
       if reward_card then
         reward_card:add_to_deck()
@@ -634,56 +633,6 @@ local unown_swarm={
   end
 }
 
-local billion_lions = {
-  name = "billion_lions",
-  pos = {x = 5, y = 12},
-  soul_pos = {x = 6, y = 12},
-  config = {extra= {Xmult = 1, Xmult_mod = 1, lions = 1000000000}},
-  loc_vars = function(self, info_queue, center)
-    type_tooltip(self, info_queue, center)
-    return {vars = {center.ability.extra.Xmult, center.ability.extra.Xmult_mod, center.ability.extra.lions}}
-  end,
-  rarity = 4,
-  cost = 6,
-  stage = "Legendary",
-  atlas = "Pokedex9",
-  gen = 9,
-  perishable_compat = true,
-  blueprint_compat = true,
-  eternal_compat = true,
-  no_collection = true,
-  calculate = function(self, card, context)
-    if context.setting_blind and not card.getting_sliced then
-      local destroyed = 0
-      for k, v in pairs(G.jokers.cards) do
-        if v ~= card and get_type(v) and not v.ability.eternal then
-          destroyed = destroyed + 1
-          v.getting_sliced = true
-          G.E_MANAGER:add_event(Event({func = function()
-              (context.blueprint_card or card):juice_up(0.8, 0.8)
-              v:start_dissolve({G.C.RED}, nil, 1.6)
-          return true end }))
-        end
-      end
-      card.ability.extra.Xmult = card.ability.extra.Xmult + card.ability.extra.Xmult_mod * destroyed
-      card.ability.extra.lions = card.ability.extra.lions - destroyed
-      if card.ability.extra.lions <= 0 then 
-        card_eval_status_text(card, 'extra', nil, nil, nil, {message = "They lose!", colour = G.C.RED})
-        card:start_dissolve({G.C.RED}, nil, 1.6) 
-      end
-    end
-    if context.cardarea == G.jokers and context.scoring_hand then
-      if context.joker_main then
-        return {
-          message = localize{type = 'variable', key = 'a_xmult', vars = {card.ability.extra.Xmult}}, 
-          colour = G.C.XMULT,
-          Xmult_mod = card.ability.extra.Xmult
-        }
-      end
-    end
-  end
-}
-
 local professor={
   name = "professor",
   pos = {x = 0, y = 1},
@@ -696,8 +645,9 @@ local professor={
   cost = 6,
   stage = "Other",
   atlas = "others",
+  artist = "MyDude_YT",
   perishable_compat = true,
-  blueprint_compat = true,
+  blueprint_compat = false,
   eternal_compat = false,
   calculate = function(self, card, context)
     if context.selling_self and (card.ability.extra.rounds_current >= card.ability.extra.rounds_total) and not context.blueprint then
@@ -725,35 +675,60 @@ local professor={
     end
   end,
   in_pool = function(self)
-    local grass_starters = {}
-    local fire_starters = {}
-    local water_starters = {}
-    local pseudo_starters = {}
-    local pika_eevee = {}
-    local pack_key = nil
-    for k, v in ipairs(G.P_CENTER_POOLS["Joker"]) do
+    local grass_found, fire_found, water_found, pseudo_found, letsgo_found
+    for _, v in ipairs(G.P_CENTER_POOLS["Joker"]) do
       if not poke_family_present(v) then
-        if v.starter and v.ptype == "Grass" then
-          grass_starters[#grass_starters + 1] = v.key
-        end
-        if v.starter and v.ptype == "Fire" then
-          fire_starters[#fire_starters + 1] = v.key
-        end
-        if v.starter and v.ptype == "Water" then
-          water_starters[#water_starters + 1] = v.key
-        end
-        if v.pseudol then
-          pseudo_starters[#pseudo_starters + 1] = v.key
-        end
-        if v.name == "pikachu" or v.name == "eevee" then
-          pika_eevee[#pika_eevee + 1] = v.key
+        if v.starter and v.ptype == "Grass" then grass_found = true end
+        if v.starter and v.ptype == "Fire" then fire_found = true end
+        if v.starter and v.ptype == "Water" then water_found = true end
+        if v.pseudol then pseudo_found = true end
+        if v.name == "pikachu" or v.name == "eevee" then letsgo_found = true end
+
+        if grass_found and fire_found and water_found and pseudo_found and letsgo_found then
+          return true
         end
       end
     end
-    if #grass_starters == 0 or #fire_starters == 0 or #water_starters == 0 or #pseudo_starters == 0 or #pika_eevee == 0 then
-      return false
-    end
+    return false
   end
+}
+
+
+local oologist={
+  name = "oologist",
+  pos = {x = 0, y = 0},
+  artist = "MyDude_YT",
+  config = {extra = {num = 1, dem = 20, activated = false}},
+  loc_vars = function(self, info_queue, center)
+    type_tooltip(self, info_queue, center)
+    if pokermon_config.detailed_tooltips then
+      if not center.edition or (center.edition and not center.edition.negative) then
+        info_queue[#info_queue+1] = G.P_CENTERS.e_negative
+      end
+    end
+    local num, dem = SMODS.get_probability_vars(center, center.ability.extra.num, center.ability.extra.dem, 'oologist')
+    return {vars = {num, dem, not center.ability.extra.activated and "("..localize('k_active_ex')..")" or ''}}
+  end,
+  rarity = 3,
+  cost = 8,
+  stage = "Other",
+  atlas = "others",
+  perishable_compat = true,
+  blueprint_compat = false,
+  eternal_compat = false,
+  calculate = function(self, card, context)
+    if context.reroll_shop and not context.blueprint and not card.ability.extra.activated then
+      if SMODS.pseudorandom_probability(card, 'oologist', card.ability.extra.num, card.ability.extra.dem, 'oologist') then
+        card.ability.extra.activated = true
+        local temp_card = {set = "Joker", area = G.shop_jokers, key = "j_poke_mystery_egg", edition = "e_negative"}
+        local add_card = SMODS.create_card(temp_card)
+        poke_add_shop_card(add_card, card)
+      end
+    end
+    if context.ending_shop and not context.blueprint then
+      card.ability.extra.activated = false
+    end
+  end,
 }
 
 local daycare={
@@ -767,10 +742,11 @@ local daycare={
   rarity = 3,
   cost = 8,
   stage = "Other",
-  atlas = "placeholder_joker",
+  atlas = "others",
+  artist = {name = {"Currently a placeholder!", "Want your art here?", "Join the Discord!"}},
   perishable_compat = true,
-  blueprint_compat = true,
-  eternal_compat = true,
+  blueprint_compat = false,
+  eternal_compat = false,
   calculate = function(self, card, context)
     if context.selling_self and not context.blueprint then
       local adjacent_jokers = poke_get_adjacent_jokers(card)
@@ -842,11 +818,39 @@ local daycare={
   end,
 }
 
-local jlist = {pokedex, rotomdex, everstone, tall_grass, jelly_donut, treasure_eatery, mystery_egg, rival, ruins_of_alph, unown_swarm, professor, daycare}
+local repel={
+  name = "repel", 
+  pos = {x = 0, y = 0}, 
+  config = {extra = {}},
+  loc_vars = function(self, info_queue, center)
+    type_tooltip(self, info_queue, center)
+    info_queue[#info_queue+1] = {key = 'tag_d_six', set = 'Tag'}
+  end,
+  rarity = 2, 
+  cost = 6, 
+  stage = "Other",
+  atlas = "placeholder_joker",
+  blueprint_compat = false,
+  eternal_compat = false,
+  calculate = function(self, card, context)
+    if context.selling_self and not context.blueprint then
+      if G.GAME.blind and G.GAME.blind:get_type() == 'Boss' then 
+        card_eval_status_text(context.blueprint_card or card, 'extra', nil, nil, nil, {message = localize('ph_boss_disabled')})
+        G.GAME.blind:disable()
+      end
+      G.E_MANAGER:add_event(Event({
+        func = (function()
+            add_tag(Tag('tag_d_six'))
+            play_sound('generic1', 0.9 + math.random()*0.1, 0.8)
+            play_sound('holo1', 1.2 + math.random()*0.1, 0.4)
+            return true
+        end)
+      }))
+    end
+  end,
+}
 
-if pokermon_config.pokemon_aprilfools then
-  jlist[#jlist + 1] = billion_lions
-end
+local jlist = {pokedex, rotomdex, everstone, tall_grass, jelly_donut, treasure_eatery, mystery_egg, rival, ruins_of_alph, unown_swarm, professor, daycare, oologist}
 
 return {name = "Other Jokers",
       list = jlist
