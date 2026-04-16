@@ -34,7 +34,8 @@ local starmie={
         }
       end
     end
-  end
+  end,
+  attributes = {"mult", "economy", "suit", "diamonds", "space"},
 }
 -- Mr Mime 122
 local mrmime={
@@ -62,7 +63,8 @@ local mrmime={
         }
       end
     end
-  end
+  end,
+  attributes = {"retrigger"},
 }
 -- Scyther 123
 local scyther={
@@ -139,7 +141,8 @@ local scyther={
     end
     return type_evo(self, card, context, "j_poke_scizor", "metal")
         or item_evo(self, card, context, "j_poke_kleavor")
-  end
+  end,
+  attributes = {"destroy_card", "mult", "editions", "scaling", "type_evo", "item_evo"},
 }
 -- Jynx 124
 local jynx={
@@ -194,6 +197,7 @@ local jynx={
       end
     end
   end,
+  attributes = {"generation", "passive", "hand_size"}
 }
 -- Electabuzz 125
 local electabuzz={
@@ -234,7 +238,8 @@ local electabuzz={
   calc_dollar_bonus = function(self, card)
     local earned = math.min(card.ability.extra.max, math.ceil(card.sell_cost * card.ability.extra.percent/100))
     return ease_poke_dollars(card, "electabuzz", earned, true)
-	end
+	end,
+  attributes = {"sell_value", "scaling", "economy", "item_evo"},
 }
 -- Magmar 126
 local magmar={
@@ -279,7 +284,8 @@ local magmar={
       }
     end
     return item_evo(self, card, context, "j_poke_magmortar")
-  end
+  end,
+  attributes = {"discard", "destroy_card", "mult", "scaling", "item_evo"},
 }
 -- Pinsir 127
 local pinsir={
@@ -318,7 +324,8 @@ local pinsir={
       end
     end
   end,
-  megas = {"mega_pinsir"}
+  megas = {"mega_pinsir"},
+  attributes = {"xmult", "rank"},
 }
 -- Mega Pinsir 127-1
 local mega_pinsir={
@@ -344,7 +351,8 @@ local mega_pinsir={
           card = card
         }
     end
-  end
+  end,
+  attributes = {"xmult", "enhancements"},
 }
 -- Tauros 128
 local tauros={
@@ -384,7 +392,8 @@ local tauros={
         poke_add_shop_card(add_card, card)
       end
     end
-  end
+  end,
+  attributes = {"xmult", "reroll", "chance", "joker", "generation"},
 }
 -- Tauros-Herd 128-1
 local taurosh={
@@ -418,7 +427,8 @@ local taurosh={
   end,
   in_pool = function(self)
     return false
-  end
+  end,
+  attributes = {"mult"},
 }
 -- Magikarp 129
 local magikarp={
@@ -456,7 +466,8 @@ local magikarp={
       }
     end
     return level_evo(self, card, context, "j_poke_gyarados")
-  end
+  end,
+  attributes = {"chips", "passive", "applies", "round_evo"},
 }
 -- Gyarados 130
 local gyarados={
@@ -485,7 +496,8 @@ local gyarados={
       end
     end
   end,
-  megas = {"mega_gyarados"}
+  megas = {"mega_gyarados"},
+  attributes = {"xmult"},
 }
 -- Mega Gyarados 130-1
 local mega_gyarados={
@@ -533,7 +545,8 @@ local mega_gyarados={
       play_sound('timpani')
       card_eval_status_text(card, 'extra', nil, nil, nil, {message = localize('ph_boss_disabled')})
     end
-  end
+  end,
+  attributes = {"xmult", "boss_blind"},
 }
 -- Lapras 131
 local lapras={
@@ -592,7 +605,8 @@ local lapras={
     if G.STAGE == G.STAGES.RUN then
       card.ability.extra.chips = G.GAME.skips * card.ability.extra.chip_mod
     end
-  end
+  end,
+  attributes = {"chips", "scaling", "skip"},
 }
 -- Ditto 132
 local ditto={
@@ -615,6 +629,7 @@ local ditto={
   ptype = "Colorless",
   atlas = "Pokedex1",
   gen = 1,
+  volatile = true,
   blueprint_compat = false,
   eternal_compat = false,
   custom_pool_func = true, 
@@ -650,7 +665,8 @@ local ditto={
     end
     if next(find_joker("Showman")) then return true end
     return true
-  end
+  end,
+  attributes = {"joker", "volatile"},
 }
 -- Eevee 133
 local eevee={
@@ -685,7 +701,8 @@ local eevee={
       end
     end
     return item_evo(self, card, context, nil)
-  end
+  end,
+  attributes = {"xmult", "hands", "item_evo"},
 }
 -- Vaporeon 134
 local vaporeon={
@@ -716,7 +733,8 @@ local vaporeon={
             colour = G.C.CHIPS
         }
     end
-  end
+  end,
+  attributes = {"modify_card", "chips", "perma_bonus", "enhancements"},
 }
 -- Jolteon 135
 local jolteon={
@@ -753,7 +771,8 @@ local jolteon={
           end
       }
     end
-  end
+  end,
+  attributes = {"discard", "economy", "enhancements"},
 }
 -- Flareon 136
 local flareon={
@@ -796,7 +815,8 @@ local flareon={
         end
       end
     end
-  end
+  end,
+  attributes = {"xmult", "enhancements"},
 }
 -- Porygon 137
 local porygon={
@@ -850,7 +870,8 @@ local porygon={
     else
       G.GAME.energy_plus = G.GAME.energy_plus - 1
     end
-  end
+  end,
+  attributes = {"generation", "energy", "energy_limit", "item_evo"},
 }
 -- Omanyte 138
 local omanyte={
@@ -908,6 +929,7 @@ local omanyte={
     return scaling_evo(self, card, context, "j_poke_omastar", card.ability.extra.third_times, self.config.evo_rqmt)
   end,
   generate_ui = fossil_generate_ui,
+  attributes = {"ancient", "rank", "three", "generation", "tarot", "item", "economy", "trigger_evo"},
 }
 -- Omastar 139
 local omastar={
@@ -988,6 +1010,7 @@ local omastar={
     end
   end,
   generate_ui = fossil_generate_ui,
+  attributes = {"ancient", "rank", "three", "generation", "tarot", "item", "economy", "tag"},
 }
 -- Kabuto 140
 local kabuto={
@@ -1045,6 +1068,7 @@ local kabuto={
     return scaling_evo(self, card, context, "j_poke_kabutops", card.ability.extra.third_times, self.config.evo_rqmt)
   end,
   generate_ui = fossil_generate_ui,
+  attributes = {"ancient", "rank", "two", "chips", "modify_card", "perma_bonus", "trigger_evo"},
 }
 -- Kabutops 141
 local kabutops={
@@ -1110,6 +1134,7 @@ local kabutops={
     end
   end,
   generate_ui = fossil_generate_ui,
+  attributes = {"ancient", "rank", "two", "chips", "modify_card", "perma_bonus", "retrigger"},
 }
 -- Aerodactyl 142
 local aerodactyl={
@@ -1184,7 +1209,8 @@ local aerodactyl={
     end
   end,
   generate_ui = fossil_generate_ui,
-  megas = {"mega_aerodactyl"}
+  megas = {"mega_aerodactyl"},
+  attributes = {"ancient", "rank", "ace", "xmult", "scaling", "modify_card", "enhancements", "reset"},
 }
 -- Mega Aerodactyl 142-1
 local mega_aerodactyl={
@@ -1227,6 +1253,7 @@ local mega_aerodactyl={
       return not context.blueprint and context.destroying_card:get_id() == 14
     end
   end,
+  attributes = {"rank", "ace", "xmult", "chance", "destroy_card"},
 }
 -- Snorlax 143
 local snorlax={
@@ -1275,7 +1302,8 @@ local snorlax={
         })
       end
     end
-  end
+  end,
+  attributes = {"holding", "xmult", "scaling"},
 }
 -- Articuno 144
 local articuno={
@@ -1299,7 +1327,8 @@ local articuno={
       local args = {edition = "e_foil", seal = SMODS.poll_seal({guaranteed = true})}
       poke_convert_cards_to(target, args, true, true)
     end
-  end
+  end,
+  attributes = {"modify_card", "seals", "editions"},
 }
 -- Zapdos 145
 local zapdos={
@@ -1338,7 +1367,8 @@ local zapdos={
         end
       end
     end
-  end
+  end,
+  attributes = {"xmult"},
 }
 -- Moltres 146
 local moltres={
@@ -1367,7 +1397,8 @@ local moltres={
       local eval = function() return G.GAME.current_round.discards_used <= 0 and not G.RESET_JIGGLES end
       juice_card_until(card, eval, true)
     end
-  end
+  end,
+  attributes = {"discard", "hand_type"},
 }
 -- Dratini 147
 local dratini={
@@ -1402,6 +1433,7 @@ local dratini={
     end
     return scaling_evo(self, card, context, "j_poke_dragonair", card.ability.extra.mult, self.config.evo_rqmt)
   end,
+  attributes = {"mult", "scaling", "scaling_evo"},
 }
 -- Dragonair 148
 local dragonair={
@@ -1435,6 +1467,7 @@ local dragonair={
     end
     return scaling_evo(self, card, context, "j_poke_dragonite", card.ability.extra.mult, self.config.evo_rqmt)
   end,
+  attributes = {"mult", "scaling", "scaling_evo"},
 }
 -- Dragonite 149
 local dragonite={
@@ -1464,6 +1497,7 @@ local dragonite={
       }
     end
   end,
+  attributes = {"mult", "scaling", "retrigger"},
 }
 -- Mewtwo 150
 local mewtwo={
@@ -1540,6 +1574,7 @@ local mewtwo={
     end
   end,
   megas = {"mega_mewtwo_x", "mega_mewtwo_y"},
+  attributes = {"boss_blind", "generation", "editions", "destroy_card", "joker", "xmult", "energy_count"},
 }
 -- Mega Mewtwo X 150-1
 local mega_mewtwo_x = {
@@ -1566,7 +1601,8 @@ local mega_mewtwo_x = {
           Xmult_mod = card.ability.extra.Xmult_multi
         }
     end
-  end
+  end,
+  attributes = {"xmult", "joker"},
 }
 -- Mega Mewtwo Y 150-2
 local mega_mewtwo_y = {
@@ -1612,7 +1648,8 @@ local mega_mewtwo_y = {
         G.GAME.energy_plus = G.GAME.energy_plus + 1
       end
     end
-  end
+  end,
+  attributes = {"boss_blind", "energy_count", "energy_limit"},
 }
 ----------------------
 return {name = "Pokemon Jokers 121-150", 
