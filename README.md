@@ -5,7 +5,7 @@ If you're having trouble loading the mod, try turning off Pixel Smoothing. This 
 This is a fork containing my own personal tweaks to the Balatro mod [Pokermon](https://github.com/InertSteak/Pokermon)
 
 ## List of changes
-- Mew percent chance increased to 80%
+- Mew percent chance increased to 25%
 - Gastly evo line will only target jokers without an edition
 - Adjusted Gengar's round timer probabilities
 - Porygon-Z energy gen effect gives matching energy to leftmost joker.
