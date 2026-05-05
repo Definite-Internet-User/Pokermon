@@ -381,7 +381,7 @@ local magmortar={
 local togekiss={
   name = "togekiss",
   pos = {x = 11, y = 5},
-  config = {extra = {num = 1, chip_dem = 5, Xmult_dem = 10, chips = 100, Xmult_multi = 1.5, plus_odds = 1}},
+  config = {extra = {num = 1, chip_dem = 5, Xmult_dem = 10, chips = 100, Xmult_multi = 1.5, plus_odds = 2}},
   loc_vars = function(self, info_queue, card)
     type_tooltip(self, info_queue, card)
     local num, chip_dem = SMODS.get_probability_vars(card, card.ability.extra.num, card.ability.extra.chip_dem, 'togekiss')
@@ -709,7 +709,8 @@ local porygonz={
           trigger = 'immediate',
           delay = 0.0,
           func = (function()
-                  local _card = create_card('Energy', G.consumeables, nil, nil, nil, nil, energy_key, 'pory')
+                  local forced_key = matching_energy(G.jokers.cards[1]);
+                  local _card = create_card('Energy', G.consumeables, nil, nil, nil, nil, forced_key)
                   _card:add_to_deck()
                   G.consumeables:emplace(_card)
                   G.GAME.consumeable_buffer = 0

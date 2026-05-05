@@ -1635,8 +1635,7 @@ return {
             j_poke_gastly = {
                 name = 'Gastly',      
                 text = {
-                    "{C:green}#1# in #2#{} chance to {C:attention}replace{} the",
-                    "edition of a random {C:attention}Joker{} with",
+                    "{C:green}#1# in #2#{} chance to give a random {C:attention}Joker{}",
                     "{C:dark_edition}Negative{} at end of round",
                     "{S:1.1,C:red,E:2}self destructs{}",
                     "{C:inactive,s:0.8}(Evolves after {C:attention,s:0.8}#3#{C:inactive,s:0.8} rounds)",
@@ -1645,8 +1644,7 @@ return {
             j_poke_haunter = {
                 name = 'Haunter',      
                 text = {
-                    "{C:green}#1# in #2#{} chance to {C:attention}replace{} the",
-                    "edition of a random {C:attention}Joker{} with",
+                    "{C:green}#1# in #2#{} chance to give a random {C:attention}Joker{}",
                     "{C:dark_edition}Negative{} at end of round",
                     "{S:1.1,C:red,E:2}self destructs{}",
                     "{C:inactive,s:0.8}(Evolves with a {C:attention,s:0.8}Linking Cord{C:inactive,s:0.8})"
@@ -1655,8 +1653,7 @@ return {
             j_poke_gengar = {
                 name = 'Gengar',      
                 text = {
-                    "{C:attention}Replace{} the edition of a",
-                    "random {C:attention}Joker{} with",
+                    "Give a random {C:attention}Joker{}",
                     "{C:dark_edition}Negative{} in {C:dark_edition}#1#{} rounds",
                     "{C:inactive,s:0.8}(Gengar picks a new number!){}",
                     "{C:inactive,s:0.8}(Excludes Gengars){}",
@@ -4542,7 +4539,8 @@ return {
                     "{X:mult,C:white} X#2# {} Mult per {C:pink}Energy{}",
                     "card used this run",
                     "{br:2}text needs to be here to work",
-                    "Creates an {C:pink}Energy",
+                    "Creates an {C:pink}Energy of",
+                    "the same {C:pink}Type{} of leftmost Joker",
                     "when you use an {C:pink}Energy",
                     "{C:inactive}(Must have room)",
                     "{C:inactive}(Currently {X:mult,C:white} X#1# {C:inactive} Mult)"
