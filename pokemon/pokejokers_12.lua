@@ -82,10 +82,10 @@ local cacturne = {
 local swablu={
   name = "swablu",
   pos = {x = 0, y = 0},
-  config = {extra = {chips = 0,chip_mod = 2,money_mod = 1,}, evo_rqmt = 36},
+  config = {extra = {chips = 0,chip_mod = 2,}, evo_rqmt = 36},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
-    return {vars = {center.ability.extra.chips, center.ability.extra.chip_mod,center.ability.extra.money_mod, self.config.evo_rqmt}}
+    return {vars = {center.ability.extra.chips, center.ability.extra.chip_mod, self.config.evo_rqmt}}
   end,
   rarity = 1,
   cost = 4,
@@ -105,14 +105,6 @@ local swablu={
             scalar_value = 'chip_mod',
             message_colour = G.C.CHIPS
           })
-          local earned = ease_poke_dollars(card, "swablu", card.ability.extra.money_mod)
-          G.GAME.dollar_buffer = (G.GAME.dollar_buffer or 0) + earned
-          G.E_MANAGER:add_event(Event({
-              func = function()
-                  G.GAME.dollar_buffer = 0
-                  return true
-              end
-          }))
         end
       end
     end
@@ -129,10 +121,11 @@ local swablu={
 local altaria={
   name = "altaria",
   pos = {x = 0, y = 0},
-  config = {extra = {chips = 0,chip_mod = 4,money_mod = 1, chip_mod_extra = 2, money_mod_extra = 1}},
+  config = {extra = {chips = 0,chip_mod = 3,money_mod = 1,num = 1, dem = 3}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
-    return {vars = {center.ability.extra.chips, center.ability.extra.chip_mod,center.ability.extra.money_mod, center.ability.extra.chip_mod_extra, center.ability.extra.money_mod_extra}}
+    local num, dem = SMODS.get_probability_vars(center, center.ability.extra.num, center.ability.extra.dem, 'altaria')
+    return {vars = {center.ability.extra.chips, center.ability.extra.chip_mod,center.ability.extra.money_mod, num, dem}}
   end,
   rarity = "poke_safari",
   cost = 6,
@@ -155,15 +148,16 @@ local altaria={
             end,
             message_colour = G.C.CHIPS
           })
-          local extra = (#find_pokemon_type("Dragon", card) > 0 and card.ability.extra.money_mod_extra or 0)
-          local earned = ease_poke_dollars(card, "swablu", card.ability.extra.money_mod + extra)
-          G.GAME.dollar_buffer = (G.GAME.dollar_buffer or 0) + earned
-          G.E_MANAGER:add_event(Event({
-              func = function()
-                  G.GAME.dollar_buffer = 0
-                  return true
-              end
-          }))
+          if (SMODS.pseudorandom_probability(card, 'altaria', card.ability.extra.num, card.ability.extra.dem, 'altaria')) or (#find_pokemon_type("Dragon", card) > 0) then
+            local earned = ease_poke_dollars(card, "altaria", card.ability.extra.money_mod)
+            G.GAME.dollar_buffer = (G.GAME.dollar_buffer or 0) + earned
+            G.E_MANAGER:add_event(Event({
+                func = function()
+                    G.GAME.dollar_buffer = 0
+                    return true
+                end
+            }))
+          end
         end
       end
     end
@@ -185,7 +179,7 @@ local altaria={
 local corphish={
   name = "corphish",
   pos = {x = 0, y = 0},
-  config = {extra = {mult = 0, mult_mod = 2, targets = {{value = "Ace", id = "14"}, {value = "King", id = "13"}, {value = "Queen", id = "12"}}}, evo_rqmt = 16},
+  config = {extra = {mult = 0, mult_mod = 1, targets = {{value = "Ace", id = "14"}, {value = "King", id = "13"}, {value = "Queen", id = "12"}}}, evo_rqmt = 10},
   loc_vars = function(self, info_queue, card)
     type_tooltip(self, info_queue, card)
     if pokermon_config.detailed_tooltips then
@@ -247,7 +241,7 @@ local corphish={
 local crawdaunt={
   name = "crawdaunt",
   pos = {x = 0, y = 0},
-  config = {extra = {mult = 0, mult_mod = 2, targets = {{value = "Ace", id = "14"}, {value = "King", id = "13"}, {value = "Queen", id = "12"}}}},
+  config = {extra = {mult = 0, mult_mod = 1, targets = {{value = "Ace", id = "14"}, {value = "King", id = "13"}, {value = "Queen", id = "12"}}}},
   loc_vars = function(self, info_queue, card)
     type_tooltip(self, info_queue, card)
     if pokermon_config.detailed_tooltips then
@@ -721,15 +715,12 @@ local duskull={
   blueprint_compat = true,
   eternal_compat = true,
   calculate = function(self, card, context)
-    if context.repetition and not context.end_of_round and context.cardarea == G.play and G.GAME.current_round.hands_left == 0 then
-      if (context.other_card == context.scoring_hand[1]) or (context.other_card == context.scoring_hand[2]) 
-      or (context.other_card == context.scoring_hand[3]) or (context.other_card == context.scoring_hand[4]) then
-        return {
-          message = localize('k_again_ex'),
-          repetitions = card.ability.extra.retriggers,
-          card = card
-        }
-      end
+    if context.repetition and context.cardarea == G.play and G.GAME.current_round.hands_left == 0
+        and (context.other_card == context.scoring_hand[1] or context.other_card == context.scoring_hand[2]
+          or context.other_card == context.scoring_hand[3] or context.other_card == context.scoring_hand[4]) then
+      return {
+        repetitions = card.ability.extra.retriggers,
+      }
     end
     return level_evo(self, card, context, "j_poke_dusclops")
   end,
@@ -755,35 +746,32 @@ local dusclops={
   blueprint_compat = true,
   eternal_compat = true,
   calculate = function(self, card, context)
-    if context.repetition and not context.end_of_round and context.cardarea == G.play and G.GAME.current_round.hands_left == 0 then
-      if (context.other_card == context.scoring_hand[1]) or (context.other_card == context.scoring_hand[2]) 
-      or (context.other_card == context.scoring_hand[3]) or (context.other_card == context.scoring_hand[4]) then
-        return {
-          message = localize('k_again_ex'),
-          repetitions = card.ability.extra.retriggers,
-          card = card
-        }
-      end
+    if context.repetition and context.cardarea == G.play and G.GAME.current_round.hands_left == 0
+        and (context.other_card == context.scoring_hand[1] or context.other_card == context.scoring_hand[2]
+          or context.other_card == context.scoring_hand[3] or context.other_card == context.scoring_hand[4]) then
+      return {
+        repetitions = card.ability.extra.retriggers,
+      }
     end
-    if context.cardarea == G.jokers and context.scoring_hand then
-      if context.after and G.GAME.current_round.hands_left == 0 and (#context.full_hand - #context.scoring_hand) == 1 and not context.blueprint then
-        for k, v in pairs(context.full_hand) do
-          if not SMODS.in_scoring(v, context.scoring_hand) then
-            poke_remove_card(v, card)
-            if #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit then
-              G.E_MANAGER:add_event(Event({
-                func = function()
-                  local _card = SMODS.add_card {set = 'Spectral'}
-                  card_eval_status_text(_card, 'extra', nil, nil, nil, {message = localize('k_plus_spectral'), colour = G.C.SECONDARY_SET.Spectral})
-                  G.GAME.consumeable_buffer = 0
-                  return true
-                end
-              }))
-            end
-            break
+    if context.destroy_card and context.cardarea == 'unscored' and not context.blueprint
+        and G.GAME.current_round.hands_left == 0
+        and (#context.full_hand - #context.scoring_hand) == 1 then
+
+      if #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit then
+        G.GAME.consumeable_buffer = G.GAME.consumeable_buffer + 1
+        G.E_MANAGER:add_event(Event({
+          func = function()
+            local spectral = SMODS.add_card({set = 'Spectral'})
+            SMODS.calculate_effect({message = localize('k_plus_spectral'), colour = G.C.SECONDARY_SET.Spectral}, spectral)
+            G.GAME.consumeable_buffer = 0
+            return true
           end
-        end
+        }))
       end
+
+      return {
+        remove = true
+      }
     end
     return item_evo(self, card, context, "j_poke_dusknoir")
   end,
