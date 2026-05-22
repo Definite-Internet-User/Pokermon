@@ -6,7 +6,7 @@ This is a fork containing my own personal tweaks to the Balatro mod [Pokermon](h
 
 ## List of changes
 - Mew percent chance increased to 25%
-- Gastly evo line will only target jokers without an edition
+- Gastly evo line now will only target jokers without an edition
 - Adjusted Gengar's round timer probabilities
 - Porygon-Z energy gen effect gives matching energy to leftmost joker.
 - Lower Deino line's evo reqs; Deino 6 triggers, Zwei 8 triggers.
@@ -15,6 +15,7 @@ This is a fork containing my own personal tweaks to the Balatro mod [Pokermon](h
 - Buff Espeon's xmult to 1.3x
 - Raised a pocket tag's chance to spawn a Megastone to 80%
 - Made Magikarp incompatible with perishable
+- Change Golbat evo req to 8 instead of 16
 
 ## Things I may do later.
 - Change Articuno to give a random edtion(excluding shiny & negative)
@@ -22,3 +23,4 @@ This is a fork containing my own personal tweaks to the Balatro mod [Pokermon](h
 - Increase megastone's soul rate.
 - Change +Hand and +Discard jokers to +Hand/Discard on blind select.
 - Adjusted edition weights for when Scizor gains an edition
+- Adjust Togekiss to triple Lucky odds
