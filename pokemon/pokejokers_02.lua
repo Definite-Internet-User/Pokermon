@@ -465,7 +465,7 @@ local zubat={
 local golbat={
   name = "golbat", 
   pos = {x = 2, y = 3},
-  config = {extra = {mult = 0, mult_mod = 2, eaten = 0}, evo_rqmt = 16},
+  config = {extra = {mult = 0, mult_mod = 2, eaten = 0}, evo_rqmt = 8},
   loc_vars = function(self, info_queue, card)
     pokermon.type_tooltip(self, info_queue, card)
     local eating_left = math.max(0, self.config.evo_rqmt - card.ability.extra.eaten)
