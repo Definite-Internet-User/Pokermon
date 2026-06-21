@@ -1558,6 +1558,27 @@ jd_def["j_poke_stantler"] = {
 }
 
 --	Smeargle
+jd_def["j_poke_smeargle"] = {
+  reminder_text = {
+    { text = "(" },
+    { ref_table = "card.joker_display_values", ref_value = "blueprint_compat", colour = G.C.RED },
+    { text = ")" }
+  },
+  calc_function = function(card)
+    local copied_joker, copied_debuff = JokerDisplay.calculate_blueprint_copy(card)
+    card.joker_display_values.blueprint_compat = localize('k_incompatible')
+    JokerDisplay.copy_display(card, copied_joker, copied_debuff)
+  end,
+  get_blueprint_joker = function(card)
+    for i = 1, #G.jokers.cards do
+      if G.jokers.cards[i] == card then
+        return G.jokers.cards[i + 1]
+      end
+    end
+    return nil
+  end,
+}
+
 --	Tyrogue
 jd_def["j_poke_tyrogue"] = {
     text = {

@@ -16,6 +16,7 @@ This is a fork containing my own personal tweaks to the Balatro mod [Pokermon](h
 - Raised a pocket tag's chance to spawn a Megastone to 80%
 - Made Magikarp incompatible with perishable
 - Change Golbat evo req to 8 instead of 16
+- Add slightly inacurate Smeargle JokerDisplay (It doesn't try at all to account for sketch)
 
 ## Things I may do later.
 - Change Articuno to give a random edtion(excluding shiny & negative)
