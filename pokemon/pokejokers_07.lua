@@ -738,7 +738,7 @@ local quagsire={
 local espeon={
   name = "espeon", 
   pos = {x = 4, y = 4},
-  config = {extra = {retriggers = 1, Xmult_multi = 1.2}},
+  config = {extra = {retriggers = 1, Xmult_multi = 1.3}},
   loc_vars = function(self, info_queue, center)
     pokermon.type_tooltip(self, info_queue, center)
     if pokermon_config.detailed_tooltips then
