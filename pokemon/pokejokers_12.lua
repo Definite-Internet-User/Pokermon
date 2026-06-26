@@ -732,7 +732,7 @@ local anorith={
 local armaldo={
   name = "armaldo",
   pos = {x = 0, y = 0},
-  config = {extra = {rank = "7", mult = 11, num = 1, dem = 4, Xmult_multi = 0.1}},
+  config = {extra = {rank = "7", mult = 11, num = 1, dem = 4, Xmult_mod = 0.1}},
   loc_vars = function(self, info_queue, center)
     pokermon.type_tooltip(self, info_queue, center)
     info_queue[#info_queue+1] = {set = 'Other', key = 'ancient', vars = {localize(center.ability.extra.rank, 'ranks')}}
@@ -757,7 +757,7 @@ local armaldo={
         enhanced_sevens = enhanced_sevens + 1
       end
     end
-    return 1 + enhanced_sevens * card.ability.extra.Xmult_multi
+    return 1 + enhanced_sevens * card.ability.extra.Xmult_mod
   end,
   calculate = function(self, card, context)
     if context.before then
