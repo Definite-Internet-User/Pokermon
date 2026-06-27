@@ -738,7 +738,7 @@ local armaldo={
     info_queue[#info_queue+1] = {set = 'Other', key = 'ancient', vars = {localize(center.ability.extra.rank, 'ranks')}}
     local num, dem = SMODS.get_probability_vars(center, center.ability.extra.num, center.ability.extra.dem, 'armaldo')
     local total_xmult = self:get_total_Xmult(center)
-    return {vars = {localize(center.ability.extra.rank, 'ranks'), center.ability.extra.mult, num, dem, center.ability.extra.Xmult_multi, total_xmult}}
+    return {vars = {localize(center.ability.extra.rank, 'ranks'), center.ability.extra.mult, num, dem, center.ability.extra.Xmult_mod, total_xmult}}
   end,
   rarity = "poke_safari",
   cost = 8,
