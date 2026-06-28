@@ -13,6 +13,13 @@ local pokedex={
   blueprint_compat = false,
   attributes = {"passive"},
 }
+local smods_showman_ref = SMODS.showman
+function SMODS.showman(card_key, ...)
+  if next(SMODS.find_card('j_poke_pokedex')) then
+    return true
+  end
+  return smods_showman_ref(card_key, ...)
+end
 
 local rotomdex={ 
   name = "rotomdex",
