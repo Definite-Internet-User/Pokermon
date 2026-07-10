@@ -1527,7 +1527,7 @@ jd_def["j_poke_armaldo"] = {
       for k, v in pairs(G.playing_cards) do
         if v:get_id() == 7 and v.config.center ~= G.P_CENTERS.c_base then
           enhanced_seven_tally = enhanced_seven_tally + 1
-          Xmult = 1 + (card.ability.extra.Xmult_multi * enhanced_seven_tally)
+          Xmult = 1 + (card.ability.extra.Xmult_mod * enhanced_seven_tally)
         end
       end
     end
