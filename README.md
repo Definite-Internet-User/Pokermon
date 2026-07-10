@@ -11,9 +11,9 @@ This is a fork containing my own personal tweaks to the Balatro mod [Pokermon](h
 - Lower Deino line's evo reqs; Deino 6 triggers, Zwei 8 triggers.
 - Togekiss + odds from 1 to 2
 - Lucario xmult from 1.3x to 1.4x
-- Buff Espeon's xmult to 1.3x
 - Raised a pocket tag's chance to spawn a Megastone to 80%
 - Made Magikarp incompatible with perishable
+- Made Jirachi (Invis) blueprint compatible
 - Change Golbat evo req to 8 instead of 16
 - Add slightly inacurate Smeargle JokerDisplay (It doesn't try at all to account for sketch)
 - Changed Armaldo from Xmult_multi to Xmult_mod
