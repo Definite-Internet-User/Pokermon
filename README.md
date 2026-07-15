@@ -13,7 +13,6 @@ This is a fork containing my own personal tweaks to the Balatro mod [Pokermon](h
 - Lucario xmult from 1.3x to 1.4x
 - Raised a pocket tag's chance to spawn a Megastone to 80%
 - Made Magikarp incompatible with perishable
-- Made Jirachi (Invis) blueprint compatible
 - Change Golbat evo req to 8 instead of 16
 - Add slightly inacurate Smeargle JokerDisplay (It doesn't try at all to account for sketch)
 - Changed Armaldo from Xmult_multi to Xmult_mod
