@@ -35,7 +35,45 @@ local starmie={
       end
     end
   end,
+  megas = { "mega_starmie" },
   attributes = {"mult", "economy", "suit", "diamonds", "space"},
+}
+
+local mega_starmie={
+  name = "mega_starmie", 
+  pos = {x = 3, y = 9},
+  config = {extra = {Xmult_multi = 2.5, money_mod = 5, suit = "Diamonds"}},
+  loc_vars = function(self, info_queue, center)
+    pokermon.type_tooltip(self, info_queue, center)
+    return {vars = {center.ability.extra.Xmult_multi, center.ability.extra.money_mod, localize(center.ability.extra.suit, 'suits_plural')}}
+  end,
+  rarity = "poke_mega", 
+  cost = 12, 
+  stage = "Mega", 
+  ptype = "Water",
+  atlas = "Pokedex1",
+  gen = 1,
+  blueprint_compat = true,
+  calculate = function(self, card, context)
+    if context.individual and context.cardarea == G.play and #context.full_hand == 2 and context.other_card:is_suit(card.ability.extra.suit) then
+      if not context.end_of_round and not context.before and not context.after and not context.other_card.debuff then
+        G.GAME.dollar_buffer = (G.GAME.dollar_buffer or 0) + card.ability.extra.money_mod
+        G.E_MANAGER:add_event(Event({
+            func = function()
+                G.GAME.dollar_buffer = 0
+                return true
+            end
+        }))
+        local earned = pokermon.ease_poke_dollars(card, "starmie", card.ability.extra.money_mod, true)
+        return {
+          xmult = card.ability.extra.Xmult_multi,
+          dollars = earned,
+          card = card
+        }
+      end
+    end
+  end,
+  attributes = {"xmult", "economy", "suit", "diamonds", "space"},
 }
 -- Mr Mime 122
 local mrmime={
@@ -314,9 +352,7 @@ local pinsir={
           for _,hand_card in pairs(G.hand.cards) do
             if found_ranks[hand_card:get_id()] then
               return {
-                message = localize{type = 'variable', key = 'a_xmult', vars = {card.ability.extra.Xmult}}, 
-                colour = G.C.XMULT,
-                Xmult_mod = card.ability.extra.Xmult
+                Xmult = card.ability.extra.Xmult
               }
             end
           end
@@ -380,9 +416,7 @@ local tauros={
           end
         })) 
         return {
-          message = localize{type = 'variable', key = 'a_xmult', vars = {card.ability.extra.Xmult_multi}}, 
-          colour = G.C.XMULT,
-          Xmult_mod = card.ability.extra.Xmult_multi
+          Xmult = card.ability.extra.Xmult_multi
         }
     end
     if context.reroll_shop and not context.blueprint then
@@ -489,9 +523,7 @@ local gyarados={
     if context.cardarea == G.jokers and context.scoring_hand then
       if context.joker_main then
         return {
-          message = localize{type = 'variable', key = 'a_xmult', vars = {card.ability.extra.Xmult}}, 
-          colour = G.C.XMULT,
-          Xmult_mod = card.ability.extra.Xmult
+          Xmult = card.ability.extra.Xmult
         }
       end
     end
@@ -520,9 +552,7 @@ local mega_gyarados={
     if context.cardarea == G.jokers and context.scoring_hand then
       if context.joker_main then
         return {
-          message = localize{type = 'variable', key = 'a_xmult', vars = {card.ability.extra.Xmult}}, 
-          colour = G.C.XMULT,
-          Xmult_mod = card.ability.extra.Xmult
+          Xmult = card.ability.extra.Xmult
         }
       end
     end
@@ -656,6 +686,7 @@ local ditto={
     end
   end,
   in_pool = function(self)
+    if SMODS.showman(self.key) then return true end
     if G.jokers and G.jokers.cards and #G.jokers.cards > 0 then
       for k, v in ipairs(G.jokers.cards) do
         if v.ability.perishable then
@@ -663,7 +694,6 @@ local ditto={
         end
       end
     end
-    if next(find_joker("Showman")) then return true end
     return true
   end,
   attributes = {"joker", "volatile"},
@@ -1398,9 +1428,7 @@ local zapdos={
         end
         if can_score then
           return {
-            message = localize{type = 'variable', key = 'a_xmult', vars = {Xmult}}, 
-            colour = G.C.MULT,
-            Xmult_mod = Xmult
+            Xmult = Xmult
           }
         end
       end
@@ -1598,17 +1626,9 @@ local mewtwo={
       end
     end
     if context.other_joker and context.other_joker.edition and context.other_joker.edition.polychrome then
-        G.E_MANAGER:add_event(Event({
-          func = function()
-              context.other_joker:juice_up(0.5, 0.5)
-              return true
-          end
-        })) 
-        return {
-          message = localize{type = 'variable', key = 'a_xmult', vars = {card.ability.extra.Xmult_multi}}, 
-          colour = G.C.XMULT,
-          Xmult_mod = card.ability.extra.Xmult_multi
-        }
+      return {
+        Xmult = card.ability.extra.Xmult_multi
+      }
     end
   end,
   megas = {"mega_mewtwo_x", "mega_mewtwo_y"},
@@ -1633,11 +1653,9 @@ local mega_mewtwo_x = {
   blueprint_compat = true,
   calculate = function(self, card, context)
     if context.other_joker then
-        return {
-          message = localize{type = 'variable', key = 'a_xmult', vars = {card.ability.extra.Xmult_multi}}, 
-          colour = G.C.XMULT,
-          Xmult_mod = card.ability.extra.Xmult_multi
-        }
+      return {
+        Xmult = card.ability.extra.Xmult_multi
+      }
     end
   end,
   attributes = {"xmult", "joker"},
@@ -1691,5 +1709,7 @@ local mega_mewtwo_y = {
 }
 ----------------------
 return {name = "Pokemon Jokers 121-150", 
-        list = { starmie, mrmime, scyther, jynx, electabuzz, magmar, pinsir, mega_pinsir, tauros, taurosh, magikarp, gyarados, mega_gyarados, lapras, ditto, eevee, vaporeon, jolteon, flareon, porygon,                 omanyte, omastar, kabuto, kabutops, aerodactyl, mega_aerodactyl, snorlax, articuno, zapdos, moltres, dratini, dragonair, dragonite, mewtwo, mega_mewtwo_x, mega_mewtwo_y},
+        list = { starmie, mega_starmie, mrmime, scyther, jynx, electabuzz, magmar, pinsir, mega_pinsir, tauros, taurosh, magikarp, gyarados, mega_gyarados, lapras, ditto, eevee, 
+                 vaporeon, jolteon, flareon, porygon, omanyte, omastar, kabuto, kabutops, aerodactyl, mega_aerodactyl, snorlax, articuno, zapdos, moltres, dratini, dragonair, 
+                 dragonite, mewtwo, mega_mewtwo_x, mega_mewtwo_y},
 }
