@@ -1324,12 +1324,12 @@ return {
             j_poke_golduck = {
                 name = "Golduck",
                 text = {
-                    "Earn {C:money}$#1#{} when a",
-                    "card becomes {C:attention}Gold{}",
-                    "{br:2}ERROR - CONTACT STEAK",
                     "If played hand is",
                     "exactly {C:attention}1 face{} card",
                     "it becomes a {C:attention}Gold{} card",
+                    "{br:2}ERROR - CONTACT STEAK",
+                    "Earn {C:money}$#1#{} when a",
+                    "card becomes {C:attention}Gold{}",
                 } 
             },
             j_poke_mankey = {
@@ -2440,9 +2440,9 @@ return {
             j_poke_sentret = {
                 name = 'Sentret',
                 text = {
-                    "{C:mult}+#2#{} Mult per",
-                    "{C:attention}consecutive{} hand played that",
-                    "isn't the last played hand",
+                    "{C:mult}+#2#{} Mult per {C:attention}consecutive{}",
+                    "hand played that isn't",
+                    "the last played hand",
                     "{C:inactive}(Last hand: {C:attention}#3#{C:inactive})",
                     "{C:inactive}(Evolves at {C:mult}+#1#{C:inactive} / +15 Mult)",
                 }
