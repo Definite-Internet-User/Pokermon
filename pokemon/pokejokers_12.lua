@@ -732,13 +732,13 @@ local anorith={
 local armaldo={
   name = "armaldo",
   pos = {x = 0, y = 0},
-  config = {extra = {rank = "7", mult = 11, num = 1, dem = 4, Xmult_multi = 0.1}},
+  config = {extra = {rank = "7", mult = 11, num = 1, dem = 4, Xmult_mod = 0.1}},
   loc_vars = function(self, info_queue, center)
     pokermon.type_tooltip(self, info_queue, center)
     info_queue[#info_queue+1] = {set = 'Other', key = 'ancient', vars = {localize(center.ability.extra.rank, 'ranks')}}
     local num, dem = SMODS.get_probability_vars(center, center.ability.extra.num, center.ability.extra.dem, 'armaldo')
     local total_xmult = self:get_total_Xmult(center)
-    return {vars = {localize(center.ability.extra.rank, 'ranks'), center.ability.extra.mult, num, dem, center.ability.extra.Xmult_multi, total_xmult}}
+    return {vars = {localize(center.ability.extra.rank, 'ranks'), center.ability.extra.mult, num, dem, center.ability.extra.Xmult_mod, total_xmult}}
   end,
   rarity = "poke_safari",
   cost = 8,
@@ -757,7 +757,7 @@ local armaldo={
         enhanced_sevens = enhanced_sevens + 1
       end
     end
-    return 1 + enhanced_sevens * card.ability.extra.Xmult_multi
+    return 1 + enhanced_sevens * card.ability.extra.Xmult_mod
   end,
   calculate = function(self, card, context)
     if context.before then
