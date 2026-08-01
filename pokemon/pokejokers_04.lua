@@ -55,12 +55,29 @@ local gastly={
   eternal_compat = false,
   blueprint_compat = false,
   calculate = function(self, card, context)
-    if context.round_eval and SMODS.pseudorandom_probability(card, 'gastly', card.ability.extra.num, card.ability.extra.dem, 'gastly') then
-      local eligible_jokers = pokermon.filter(G.jokers.cards,
-        function(c) return c.ability.set == 'Joker' and c ~= card and not c.getting_sliced end)
-
-      if #eligible_jokers > 0 then
-        local selected_card = pseudorandom_element(eligible_jokers, pseudoseed('gastly'))
+    if not card.gone then
+      return pokermon.level_evo(self, card, context, "j_poke_haunter")
+    end
+  end,
+  calc_dollar_bonus = function(self, card)
+    local eligible_card = nil
+    if SMODS.pseudorandom_probability(card, 'gastly', card.ability.extra.num, card.ability.extra.dem, 'gastly') then
+      if #G.jokers.cards > 0 then
+        local eligible_editionless_jokers = {}
+        for k, v in pairs(G.jokers.cards) do
+          if v.ability.set == 'Joker' and (not v.edition) and v ~= card and not v.gone then
+              table.insert(eligible_editionless_jokers, v)
+          end
+        end
+        if #eligible_editionless_jokers > 0 then
+          eligible_card = pseudorandom_element(eligible_editionless_jokers, pseudoseed('gastly'))
+          local edition = {negative = true}
+          eligible_card:set_edition(edition, true)
+        else
+          eligible_card = pseudorandom_element(G.jokers.cards, pseudoseed('gastly'))
+          local edition = {negative = true}
+          eligible_card:set_edition(edition, true)
+        end
 
         SMODS.destroy_cards(card, {pinch_anim = true})
 
@@ -104,14 +121,29 @@ local haunter={
   eternal_compat = false,
   blueprint_compat = false,
   calculate = function(self, card, context)
-    if context.round_eval and SMODS.pseudorandom_probability(card, 'haunter', card.ability.extra.num, card.ability.extra.dem, 'haunter') then
-      local eligible_jokers = pokermon.filter(G.jokers.cards,
-        function(c) return c.ability.set == 'Joker' and c ~= card and not c.getting_sliced end)
-
-      if #eligible_jokers > 0 then
-        local selected_card = pseudorandom_element(eligible_jokers, pseudoseed('haunter'))
-
-        SMODS.destroy_cards(card, {pinch_anim = true})
+    if not card.gone then
+      return pokermon.item_evo(self, card, context, "j_poke_gengar")
+    end
+  end,
+  calc_dollar_bonus = function(self, card)
+    local eligible_card = nil
+    if SMODS.pseudorandom_probability(card, 'haunter', card.ability.extra.num, card.ability.extra.dem, 'haunter') and not card.ability.extra.evolve then
+      if #G.jokers.cards > 0 then
+        local eligible_editionless_jokers = {}
+        for k, v in pairs(G.jokers.cards) do
+          if v.ability.set == 'Joker' and (not v.edition) and v ~= card and not v.gone then
+              table.insert(eligible_editionless_jokers, v)
+          end
+        end
+        if #eligible_editionless_jokers > 0 then
+          eligible_card = pseudorandom_element(eligible_editionless_jokers, pseudoseed('haunter'))
+          local edition = {negative = true}
+          eligible_card:set_edition(edition, true)
+        else
+          eligible_card = pseudorandom_element(G.jokers.cards, pseudoseed('haunter'))
+          local edition = {negative = true}
+          eligible_card:set_edition(edition, true)
+        end
 
         G.E_MANAGER:add_event(Event({
           func = function()
@@ -171,24 +203,41 @@ local gengar={
         }
       else
         card.ability.extra.trigger = true
-        self:set_gengar_rounds(card)
+        
+        local gengar_chance = pseudorandom('gengar')
+        if gengar_chance < .10 then card.ability.extra.gengar_rounds = 2
+        elseif gengar_chance < .20 then card.ability.extra.gengar_rounds = 3
+        elseif gengar_chance < .40 then card.ability.extra.gengar_rounds = 4
+        elseif gengar_chance < .65 then card.ability.extra.gengar_rounds = 5
+        elseif gengar_chance < .85 then card.ability.extra.gengar_rounds = 6
+        elseif gengar_chance < .95 then card.ability.extra.gengar_rounds = 7
+        else card.ability.extra.gengar_rounds = 8
+        end
       end
     end
-    if context.round_eval and card.ability.extra.trigger then
+  end,
+  set_ability = function(self, card, initial, delay_sprites)
+    if initial then
+      local gengar_chance = pseudorandom('gengar')
+      if gengar_chance < .10 then card.ability.extra.gengar_rounds = 2
+      elseif gengar_chance < .20 then card.ability.extra.gengar_rounds = 3
+      elseif gengar_chance < .40 then card.ability.extra.gengar_rounds = 4
+      elseif gengar_chance < .65 then card.ability.extra.gengar_rounds = 5
+      elseif gengar_chance < .85 then card.ability.extra.gengar_rounds = 6
+      elseif gengar_chance < .95 then card.ability.extra.gengar_rounds = 7
+      else card.ability.extra.gengar_rounds = 8
+      end
+    end
+  end,
+  calc_dollar_bonus = function(self, card)
+    local eligible_card = nil
+    if card.ability.extra.trigger then
       card.ability.extra.trigger = false
-
-      local eligible_jokers = pokermon.filter(G.jokers.cards,
-        function(c) return c.ability.set == 'Joker' and c.ability.name ~= "gengar" and not c.getting_sliced end)
-
-      if #eligible_jokers > 0 then
-        local selected_card = pseudorandom_element(eligible_jokers, pseudoseed('gengar'))
-
-        G.E_MANAGER:add_event(Event({
-          func = function()
-            -- event to delay the negative shader appearing
-            selected_card:set_edition('e_negative', true)
-            card:juice_up()
-            return true
+      if #G.jokers.cards > 0 then
+        local eligible_jokers = {}
+        for k, v in pairs(G.jokers.cards) do
+          if v.ability.set == 'Joker' and (not v.edition) and v.ability.name ~= "gengar" and not v.gone then
+              table.insert(eligible_jokers, v)
           end
         }))
 
