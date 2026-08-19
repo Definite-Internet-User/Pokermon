@@ -2141,11 +2141,9 @@ return {
             j_poke_vaporeon = {
                 name = 'Vaporeon',
                 text = {
-                    "Every played {C:attention}card{} permanently",
-                    "gains {C:chips}+#1#{} Chips for each {C:attention}Bonus{}",
-                    "card in your {C:attention}full deck{}",
-                    "when scored",
-                    "{C:inactive}(Currrently {C:chips}+#2#{C:inactive} Chips)"
+                    "Every card in {C:attention}poker hand",
+                    "permanently gains {C:chips}+#1#{} Chips",
+                    "when a {C:attention}Bonus{} card scores"
                 } 
             },
             j_poke_jolteon = {
@@ -3847,8 +3845,8 @@ return {
             j_poke_minun = {
               name = "Minun",
               text = {
-                "All {C:attention}Jokers{} and {C:attention}consumables{} in",
-                "the shop cost {C:money}$#1#{} less",
+                "All cards and packs in",
+                "shop cost {C:money}$#1#{} less",
                 "{br:2}ERROR - CONTACT STEAK",
                 "Earn {C:money}$#2#{} at end of round",
                 "for each {C:attention}Plusle{} you have"
@@ -3861,7 +3859,7 @@ return {
                 "you use a {C:planet}Planet{} card",
                 "{br:2}ERROR - CONTACT STEAK",
                 "If you have another {X:poke_grass,C:white}Grass{}",
-                "Joker, gains {X:mult,C:white} X#4# {} Mult as well",
+                "Joker, gains {X:mult,C:white} X#4# {} Mult {C:attention}instead",
                 "{C:inactive}(Currently {C:chips}+#1#{C:inactive} Chips, {X:mult,C:white} X#3# {C:inactive} Mult)"
               }
             },
@@ -4132,6 +4130,25 @@ return {
                     "{C:attention}3+ {B:1,V:2}#2#{} Jokers",
                     "{C:inactive,s:0.8}(Changes to {C:attention,s:0.8}Kecleon{C:inactive,s:0.8}'s type)"
                 },
+            },
+            j_poke_shuppet = {
+              name = "Shuppet",
+              text = {
+                "Gains {C:mult}+#2#{} Mult when",
+                "a Joker is sold",
+                "during the {C:attention}Blind",
+                "{C:inactive}(Evolves at {C:mult}+#1#{C:inactive} / +#3# Mult)",
+              }
+            },
+            j_poke_banette = {
+              name = "Banette",
+              text = {
+                "{C:attention}+#3#{} joker slot, {C:chips}-#4#{} hand",
+                "Gains {C:mult}+#2#{} Mult when",
+                "a Joker is sold",
+                "during the {C:attention}Blind",
+                "{C:inactive}(Currently {C:mult}+#1#{C:inactive} Mult)",
+              }
             },
             j_poke_duskull = {
               name = "Duskull",
@@ -4770,7 +4787,7 @@ return {
                 text = {
                     "Triples all {C:attention}listed {C:green,E:1,S:1.1}probabilities{} if",
                     "a {C:attention}Lucky{} card {C:green}successfully{}",
-                    "triggered this {C:attention}ante",
+                    "triggered this {C:attention}round",
                     "{C:inactive}(ex: {C:green}1 in 6{C:inactive} -> {C:green}3 in 6{C:inactive})",
                 } 
             },
@@ -4861,7 +4878,7 @@ return {
                   "{C:attention}Booster Pack{} is opened",
                   "{C:inactive}(Must have room){}",
                   "{br:2}ERROR - CONTACT STEAK",
-                  "{C:attention}Booster Packs{} cost {C:money}$1{} less",
+                  "Packs cost {C:money}$1{} less",
                   "{C:inactive}(Transforms when using a {C:attention}Machine{C:inactive}){}"
                 }
             },
@@ -5427,9 +5444,10 @@ return {
             j_poke_sylveon = {
                 name = 'Sylveon',
                 text = {
-                    "Gain {C:chips}+#2#{} Chips when each",
-                    "played {C:attention}editioned{} card scores",
-                    "{C:inactive}(Currently {C:chips}+#1#{C:inactive} Chips)",
+                    "When round begins, add a",
+                    "{C:dark_edition}Foil{}, {C:dark_edition}Holographic{}, or {C:dark_edition}Polychrome{}",
+                    "copy of a random card in",
+                    "your {C:attention}deck{} to your hand",
                 } 
             },
             j_poke_pumpkaboo_small = {
@@ -5968,10 +5986,12 @@ return {
                 name = "Kingambit",
                 text = {
                   "{X:red,C:white}X#1#{} Mult",
-                  "If played hand has the only",
-                  "{C:attention}King{} in your {C:attention}full deck{}, each",
-                  "played {C:attention}non-face{} card gives half",
-                  "this Joker's {X:mult,C:white}X{} Mult when scored",
+                  "{br:2}ERROR - CONTACT STEAK",
+                  "Played {C:attention}non-face{} cards give {C:attention}half",
+                  "this {X:red,C:white}X{} Mult when scored if",
+                  "the only {C:attention}King{} in your {C:attention}full", 
+                  "{C:attention}deck{} is {C:attention}held{} in hand",
+                  "{C:inactive}(Currently {X:red,C:white}X#2#{C:inactive} Mult)",
                 }
             },
             j_poke_farigiraf = {

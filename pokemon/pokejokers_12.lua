@@ -4,7 +4,6 @@ local cacnea = {
   pos = {x = 0, y = 0},
   config = {extra = {hazard_level = 1, money_mod = 3, rounds = 5}},
   loc_vars = function(self, info_queue, card)
-    pokermon.type_tooltip(self, info_queue, card)
     -- just to shorten function
     local abbr = card.ability.extra
     info_queue[#info_queue+1] = {set = 'Other', key = 'hazard_level', vars = pokermon.get_hazard_level_vars()}
@@ -18,7 +17,6 @@ local cacnea = {
   ptype = "Grass",
   atlas = "Pokedex3",
   gen = 3,
-  hazard_poke = true,
   blueprint_compat = true,
   calculate = function(self, card, context)
     if context.remove_playing_cards then
@@ -43,7 +41,6 @@ local cacturne = {
   pos = {x = 0, y = 0},
   config = {extra = {hazard_level = 1, money_mod = 5}},
   loc_vars = function(self, info_queue, card)
-    pokermon.type_tooltip(self, info_queue, card)
     -- just to shorten function
     local abbr = card.ability.extra
     info_queue[#info_queue+1] = {set = 'Other', key = 'hazard_level', vars = pokermon.get_hazard_level_vars()}
@@ -57,7 +54,6 @@ local cacturne = {
   ptype = "Grass",
   atlas = "Pokedex3",
   gen = 3,
-  hazard_poke = true,
   blueprint_compat = true,
   calculate = function(self, card, context)
     if context.remove_playing_cards then
@@ -84,7 +80,6 @@ local swablu={
   pos = {x = 0, y = 0},
   config = {extra = {chips = 0,chip_mod = 2,}, evo_rqmt = 36},
   loc_vars = function(self, info_queue, center)
-    pokermon.type_tooltip(self, info_queue, center)
     return {vars = {center.ability.extra.chips, center.ability.extra.chip_mod, self.config.evo_rqmt}}
   end,
   rarity = 1,
@@ -124,7 +119,6 @@ local altaria={
   pos = {x = 0, y = 0},
   config = {extra = {chips = 0,chip_mod = 3,money_mod = 1,num = 1, dem = 3}},
   loc_vars = function(self, info_queue, center)
-    pokermon.type_tooltip(self, info_queue, center)
     local num, dem = SMODS.get_probability_vars(center, center.ability.extra.num, center.ability.extra.dem, 'altaria')
     return {vars = {center.ability.extra.chips, center.ability.extra.chip_mod,center.ability.extra.money_mod, num, dem}}
   end,
@@ -185,7 +179,6 @@ local corphish={
   pos = {x = 0, y = 0},
   config = {extra = {mult = 0, mult_mod = 1, targets = {{value = "Ace", id = "14"}, {value = "King", id = "13"}, {value = "Queen", id = "12"}}}, evo_rqmt = 10},
   loc_vars = function(self, info_queue, card)
-    pokermon.type_tooltip(self, info_queue, card)
     if pokermon_config.detailed_tooltips then
       info_queue[#info_queue+1] = {set = 'Other', key = 'nature', vars = {"rank"}}
     end
@@ -247,7 +240,6 @@ local crawdaunt={
   pos = {x = 0, y = 0},
   config = {extra = {mult = 0, mult_mod = 1, targets = {{value = "Ace", id = "14"}, {value = "King", id = "13"}, {value = "Queen", id = "12"}}}},
   loc_vars = function(self, info_queue, card)
-    pokermon.type_tooltip(self, info_queue, card)
     if pokermon_config.detailed_tooltips then
       info_queue[#info_queue+1] = {set = 'Other', key = 'nature', vars = {"rank"}}
     end
@@ -310,7 +302,6 @@ local baltoy={
   pos = {x = 0, y = 0},
   config = {extra = {chips = 0, chip_mod = 1, chip_mod1 = 6, hazard_level = 1,}, evo_rqmt = 40},
   loc_vars = function(self, info_queue, center)
-    pokermon.type_tooltip(self, info_queue, center)
     info_queue[#info_queue+1] = {set = 'Other', key = 'hazard_level', vars = pokermon.get_hazard_level_vars()}
     info_queue[#info_queue+1] = G.P_CENTERS.m_poke_hazard
     local r_chips = {}
@@ -399,6 +390,7 @@ local baltoy={
   remove_from_deck = function(self, card, from_debuff)
     pokermon.change_hazard_level(-card.ability.extra.hazard_level)
   end,
+  attributes = {"hazards", "discard", "enhancements", "chips", "scaling", "scaling_evo"}
 }
 -- Claydol 344
 local claydol={
@@ -406,7 +398,6 @@ local claydol={
   pos = {x = 0, y = 0},
   config = {extra = {chips = 0, chip_mod = 1, chip_mod1 = 8, hazard_level = 1, num = 1, dem = 3}},
   loc_vars = function(self, info_queue, center)
-    pokermon.type_tooltip(self, info_queue, center)
     info_queue[#info_queue+1] = {set = 'Other', key = 'hazard_level', vars = pokermon.get_hazard_level_vars()}
     info_queue[#info_queue+1] = G.P_CENTERS.m_poke_hazard
     local r_chips = {}
@@ -515,6 +506,7 @@ local claydol={
   remove_from_deck = function(self, card, from_debuff)
     pokermon.change_hazard_level(-card.ability.extra.hazard_level)
   end,
+  attributes = {"hazards", "discard", "enhancements", "chips", "scaling", "chance"}
 }
 -- Lileep 345
 local lileep={
@@ -522,7 +514,6 @@ local lileep={
   pos = {x = 0, y = 0},
   config = {extra = {rank = "8", chip_mod = 10, money_mod = 1, h_size = 1, money_minus = 2, third_times = 0}, evo_rqmt = 5},
   loc_vars = function(self, info_queue, center)
-    pokermon.type_tooltip(self, info_queue, center)
     info_queue[#info_queue+1] = {set = 'Other', key = 'ancient', vars = {localize(center.ability.extra.rank, 'ranks')}}
     local third_left = math.max(0, self.config.evo_rqmt - center.ability.extra.third_times)
     return {vars = {localize(center.ability.extra.rank, 'ranks'), center.ability.extra.chip_mod, center.ability.extra.money_mod, center.ability.extra.h_size, 
@@ -587,7 +578,7 @@ local lileep={
     return pokermon.scaling_evo(self, card, context, "j_poke_cradily", card.ability.extra.third_times, self.config.evo_rqmt)
   end,
   generate_ui = pokermon.fossil_generate_ui,
-  attributes = {"rank", "eight", "hand_size", "sell_value", "chips", "trigger_evo"},
+  attributes = {"ancient", "rank", "eight", "hand_size", "sell_value", "chips", "trigger_evo"},
 }
 -- Cradily 346
 local cradily={
@@ -595,7 +586,6 @@ local cradily={
   pos = {x = 0, y = 0},
   config = {extra = {rank = "8", chip_mod = 20, money_mod = 2, h_size = 1, money_minus = 4, money_minus2 = 26}},
   loc_vars = function(self, info_queue, center)
-    pokermon.type_tooltip(self, info_queue, center)
     info_queue[#info_queue+1] = {set = 'Other', key = 'ancient', vars = {localize(center.ability.extra.rank, 'ranks')}}
     return {vars = {localize(center.ability.extra.rank, 'ranks'), center.ability.extra.chip_mod, center.ability.extra.money_mod, center.ability.extra.h_size, 
                     center.ability.extra.money_minus, center.ability.extra.money_minus2}}
@@ -672,7 +662,6 @@ local anorith={
   pos = {x = 0, y = 0},
   config = {extra = {rank = "7", mult = 7, num = 1, dem = 4, third_times = 0}, evo_rqmt = 5},
   loc_vars = function(self, info_queue, center)
-    pokermon.type_tooltip(self, info_queue, center)
     info_queue[#info_queue+1] = {set = 'Other', key = 'ancient', vars = {localize(center.ability.extra.rank, 'ranks')}}
     local num, dem = SMODS.get_probability_vars(center, center.ability.extra.num, center.ability.extra.dem, 'anorith')
     local third_left = math.max(0, self.config.evo_rqmt - center.ability.extra.third_times)
@@ -734,7 +723,6 @@ local armaldo={
   pos = {x = 0, y = 0},
   config = {extra = {rank = "7", mult = 11, num = 1, dem = 4, Xmult_mod = 0.1}},
   loc_vars = function(self, info_queue, center)
-    pokermon.type_tooltip(self, info_queue, center)
     info_queue[#info_queue+1] = {set = 'Other', key = 'ancient', vars = {localize(center.ability.extra.rank, 'ranks')}}
     local num, dem = SMODS.get_probability_vars(center, center.ability.extra.num, center.ability.extra.dem, 'armaldo')
     local total_xmult = self:get_total_Xmult(center)
@@ -811,7 +799,6 @@ local feebas={
   pos = {x = 7, y = 9},
   config = {extra = {mult = 1}},
   loc_vars = function(self, info_queue, center)
-    pokermon.type_tooltip(self, info_queue, center)
     if pokermon_config.detailed_tooltips then
       info_queue[#info_queue+1] = { set = 'Joker', key = 'j_splash', config={}}
     end
@@ -850,7 +837,6 @@ local milotic={
   pos = {x = 8, y = 9},
   config = {extra = {retriggers = 1, active = false}},
   loc_vars = function(self, info_queue, center)
-    pokermon.type_tooltip(self, info_queue, center)
   end,
   rarity = "poke_safari",
   cost = 8,
@@ -958,14 +944,97 @@ local kecleon = {
   attributes = {"types", "joker", "xmult"},
 }
 -- Shuppet 353
+local shuppet={
+  name = "shuppet",
+  pos = {x = 0, y = 0},
+  config = {extra = {mult = 0,mult_mod = 3,}, evo_rqmt = 18},
+  loc_vars = function(self, info_queue, center)
+    return {vars = {center.ability.extra.mult, center.ability.extra.mult_mod, self.config.evo_rqmt}}
+  end,
+  rarity = 2,
+  cost = 5,
+  gen = 3,
+  stage = "Basic",
+  ptype = "Psychic",
+  atlas = "Pokedex3",
+  perishable_compat = false,
+  blueprint_compat = true,
+  eternal_compat = true,
+  calculate = function(self, card, context)
+    if context.joker_main then
+      if card.ability.extra.mult > 0 then
+        return {
+          mult = card.ability.extra.mult
+        }
+      end
+    end
+    
+    if context.selling_card and context.card.ability.set == 'Joker' and G.GAME.facing_blind and not context.blueprint then
+      SMODS.scale_card(card, {
+        ref_value = 'mult',
+        scalar_value = 'mult_mod',
+        message_colour = G.C.MULT,
+      })
+    end
+    return scaling_evo(self, card, context, "j_poke_banette", card.ability.extra.mult, self.config.evo_rqmt)
+  end,
+  attributes = {"hand_type", "mult", "scaling", "on_sell"},
+}
 -- Banette 354
+local banette={
+  name = "banette",
+  pos = {x = 0, y = 0},
+  config = {extra = {mult = 0,mult_mod = 3, card_limit = 1, hand_minus = 1}, evo_rqmt = 15},
+  loc_vars = function(self, info_queue, center)
+    return {vars = {center.ability.extra.mult, center.ability.extra.mult_mod, center.ability.extra.card_limit, center.ability.extra.hand_minus}}
+  end,
+  rarity = "poke_safari",
+  cost = 7,
+  gen = 3,
+  stage = "One",
+  ptype = "Psychic",
+  atlas = "Pokedex3",
+  perishable_compat = false,
+  blueprint_compat = true,
+  eternal_compat = true,
+  calculate = function(self, card, context)
+    if context.joker_main then
+      if card.ability.extra.mult > 0 then
+        return {
+          mult = card.ability.extra.mult
+        }
+      end
+    end
+    
+    if context.selling_card and context.card.ability.set == 'Joker' and G.GAME.facing_blind and not context.blueprint then
+      SMODS.scale_card(card, {
+        ref_value = 'mult',
+        scalar_value = 'mult_mod',
+        message_colour = G.C.MULT,
+      })
+    end
+  end,
+  add_to_deck = function(self, card, from_debuff)
+    G.jokers.config.card_limit = G.jokers.config.card_limit + card.ability.extra.card_limit
+    G.GAME.round_resets.hands = G.GAME.round_resets.hands - card.ability.extra.hand_minus
+    if not from_debuff then
+      ease_hands_played(-card.ability.extra.hand_minus)
+    end
+  end,
+  remove_from_deck = function(self, card, from_debuff)
+    G.jokers.config.card_limit = G.jokers.config.card_limit - card.ability.extra.card_limit
+    G.GAME.round_resets.hands = G.GAME.round_resets.hands + card.ability.extra.hand_minus
+    pokermon.ease_hands_played(card.ability.extra.hand_minus)
+  end,
+  attributes = {"hand_type", "mult", "scaling", "on_sell", "hands", "joker slots"},
+}
+
 -- Duskull 355
 local duskull={
   name = "duskull",
   pos = {x = 0, y = 0},
   config = {extra = {retriggers = 1,rounds = 5,}},
   loc_vars = function(self, info_queue, center)
-    pokermon.type_tooltip(self, info_queue, center)
     return {vars = {center.ability.extra.retriggers, center.ability.extra.rounds, }}
   end,
   rarity = 2,
@@ -995,7 +1064,6 @@ local dusclops={
   pos = {x = 0, y = 0},
   config = {extra = {retriggers = 1,}},
   loc_vars = function(self, info_queue, center)
-    pokermon.type_tooltip(self, info_queue, center)
     return {vars = {center.ability.extra.retriggers, }}
   end,
   rarity = "poke_safari",
@@ -1046,7 +1114,6 @@ local tropius={
   pos = {x = 0, y = 0},
   config = {extra = {Xmult = 1, Xmult_mod = 0.5, cavendish_chance = 0, chance_increase = .20, active = true}},
   loc_vars = function(self, info_queue, center)
-    pokermon.type_tooltip(self, info_queue, center)
     info_queue[#info_queue+1] = G.P_CENTERS.j_gros_michel
     info_queue[#info_queue+1] = G.P_CENTERS.j_cavendish
     return {vars = {center.ability.extra.Xmult, center.ability.extra.Xmult_mod, }}
@@ -1119,7 +1186,6 @@ local chimecho={
   pos = {x = 0, y = 0},
   config = {extra = {glass_restored = 0, glass_limit = 2}},
   loc_vars = function(self, info_queue, center)
-    pokermon.type_tooltip(self, info_queue, center)
     if pokermon_config.detailed_tooltips then
       info_queue[#info_queue+1] = G.P_CENTERS.m_glass
     end
@@ -1197,7 +1263,6 @@ local absol={
   pos = {x = 0, y = 0},
   config = {extra = {Xmult = 2}},
   loc_vars = function(self, info_queue, center)
-    pokermon.type_tooltip(self, info_queue, center)
     return {vars = {center.ability.extra.Xmult, center.ability.extra.scry}}
   end,
   rarity = 3,
@@ -1231,7 +1296,6 @@ local wynaut={
   pos = {x = 1, y = 11},
   config = {extra = {Xmult_minus = 0.75,rounds = 2,}},
   loc_vars = function(self, info_queue, center)
-    pokermon.type_tooltip(self, info_queue, center)
     if pokermon_config.detailed_tooltips then
       info_queue[#info_queue+1] = {set = 'Other', key = 'baby'}
       info_queue[#info_queue+1] = {key = 'e_negative_consumable', set = 'Edition', config = {extra = 1}}
@@ -1270,5 +1334,6 @@ local wynaut={
   attributes = {"baby", "tarot", "generation", "round_evo"},
 }
 return {name = "Pokemon Jokers 331-360", 
-        list = {cacnea, cacturne, swablu, altaria, corphish, crawdaunt, baltoy, claydol, lileep, cradily, anorith, armaldo, feebas, milotic, kecleon, duskull, dusclops, tropius, chimecho, absol, wynaut},
+        list = {cacnea, cacturne, swablu, altaria, corphish, crawdaunt, baltoy, claydol, lileep, cradily, anorith, armaldo, feebas, milotic, kecleon, duskull, dusclops, shuppet, banette,
+                tropius, chimecho, absol, wynaut},
 }

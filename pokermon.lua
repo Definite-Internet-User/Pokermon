@@ -68,31 +68,6 @@ SMODS.Rarity{
     end,
 }
 
---Load Custom Attributes
-if SMODS.Attribute then
-  SMODS.Attribute { key = "round_evo" }
-  SMODS.Attribute { key = "scaling_evo" }
-  SMODS.Attribute { key = "item_evo" }
-  SMODS.Attribute { key = "type_evo" }
-  SMODS.Attribute { key = "trigger_evo" }
-  SMODS.Attribute { key = "condition_evo" }
-  SMODS.Attribute { key = "starter" }
-  SMODS.Attribute { key = "holding" }
-  SMODS.Attribute { key = "item" }
-  SMODS.Attribute { key = "types" }
-  SMODS.Attribute { key = "volatile" }
-  SMODS.Attribute { key = "energy" }
-  SMODS.Attribute { key = "energy_count" }
-  SMODS.Attribute { key = "energy_limit" }
-  SMODS.Attribute { key = "ancient" }
-  SMODS.Attribute { key = "foresight" }
-  SMODS.Attribute { key = "baby" }
-  SMODS.Attribute { key = "nature" }
-  SMODS.Attribute { key = "hazards" }
-  SMODS.Attribute { key = "applies" }
-  SMODS.Attribute { key = "drain" }
-end
-
 --Load helper function files
 assert(SMODS.load_file("functions/pokeconstants.lua"))()
 assert(SMODS.load_file("functions/pokefunctions.lua"))()
@@ -337,6 +312,9 @@ function SMODS.current_mod.calculate(self, context)
   --Leafeon
   if context.individual and context.cardarea == G.play and context.other_card.lucky_trigger then
     G.GAME.poke_lucky_triggers = (G.GAME.poke_lucky_triggers or 0) + 1
+  end
+  if context.end_of_round and context.main_eval then
+    G.GAME.poke_lucky_triggers = 0
   end
 
   --Revive fainted Jokers (MP Fix)
